@@ -63,7 +63,8 @@ flutter:
    - assets/landing.svg
    - assets/r8.svg
    - assets/mainLanding.svg
-   - assets/User.svg
+   - assets/users.svg
+   - assets/flecha.svg
    - assets/next.png
   #   - images/a_dot_ham.jpeg
 
