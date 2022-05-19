@@ -25,7 +25,7 @@ class _LandingPageState extends State<LandingPage> {
       // color: Colors.blue,
     );
     return Scaffold(
-      backgroundColor: Color(0xff020202),
+      backgroundColor: const Color(0xff020202),
       body: Container(
           // color: Color(0xff020202),
           child: Column(
@@ -38,8 +38,8 @@ class _LandingPageState extends State<LandingPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 50),
+              const Padding(
+                padding: EdgeInsets.only(bottom: 50),
                 child: Text(
                   "It’s time to find Love",
                   style: TextStyle(
@@ -75,7 +75,7 @@ class _LandingPageState extends State<LandingPage> {
     return Container(
       width: 390,
       height: 844,
-      color: Color(0xff020202),
+      color: const Color(0xff020202),
       child: Stack(
         children: [
           Positioned(
@@ -87,10 +87,10 @@ class _LandingPageState extends State<LandingPage> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: Color(0x4f05f0ff),
+                  color: const Color(0x4f05f0ff),
                   width: 3,
                 ),
-                color: Color(0x7f7f3a44),
+                color: const Color(0x7f7f3a44),
               ),
               child: Stack(
                 children: [
@@ -103,10 +103,10 @@ class _LandingPageState extends State<LandingPage> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: Color(0x4f05f0ff),
+                            color: const Color(0x4f05f0ff),
                             width: 3,
                           ),
-                          color: Color(0x7f7f3a44),
+                          color: const Color(0x7f7f3a44),
                         ),
                       ),
                     ),
@@ -120,10 +120,10 @@ class _LandingPageState extends State<LandingPage> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: Color(0x4f05f0ff),
+                            color: const Color(0x4f05f0ff),
                             width: 3,
                           ),
-                          color: Color(0x7f7f3a44),
+                          color: const Color(0x7f7f3a44),
                         ),
                       ),
                     ),
@@ -134,9 +134,9 @@ class _LandingPageState extends State<LandingPage> {
                       child: Container(
                         width: 68,
                         height: 67,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Color(0xff1db9fc),
+                          color: const Color(0xff1db9fc),
                         ),
                       ),
                     ),
@@ -150,7 +150,7 @@ class _LandingPageState extends State<LandingPage> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: FlutterLogo(size: 65),
+                        child: const FlutterLogo(size: 65),
                       ),
                     ),
                   ),
@@ -164,7 +164,7 @@ class _LandingPageState extends State<LandingPage> {
             child: Container(
               width: 354,
               height: 356,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: Color(0xff494746),
               ),
@@ -179,10 +179,10 @@ class _LandingPageState extends State<LandingPage> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: FlutterLogo(size: 354),
+              child: const FlutterLogo(size: 354),
             ),
           ),
-          Positioned(
+          const Positioned(
             left: 100,
             top: 556,
             child: Text(
