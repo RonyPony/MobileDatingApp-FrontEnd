@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:inlove/routes.dart';
-import 'package:inlove/screens/landing.page.dart';
+import 'package:inlove/routes/export.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,8 +15,11 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: color020202,
       ),
-      home: const LandingPage(),
+      home: Sizer(
+        builder: (context, orientation, deviceType) => const LandingPage(),
+      ),
       routes: routes,
     );
   }

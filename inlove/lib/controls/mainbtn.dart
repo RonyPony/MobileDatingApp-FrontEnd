@@ -1,6 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inlove/routes/export.dart';
 
 class CustomButton extends StatefulWidget {
   @override
@@ -23,7 +22,7 @@ class _CustomButtonState extends State<CustomButton> {
                 height: 53,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(32),
-                  color: Color(0xff1db9fc),
+                  color: color1db9fc,
                 ),
                 padding: const EdgeInsets.only(
                   left: 37,
@@ -40,7 +39,7 @@ class _CustomButtonState extends State<CustomButton> {
                       "Entrar",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 28,
+                        fontSize: 28.fS,
                       ),
                     ),
                   ],
@@ -52,12 +51,13 @@ class _CustomButtonState extends State<CustomButton> {
             left: 105,
             top: 0,
             child: Container(
-                width: 66,
-                height: 65,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: SvgPicture.asset('assets/flecha.svg')),
+              width: 66,
+              height: 65,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: SvgPicture.asset(AppImages.flecha),
+            ),
           ),
         ],
       ),
