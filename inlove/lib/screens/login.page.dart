@@ -1,7 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:inlove/controls/linkButtom.dart';
 import 'package:inlove/controls/mainbtn.dart';
+import 'package:inlove/screens/home.page.dart';
+
+import '../controls/textBox.dart';
 
 class LoginPage extends StatefulWidget {
   static String routeName = "/LoginPage";
@@ -24,23 +28,61 @@ class _LoginPageState extends State<LoginPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  "Iniciar Sesion",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
+                Padding(
+                  padding: const EdgeInsets.only(top: 70, bottom: 20),
+                  child: Text(
+                    "Iniciar Sesion",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                    ),
                   ),
                 ),
               ],
             ),
-            // Container(
-            //   height: MediaQuery.of(context).size.height * .5,
-            //   width: MediaQuery.of(context).size.width * .7,
-            //   color: Colors.red,
-            //   child: user,
-            // ),
-            prebuiltPanel(),
-            CustomButton()
+            Container(
+              width: MediaQuery.of(context).size.width * .9,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(26),
+                color: Color(0xff1b1b1b),
+              ),
+              child: Column(
+                children: [
+                  user,
+                  CustomTextBox("Correo Electronico"),
+                  CustomTextBox("Clave"),
+                ],
+              ),
+            ),
+            // prebuiltPanel(),
+            Padding(
+              padding: const EdgeInsets.only(top: 30),
+              child: CustomButton(),
+            ),
+            CustomLinkButton(
+              tittle: "O Registrate",
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 60),
+                  child: GestureDetector(
+                    onTap: (() {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, HomePage.routeName, (route) => false);
+                    }),
+                    child: Text(
+                      "Saltar",
+                      style: TextStyle(
+                        color: Color(0x9effffff),
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            )
           ],
         ));
   }

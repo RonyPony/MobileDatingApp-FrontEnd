@@ -65,7 +65,10 @@ flutter:
    - assets/mainLanding.svg
    - assets/users.svg
    - assets/flecha.svg
+   - assets/deny.svg
+   - assets/love.svg
    - assets/next.png
+   - assets/modelo.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
