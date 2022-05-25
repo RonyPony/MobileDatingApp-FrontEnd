@@ -66,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 60),
+                  padding: const EdgeInsets.only(top: 60, right: 30),
                   child: GestureDetector(
                     onTap: (() {
                       Navigator.pushNamedAndRemoveUntil(
