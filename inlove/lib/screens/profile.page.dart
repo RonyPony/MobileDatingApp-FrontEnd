@@ -3,6 +3,7 @@ import 'package:flag/flag_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:inlove/screens/login.page.dart';
 
 import '../controls/menu.dart';
 
@@ -121,6 +122,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ),
+            const SizedBox(
+              height: 10,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -137,6 +141,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            logout(),
+            const SizedBox(
+              height: 10,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget logout() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamedAndRemoveUntil(
+            context, LoginPage.routeName, (route) => false);
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width * .8,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(26),
+          color: const Color(0xff242424),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 10, bottom: 10),
+              child: Text(
+                "Cerrar Sesion",
+                style: TextStyle(color: Colors.grey, fontSize: 22),
+              ),
             ),
           ],
         ),

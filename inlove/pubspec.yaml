@@ -32,6 +32,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_svg: ^1.0.3
   flag: ^6.0.0
+  flutter_native_splash: ^2.2.1
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +76,10 @@ flutter:
    - assets/next.png
    - assets/modelo.png
    - assets/man.png
+   - assets/logo-name.png
+   - assets/logo-no-name.png
+   - assets/logo-name.svg
+   - assets/logo-no-name.svg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+import '../controls/mainbtn.dart';
 import '../controls/menu.dart';
 import '../controls/picker.dart';
+import '../controls/rangeSelect.dart';
 import '../controls/textBox.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -33,14 +35,286 @@ class _SettingScreenState extends State<SettingScreen> {
               height: 20,
             ),
             buildFilters(),
-            buildTmpFilters()
+            const SizedBox(
+              height: 20,
+            ),
+            deleteAccount(),
+            const SizedBox(
+              height: 20,
+            ),
           ],
         ),
       ),
     );
   }
 
+  Widget deleteAccount() {
+    return Container(
+      width: MediaQuery.of(context).size.width * .8,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(26),
+        color: const Color(0xff242424),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 10, bottom: 10),
+            child: Text(
+              "Elimina mi cuenta",
+              style: TextStyle(color: Colors.red, fontSize: 22),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget buildFilters() {
+    const List<String> paisesFrom = <String>[
+      "DE TODO EL MUNDO",
+      "United States",
+      "Canada",
+      "Afghanistan",
+      "Albania",
+      "Algeria",
+      "American Samoa",
+      "Andorra",
+      "Angola",
+      "Anguilla",
+      "Antarctica",
+      "Antigua and/or Barbuda",
+      "Argentina",
+      "Armenia",
+      "Aruba",
+      "Australia",
+      "Austria",
+      "Azerbaijan",
+      "Bahamas",
+      "Bahrain",
+      "Bangladesh",
+      "Barbados",
+      "Belarus",
+      "Belgium",
+      "Belize",
+      "Benin",
+      "Bermuda",
+      "Bhutan",
+      "Bolivia",
+      "Bosnia and Herzegovina",
+      "Botswana",
+      "Bouvet Island",
+      "Brazil",
+      "British Indian Ocean Territory",
+      "Brunei Darussalam",
+      "Bulgaria",
+      "Burkina Faso",
+      "Burundi",
+      "Cambodia",
+      "Cameroon",
+      "Cape Verde",
+      "Cayman Islands",
+      "Central African Republic",
+      "Chad",
+      "Chile",
+      "China",
+      "Christmas Island",
+      "Cocos (Keeling) Islands",
+      "Colombia",
+      "Comoros",
+      "Congo",
+      "Cook Islands",
+      "Costa Rica",
+      "Croatia (Hrvatska)",
+      "Cuba",
+      "Cyprus",
+      "Czech Republic",
+      "Denmark",
+      "Djibouti",
+      "Dominica",
+      "Dominican Republic",
+      "East Timor",
+      "Ecudaor",
+      "Egypt",
+      "El Salvador",
+      "Equatorial Guinea",
+      "Eritrea",
+      "Estonia",
+      "Ethiopia",
+      "Falkland Islands (Malvinas)",
+      "Faroe Islands",
+      "Fiji",
+      "Finland",
+      "France",
+      "France, Metropolitan",
+      "French Guiana",
+      "French Polynesia",
+      "French Southern Territories",
+      "Gabon",
+      "Gambia",
+      "Georgia",
+      "Germany",
+      "Ghana",
+      "Gibraltar",
+      "Greece",
+      "Greenland",
+      "Grenada",
+      "Guadeloupe",
+      "Guam",
+      "Guatemala",
+      "Guinea",
+      "Guinea-Bissau",
+      "Guyana",
+      "Haiti",
+      "Heard and Mc Donald Islands",
+      "Honduras",
+      "Hong Kong",
+      "Hungary",
+      "Iceland",
+      "India",
+      "Indonesia",
+      "Iran (Islamic Republic of)",
+      "Iraq",
+      "Ireland",
+      "Israel",
+      "Italy",
+      "Ivory Coast",
+      "Jamaica",
+      "Japan",
+      "Jordan",
+      "Kazakhstan",
+      "Kenya",
+      "Kiribati",
+      "Korea, Democratic People's Republic of",
+      "Korea, Republic of",
+      "Kosovo",
+      "Kuwait",
+      "Kyrgyzstan",
+      "Lao People's Democratic Republic",
+      "Latvia",
+      "Lebanon",
+      "Lesotho",
+      "Liberia",
+      "Libyan Arab Jamahiriya",
+      "Liechtenstein",
+      "Lithuania",
+      "Luxembourg",
+      "Macau",
+      "Macedonia",
+      "Madagascar",
+      "Malawi",
+      "Malaysia",
+      "Maldives",
+      "Mali",
+      "Malta",
+      "Marshall Islands",
+      "Martinique",
+      "Mauritania",
+      "Mauritius",
+      "Mayotte",
+      "Mexico",
+      "Micronesia, Federated States of",
+      "Moldova, Republic of",
+      "Monaco",
+      "Mongolia",
+      "Montserrat",
+      "Morocco",
+      "Mozambique",
+      "Myanmar",
+      "Namibia",
+      "Nauru",
+      "Nepal",
+      "Netherlands",
+      "Netherlands Antilles",
+      "New Caledonia",
+      "New Zealand",
+      "Nicaragua",
+      "Niger",
+      "Nigeria",
+      "Niue",
+      "Norfork Island",
+      "Northern Mariana Islands",
+      "Norway",
+      "Oman",
+      "Pakistan",
+      "Palau",
+      "Panama",
+      "Papua New Guinea",
+      "Paraguay",
+      "Peru",
+      "Philippines",
+      "Pitcairn",
+      "Poland",
+      "Portugal",
+      "Puerto Rico",
+      "Qatar",
+      "Reunion",
+      "Romania",
+      "Russian Federation",
+      "Rwanda",
+      "Saint Kitts and Nevis",
+      "Saint Lucia",
+      "Saint Vincent and the Grenadines",
+      "Samoa",
+      "San Marino",
+      "Sao Tome and Principe",
+      "Saudi Arabia",
+      "Senegal",
+      "Seychelles",
+      "Sierra Leone",
+      "Singapore",
+      "Slovakia",
+      "Slovenia",
+      "Solomon Islands",
+      "Somalia",
+      "South Africa",
+      "South Georgia South Sandwich Islands",
+      "South Sudan",
+      "Spain",
+      "Sri Lanka",
+      "St. Helena",
+      "St. Pierre and Miquelon",
+      "Sudan",
+      "Suriname",
+      "Svalbarn and Jan Mayen Islands",
+      "Swaziland",
+      "Sweden",
+      "Switzerland",
+      "Syrian Arab Republic",
+      "Taiwan",
+      "Tajikistan",
+      "Tanzania, United Republic of",
+      "Thailand",
+      "Togo",
+      "Tokelau",
+      "Tonga",
+      "Trinidad and Tobago",
+      "Tunisia",
+      "Turkey",
+      "Turkmenistan",
+      "Turks and Caicos Islands",
+      "Tuvalu",
+      "Uganda",
+      "Ukraine",
+      "United Arab Emirates",
+      "United Kingdom",
+      "United States minor outlying islands",
+      "Uruguay",
+      "Uzbekistan",
+      "Vanuatu",
+      "Vatican City State",
+      "Venezuela",
+      "Vietnam",
+      "Virigan Islands (British)",
+      "Virgin Islands (U.S.)",
+      "Wallis and Futuna Islands",
+      "Western Sahara",
+      "Yemen",
+      "Yugoslavia",
+      "Zaire",
+      "Zambia",
+      "Zimbabwe"
+    ];
     const List<String> paises = <String>[
       "United States",
       "Canada",
@@ -308,18 +582,63 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
             Row(
               children: [
-                const Text(
-                  "Soy de",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 19,
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, top: 25),
+                  child: const Text(
+                    "Soy de",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 19,
+                    ),
                   ),
                 ),
               ],
             ),
-            const CustomPicker(
-              placeHolder: "Selecciona un pais",
-              options: paises,
+            Padding(
+              padding: const EdgeInsets.only(left: 20, top: 10, right: 20),
+              child: const CustomPicker(
+                placeHolder: "Pais:",
+                options: paises,
+              ),
+            ),
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, top: 10),
+                  child: const Text(
+                    "Muestrame personas de",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 19,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20, top: 10, right: 20),
+              child: const CustomPicker(
+                placeHolder: "Pais:",
+                options: paisesFrom,
+              ),
+            ),
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, top: 10),
+                  child: const Text(
+                    "Muestrame rando de edad",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 19,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 20, top: 10),
+              child: CustomRangeSelect(),
             )
           ],
         ));
@@ -426,220 +745,6 @@ class _SettingScreenState extends State<SettingScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget buildTmpFilters() {
-    return Container(
-      width: 311,
-      height: 361,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            width: 311,
-            height: 361,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(26),
-              color: const Color(0xff242424),
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  left: 28,
-                  top: 192,
-                  child: Container(
-                    width: 213,
-                    height: 37,
-                    decoration: const BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        topRight: Radius.circular(0),
-                        bottomLeft: Radius.circular(12),
-                        bottomRight: Radius.circular(0),
-                      ),
-                      color: Color(0xff3c3c3c),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 241,
-                  top: 192,
-                  child: Container(
-                    width: 45,
-                    height: 37,
-                    child: const FlutterLogo(size: 37),
-                  ),
-                ),
-                const Positioned(
-                  left: 41,
-                  top: 197,
-                  child: const Text(
-                    "Estados Unidos",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 19,
-                    ),
-                  ),
-                ),
-                const Positioned(
-                  left: 27,
-                  top: 24,
-                  child: SizedBox(
-                    width: 214,
-                    height: 41,
-                    child: Text(
-                      "Filtros",
-                      style: const TextStyle(
-                        color: Color(0xff00b2ff),
-                        fontSize: 23,
-                      ),
-                    ),
-                  ),
-                ),
-                const Positioned(
-                  left: 27,
-                  top: 75,
-                  child: SizedBox(
-                    width: 214,
-                    height: 41,
-                    child: Text(
-                      "Soy de",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 19,
-                      ),
-                    ),
-                  ),
-                ),
-                const Positioned(
-                  left: 27,
-                  top: 159,
-                  child: const SizedBox(
-                    width: 214,
-                    height: 41,
-                    child: Text(
-                      "Muestrame personas de",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 19,
-                      ),
-                    ),
-                  ),
-                ),
-                const Positioned(
-                  left: 27,
-                  top: 239,
-                  child: const SizedBox(
-                    width: 244,
-                    height: 41,
-                    child: Text(
-                      "Muestrame rango de edad",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 19,
-                      ),
-                    ),
-                  ),
-                ),
-                const Positioned(
-                  left: 28,
-                  top: 311,
-                  child: SizedBox(
-                    width: 35,
-                    height: 41,
-                    child: Text(
-                      "18",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 19,
-                      ),
-                    ),
-                  ),
-                ),
-                const Positioned(
-                  left: 251,
-                  top: 309,
-                  child: SizedBox(
-                    width: 35,
-                    height: 41,
-                    child: Text(
-                      "50",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 19,
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 28,
-                  top: 111,
-                  child: Container(
-                    width: 213,
-                    height: 37,
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        topRight: Radius.circular(0),
-                        bottomLeft: Radius.circular(12),
-                        bottomRight: Radius.circular(0),
-                      ),
-                      color: Color(0xff3c3c3c),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 241,
-                  top: 111,
-                  child: Container(
-                    width: 45,
-                    height: 37,
-                    child: const FlutterLogo(size: 37),
-                  ),
-                ),
-                const Positioned(
-                  left: 41,
-                  top: 116,
-                  child: Text(
-                    "Republica Dominicana",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 19,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 35,
-                  top: 285,
-                  child: Container(
-                    width: 241,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: const Color(0xff535353),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 141,
-                  top: 275,
-                  child: Container(
-                    width: 30,
-                    height: 29,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: const Color(0xffc4c4c4),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -41,7 +41,7 @@ class _CustomPickerState extends State<CustomPicker> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      backgroundColor: Colors.grey,
+      backgroundColor: const Color(0xff242424),
       child: DefaultTextStyle(
         style: TextStyle(
           color: CupertinoColors.label.resolveFrom(context),
@@ -53,7 +53,10 @@ class _CustomPickerState extends State<CustomPicker> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(widget.placeHolder + " "),
+                Text(
+                  widget.placeHolder + " ",
+                  style: TextStyle(color: Colors.white),
+                ),
                 CupertinoButton(
                   padding: EdgeInsets.zero,
                   // Display a CupertinoPicker with list of fruits.
