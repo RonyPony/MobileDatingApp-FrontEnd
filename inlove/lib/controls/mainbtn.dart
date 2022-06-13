@@ -40,7 +40,7 @@ class _CustomButtonState extends State<CustomButton> {
                       "Entrar",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 28,
+                        fontSize: 25,
                       ),
                     ),
                   ],
@@ -49,11 +49,12 @@ class _CustomButtonState extends State<CustomButton> {
             ),
           ),
           Positioned(
-            left: 105,
+            left:110,
             top: 0,
-            child: Container(
-                width: 66,
-                height: 65,
+            child: 
+            Container(
+                width: 70,
+                height: 60,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                 ),

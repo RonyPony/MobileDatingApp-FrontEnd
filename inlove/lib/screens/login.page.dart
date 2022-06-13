@@ -59,6 +59,7 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.only(top: 30),
               child: CustomButton(),
             ),
+            SizedBox(height: 10,),
             CustomLinkButton(
               tittle: "O Registrate",
             ),
