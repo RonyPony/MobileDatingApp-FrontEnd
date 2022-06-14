@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inlove/models/userLogin.dart';
 import 'package:inlove/services/authService.dart';
 
 import '../models/user.dart';
@@ -9,11 +10,11 @@ class AuthProvider with ChangeNotifier {
   AuthProvider(this._authService);
 
   Future<bool> userEmailExists(String userEmail) async {
-    final bool response = await _authService.userExists();
+    final bool response = await _authService.userExists(userEmail);
     return response;
   }
-  Future<bool>performLogin() async {
-    final bool response = await _authService.performLogin();
+  Future<bool>performLogin(Login userLogin) async {
+    final bool response = await _authService.performLogin(userLogin);
     return response;
   }
 }

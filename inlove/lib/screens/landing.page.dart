@@ -21,7 +21,7 @@ class _LandingPageState extends State<LandingPage> {
     );
     final Widget landingPic = SvgPicture.asset(
       assetNameLanding,
-      height: MediaQuery.of(context).size.height * .5,
+      height: MediaQuery.of(context).size.height * .46,
       // color: Colors.blue,
     );
     return Scaffold(
@@ -29,7 +29,7 @@ class _LandingPageState extends State<LandingPage> {
       body: Container(
           // color: Color(0xff020202),
           child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
