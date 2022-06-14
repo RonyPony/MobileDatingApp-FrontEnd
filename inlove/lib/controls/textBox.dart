@@ -1,15 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
-class CustomTextBox extends StatefulWidget {
-  final String text;
-  CustomTextBox(this.text);
-  @override
-  State<StatefulWidget> createState() => _CustomTextBoxState();
-}
-
-class _CustomTextBoxState extends State<CustomTextBox> {
+class CustomTextBox extends StatelessWidget {
+  const CustomTextBox({Key? key,required this.text,required this.controller}) : super(key: key);
+ final String text;
+ final TextEditingController controller;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -18,6 +12,7 @@ class _CustomTextBoxState extends State<CustomTextBox> {
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: TextField(
+            controller: controller,
             cursorColor: Colors.black,
             style: TextStyle(color: Colors.white),
             decoration: InputDecoration(
@@ -26,7 +21,7 @@ class _CustomTextBoxState extends State<CustomTextBox> {
               border: OutlineInputBorder(
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.circular(20)),
-              hintText: widget.text,
+              hintText: text,
             ),
           ),
         ),

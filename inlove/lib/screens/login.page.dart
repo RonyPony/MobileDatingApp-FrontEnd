@@ -4,8 +4,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlove/controls/linkButtom.dart';
 import 'package:inlove/controls/mainbtn.dart';
 import 'package:inlove/screens/home.page.dart';
+import 'package:provider/provider.dart';
 
 import '../controls/textBox.dart';
+import '../models/user.dart';
+import '../providers/authProvider.dart';
 
 class LoginPage extends StatefulWidget {
   static String routeName = "/LoginPage";
@@ -21,6 +24,9 @@ class _LoginPageState extends State<LoginPage> {
       usersAsset,
       // color: Colors.blue,
     );
+
+    final emailController = TextEditingController();
+    final passController = TextEditingController();
     return Scaffold(
         backgroundColor: Color(0xff020202),
         body: Column(
@@ -49,17 +55,28 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 children: [
                   user,
-                  CustomTextBox("Correo Electronico"),
-                  CustomTextBox("Clave"),
+                  CustomTextBox(text: "Correo Electronico",controller: emailController,),
+                  CustomTextBox(text:"Clave", controller: passController,),
                 ],
               ),
             ),
             // prebuiltPanel(),
             Padding(
               padding: const EdgeInsets.only(top: 30),
-              child: CustomButton(),
+              child: CustomBtn(
+                onPress: () async {
+                  final authProvider =
+                      Provider.of<AuthProvider>(context, listen: false);
+                  final userExists = await authProvider.userEmailExists(emailController.text);
+                  if (userExists) {
+                    
+                  }
+                },
+              ),
             ),
-            SizedBox(height: 10,),
+            SizedBox(
+              height: 10,
+            ),
             CustomLinkButton(
               tittle: "O Registrate",
             ),

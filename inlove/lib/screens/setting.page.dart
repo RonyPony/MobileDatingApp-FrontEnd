@@ -711,7 +711,7 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
               Container(
                   width: MediaQuery.of(context).size.width,
-                  child: CustomTextBox("Instagram")),
+                  child: CustomTextBox(text: "Instagram",controller: TextEditingController(),)),
               Row(
                 children: [
                   const Padding(
@@ -740,7 +740,7 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
               Container(
                   width: MediaQuery.of(context).size.width,
-                  child: CustomTextBox("Whatsapp")),
+                  child: CustomTextBox(text: "Whatsapp",controller: TextEditingController(),)),
             ],
           ),
         ),

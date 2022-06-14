@@ -1,13 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 
-class CustomButton extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => _CustomButtonState();
-}
+import '../providers/authProvider.dart';
 
-class _CustomButtonState extends State<CustomButton> {
+class CustomBtn extends StatelessWidget {
+  const CustomBtn({Key? key,required this.onPress}) : super(key: key);
+
+  final Function onPress;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -36,11 +38,14 @@ class _CustomButtonState extends State<CustomButton> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      "Entrar",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
+                    GestureDetector(
+                      onTap: (() => onPress),
+                      child: const Text(
+                        "Entrar",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 25,
+                        ),
                       ),
                     ),
                   ],
@@ -49,10 +54,9 @@ class _CustomButtonState extends State<CustomButton> {
             ),
           ),
           Positioned(
-            left:110,
+            left: 110,
             top: 0,
-            child: 
-            Container(
+            child: Container(
                 width: 70,
                 height: 60,
                 decoration: BoxDecoration(

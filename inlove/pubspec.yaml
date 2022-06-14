@@ -33,6 +33,7 @@ dependencies:
   flutter_svg: ^1.0.3
   flag: ^6.0.0
   flutter_native_splash: ^2.2.1
+  provider: ^6.0.3
 
 dev_dependencies:
   flutter_test:
