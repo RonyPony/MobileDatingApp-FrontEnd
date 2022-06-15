@@ -1,3 +1,4 @@
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -5,6 +6,7 @@ import 'package:inlove/controls/linkButtom.dart';
 import 'package:inlove/controls/mainbtn.dart';
 import 'package:inlove/models/userLogin.dart';
 import 'package:inlove/screens/home.page.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
 import '../controls/textBox.dart';
@@ -20,8 +22,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
 
 
-    final emailController = TextEditingController();
-  final passController = TextEditingController();
+    final emailController = TextEditingController(text: "ronel.cruz.a8@gmail.com");
+  final passController = TextEditingController(text: "ronel0808");
   
   @override
   Widget build(BuildContext context) {
@@ -31,82 +33,110 @@ class _LoginPageState extends State<LoginPage> {
       // color: Colors.blue,
     );
 
-    return Scaffold(
-        backgroundColor: Color(0xff020202),
-        body: SingleChildScrollView(
-          // controller: controller,
+    return LoaderOverlay(
+      useDefaultLoading: false,
+      overlayWidget: Center(
+        child:Container(
+          decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.black,
+          boxShadow: [
+            BoxShadow(color: Colors.pink, spreadRadius: 3),
+          ],
+        ),
+
+          height: MediaQuery.of(context).size.height*.25,
+          // color: Colors.black,
+          padding: EdgeInsets.all(29),
           child: Column(
-        children: [
-          Row(
+            // crossAxisAlignment: CrossAxisAlignment.center
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 70, bottom: 20),
-                child: Text(
-                  "Iniciar Sesion",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                  ),
-                ),
-              ),
+              CircularProgressIndicator(color:Colors.pink,),
+              SizedBox(height: 10,),
+              Text("Cargando",style: TextStyle(fontSize: 18,color: Colors.white,decoration: TextDecoration.none),)
             ],
           ),
-          Container(
-            width: MediaQuery.of(context).size.width * .9,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(26),
-              color: Color(0xff1b1b1b),
-            ),
+        )
+      ),
+
+      child: Scaffold(
+          backgroundColor: Color(0xff020202),
+          body: SingleChildScrollView(
+            // controller: controller,
             child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                user,
-                CustomTextBox(
-                  text: "Correo Electronico",
-                  controller: emailController,
-                ),
-                CustomTextBox(
-                  text: "Clave",
-                  controller: passController,
-                ),
-              ],
-            ),
-          ),
-          // prebuiltPanel(),
-          Padding(
-            padding: const EdgeInsets.only(top: 30),
-            child: buildEnterButton(),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          const CustomLinkButton(
-            tittle: "O Registrate",
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 60, right: 30),
-                child: GestureDetector(
-                  onTap: (() {
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, HomePage.routeName, (route) => false);
-                  }),
+                Padding(
+                  padding: const EdgeInsets.only(top: 70, bottom: 20),
                   child: Text(
-                    "Saltar",
+                    "Iniciar Sesion",
                     style: TextStyle(
-                      color: Color(0x9effffff),
-                      fontSize: 20,
+                      color: Colors.white,
+                      fontSize: 28,
                     ),
                   ),
                 ),
-              )
-            ],
-          )
-        ],
-      )
-        ),);
+              ],
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width * .9,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(26),
+                color: Color(0xff1b1b1b),
+              ),
+              child: Column(
+                children: [
+                  user,
+                  CustomTextBox(
+                    text: "Correo Electronico",
+                    controller: emailController,
+                  ),
+                  CustomTextBox(
+                    text: "Clave",
+                    controller: passController,
+                  ),
+                ],
+              ),
+            ),
+            // prebuiltPanel(),
+            Padding(
+              padding: const EdgeInsets.only(top: 30),
+              child: buildEnterButton(),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            const CustomLinkButton(
+              tittle: "O Registrate",
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 60, right: 30),
+                  child: GestureDetector(
+                    onTap: (() {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, HomePage.routeName, (route) => false);
+                    }),
+                    child: Text(
+                      "Saltar",
+                      style: TextStyle(
+                        color: Color(0x9effffff),
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            )
+          ],
+        )
+          ),),
+    );
   }
 
   Widget buildEnterButton(){
@@ -138,6 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     GestureDetector(
                       onTap: () async {
+                        context.loaderOverlay.show();
                           final authProvider =
                               Provider.of<AuthProvider>(context, listen: false);
                           final userExists =
@@ -148,10 +179,22 @@ class _LoginPageState extends State<LoginPage> {
                             final bool logged = await authProvider.performLogin(info);
                             if (logged) {
                               Navigator.pushNamedAndRemoveUntil(context, HomePage.routeName, (route) => false);
+                            }else{
+                              CoolAlert.show(
+                              context: context,
+                              type: CoolAlertType.error,
+                              text:
+                                  "Credenciales incorrectas, por favor intentalo de nuevo.",
+                            );
                             }
                           }else{
-                            print("nothing");
+                            CoolAlert.show(
+                            context: context,
+                            type: CoolAlertType.error,
+                            text: "Este correo electronico no esta registrado, favor verificalo.",
+                          );
                           }
+                          context.loaderOverlay.hide();
                       },
                       child: const Text(
                         "Entrar",

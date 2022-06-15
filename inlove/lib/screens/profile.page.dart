@@ -1,10 +1,11 @@
 import 'package:flag/flag_enum.dart';
 import 'package:flag/flag_widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:inlove/models/user.dart';
+import 'package:inlove/providers/authProvider.dart';
 import 'package:inlove/screens/login.page.dart';
-
+import 'package:provider/provider.dart';
 import '../controls/menu.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -14,10 +15,18 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  late Future<User> localUserInfo;
+
+@override
+  void initState() {
+    super.initState();
+    Future<User> userInfo =  getUserInfo();
+    localUserInfo=userInfo;
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width * 1;
-
     double screenHeight = MediaQuery.of(context).size.height * 1;
     return Scaffold(
       bottomNavigationBar: MainMenu(),
@@ -99,17 +108,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: Color(0xff1b1b1b),
               ),
               child: Column(
-                children: const [
+                children:  [
                   Padding(
-                    padding: EdgeInsets.only(
+                    padding: const EdgeInsets.only(
                         top: 0, left: 20, right: 20, bottom: 20),
-                    child: Text(
-                      "Jose Armando H.",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
-                        letterSpacing: 2.10,
-                      ),
+                    child: 
+                    FutureBuilder<User>(
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        }
+                        if (snapshot.hasError) {
+                          return Text("Error obteniendo datos");
+                        }
+                        if (snapshot.connectionState==ConnectionState.done) {
+                          if (snapshot.hasData) {
+                            return Text(
+                                    "${snapshot.data?.name} ${snapshot.data?.lastName}",
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 25,
+                                        letterSpacing: 2.10,
+                                      ),
+                                    );
+                          }
+                          return Text("No identificado");
+                        }
+                        return Text("NO INFO");
+                      },
+                      future: localUserInfo,
                     ),
                   ),
                   Text(
@@ -181,5 +208,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
+  }
+  
+  Future<User> getUserInfo() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    User currentUser = await authProvider.readLocalUserInfo();
+    return currentUser;
   }
 }
