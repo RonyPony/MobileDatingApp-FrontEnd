@@ -1,12 +1,16 @@
+import 'dart:math';
+
 import 'package:flag/flag_enum.dart';
 import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:inlove/models/country.dart';
 import 'package:inlove/models/user.dart';
 import 'package:inlove/providers/authProvider.dart';
 import 'package:inlove/screens/login.page.dart';
 import 'package:provider/provider.dart';
 import '../controls/menu.dart';
+import '../providers/countriesProvider.dart';
 
 class ProfileScreen extends StatefulWidget {
   static String routeName = '/ProfileScreen';
@@ -17,11 +21,11 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   late Future<User> localUserInfo;
 
-@override
+  @override
   void initState() {
     super.initState();
-    Future<User> userInfo =  getUserInfo();
-    localUserInfo=userInfo;
+    Future<User> userInfo = getUserInfo();
+    localUserInfo = userInfo;
   }
 
   @override
@@ -55,24 +59,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             top: 010, left: 10, right: 10, bottom: 10),
                         child: Image.asset(
                           "assets/man.png",
-                          height: 300,
+                          height: MediaQuery.of(context).size.height * .5,
+                          width: MediaQuery.of(context).size.width * .9,
                         ),
                       ),
                       Container(
                         // color: Colors.red,
                         height: 80,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Padding(
-                              padding: EdgeInsets.only(left: screenWidth * 0.1),
-                              child: Flag.fromCode(
-                                FlagsCode.DO,
-                                fit: BoxFit.fill,
-                                height: 50,
-                                width: 50,
-                                borderRadius: 100,
-                              ),
+                            FutureBuilder<User>(
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return CircularProgressIndicator(color: Colors.pink,);
+                                }
+                                if (snapshot.hasError) {
+                                  return Text("Err");
+                                }
+
+                                if (snapshot.connectionState ==
+                                    ConnectionState.done) {
+                                  if (snapshot.hasData) {
+                                    Future<Country> pais = getCountry(
+                                        "${snapshot.data?.countryId}");
+                                    return FutureBuilder<Country>(
+                                      future: pais,
+                                      builder: (context, snapshotCountry) {
+                                        if (snapshotCountry.hasData &&
+                                            snapshotCountry.connectionState ==
+                                                ConnectionState.done) {
+                                          return 
+                                          Flag.fromString(
+                                            "${snapshotCountry. data?.code}",
+                                            fit: BoxFit.fill,
+                                            height: 50,
+                                            width: 50,
+                                            borderRadius: 100,
+                                          );
+
+                                          // Flag.fromCode(
+                                          //   FlagsCode.CA,
+                                          //   fit: BoxFit.fill,
+                                          //   height: 50,
+                                          //   width: 50,
+                                          //   borderRadius: 100,
+                                          // );
+                                        }
+                                        return CircularProgressIndicator(
+                                          color: Colors.pink,
+                                        );
+                                      },
+                                    );
+                                  }
+                                  return Text("Error 3");
+                                }
+                                return Text("error 4");
+                              },
+                              future: localUserInfo,
                             ),
                             Padding(
                               padding: EdgeInsets.only(left: screenWidth * .4),
@@ -82,7 +127,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 child: Padding(
                                   padding:
                                       const EdgeInsets.only(left: 5, top: 2),
-                                  child: Image.asset("assets/changePhoto.png"),
+                                  child: Image.asset("assets/changePhoto.png",),
                                 ),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(50),
@@ -108,44 +153,63 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: Color(0xff1b1b1b),
               ),
               child: Column(
-                children:  [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        top: 0, left: 20, right: 20, bottom: 20),
-                    child: 
-                    FutureBuilder<User>(
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return CircularProgressIndicator();
-                        }
-                        if (snapshot.hasError) {
-                          return Text("Error obteniendo datos");
-                        }
-                        if (snapshot.connectionState==ConnectionState.done) {
-                          if (snapshot.hasData) {
-                            return Text(
-                                    "${snapshot.data?.name} ${snapshot.data?.lastName}",
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 25,
-                                        letterSpacing: 2.10,
-                                      ),
-                                    );
+                children: [
+                  FutureBuilder<User>(
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return CircularProgressIndicator(
+                          color: Colors.pink,
+                        );
+                      }
+                      if (snapshot.hasError) {
+                        return Text("Error obteniendo datos");
+                      }
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        if (snapshot.hasData) {
+                          if (snapshot.data?.bio == "N/A") {
+                            snapshot.data?.bio =
+                                "No has agregado informacion sobre ti, hazlo " +
+                                    getAnEmmoji(false);
                           }
-                          return Text("No identificado");
+                          return Column(
+                            children: [
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 0, left: 20, right: 20, bottom: 20),
+                                child: Text(
+                                  "${snapshot.data?.name} ${snapshot.data?.lastName}",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 30,
+                                    letterSpacing: 2.10,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 20,right: 20),
+                                child: Text(
+                                  "${snapshot.data?.bio}",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                            ],
+                          );
                         }
-                        return Text("NO INFO");
-                      },
-                      future: localUserInfo,
-                    ),
+                        return Text("No identificado");
+                      }
+                      return Text("NO INFO");
+                    },
+                    future: localUserInfo,
                   ),
-                  Text(
-                    "Una chica divertida, honesta y cool.\nNo tengo hijos y estoy buscando algo\nestable.",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 15,
-                    ),
-                  )
                 ],
               ),
             ),
@@ -209,10 +273,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-  
+
   Future<User> getUserInfo() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     User currentUser = await authProvider.readLocalUserInfo();
     return currentUser;
+  }
+
+  String getAnEmmoji(bool cool) {
+    var coolEmojies = ['😇', '🤩', '🥳', '😎', '😊'];
+    var notCoolEmojies = ['🥺', '😕', '😅', '😩', '😢'];
+    // generates a new Random object
+    final _random = new Random();
+    var element;
+    // generate a random index based on the list length
+    // and use it to retrieve the element
+    if (cool) {
+      element = coolEmojies[_random.nextInt(coolEmojies.length)];
+    } else {
+      element = notCoolEmojies[_random.nextInt(notCoolEmojies.length)];
+    }
+    return element;
+  }
+
+  Future<Country> getCountry(String s) async {
+    final authProvider = Provider.of<CountriesProvider>(context, listen: false);
+    Country pais = await authProvider.findCountryById(s);
+    return pais;
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,12 +21,31 @@ class LoginPage extends StatefulWidget {
   State<StatefulWidget> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-
-
-    final emailController = TextEditingController(text: "ronel.cruz.a8@gmail.com");
+class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin{
+  late AnimationController _controller;
+  final emailController =
+      TextEditingController(text: "ronel.cruz.a8@gmail.com");
   final passController = TextEditingController(text: "ronel0808");
-  
+
+  @override
+  void initState() {
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 2)
+    );
+      _controller.repeat();
+    
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    // TODO: implement dispose
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final String usersAsset = 'assets/users.svg';
@@ -36,33 +57,50 @@ class _LoginPageState extends State<LoginPage> {
     return LoaderOverlay(
       useDefaultLoading: false,
       overlayWidget: Center(
-        child:Container(
-          decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
+          child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50),
           color: Colors.black,
           boxShadow: [
             BoxShadow(color: Colors.pink, spreadRadius: 3),
           ],
         ),
 
-          height: MediaQuery.of(context).size.height*.25,
-          // color: Colors.black,
-          padding: EdgeInsets.all(29),
-          child: Column(
-            // crossAxisAlignment: CrossAxisAlignment.center
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(color:Colors.pink,),
-              SizedBox(height: 10,),
-              Text("Cargando",style: TextStyle(fontSize: 18,color: Colors.white,decoration: TextDecoration.none),)
-            ],
-          ),
-        )
-      ),
-
+        height: MediaQuery.of(context).size.height * .25,
+        // color: Colors.black,
+        padding: EdgeInsets.all(29),
+        child: Column(
+          // crossAxisAlignment: CrossAxisAlignment.center
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedBuilder(
+              animation: _controller.view,
+              builder: (context,child){
+                return Transform.rotate(angle: _controller.value*2*pi,child: child,);
+              },
+              child: SvgPicture.asset(
+                'assets/logo-no-name.svg',
+                height: MediaQuery.of(context).size.height * .12,
+              ),
+            ),
+            // CircularProgressIndicator(color:Colors.pink,),
+            SizedBox(
+              height: 10,
+            ),
+            const Text(
+              "Cargando...",
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.white,
+                  decoration: TextDecoration.none),
+            )
+          ],
+        ),
+      )),
       child: Scaffold(
-          backgroundColor: Color(0xff020202),
-          body: SingleChildScrollView(
+        backgroundColor: Color(0xff020202),
+        body: SingleChildScrollView(
             // controller: controller,
             child: Column(
           children: [
@@ -134,12 +172,12 @@ class _LoginPageState extends State<LoginPage> {
               ],
             )
           ],
-        )
-          ),),
+        )),
+      ),
     );
   }
 
-  Widget buildEnterButton(){
+  Widget buildEnterButton() {
     return Container(
       width: 181,
       height: 65,
@@ -169,32 +207,38 @@ class _LoginPageState extends State<LoginPage> {
                     GestureDetector(
                       onTap: () async {
                         context.loaderOverlay.show();
-                          final authProvider =
-                              Provider.of<AuthProvider>(context, listen: false);
-                          final userExists =
-                              await authProvider.userEmailExists(emailController.text);
-                          if (userExists) {
-                            print("User Exists");
-                            Login info = Login(userEmail: emailController.text,password: passController.text,rememberMe: false);
-                            final bool logged = await authProvider.performLogin(info);
-                            if (logged) {
-                              Navigator.pushNamedAndRemoveUntil(context, HomePage.routeName, (route) => false);
-                            }else{
-                              CoolAlert.show(
+                        final authProvider =
+                            Provider.of<AuthProvider>(context, listen: false);
+                        final userExists = await authProvider
+                            .userEmailExists(emailController.text);
+                        if (userExists) {
+                          print("User Exists");
+                          Login info = Login(
+                              userEmail: emailController.text,
+                              password: passController.text,
+                              rememberMe: false);
+                          final bool logged =
+                              await authProvider.performLogin(info);
+                          if (logged) {
+                            Navigator.pushNamedAndRemoveUntil(
+                                context, HomePage.routeName, (route) => false);
+                          } else {
+                            CoolAlert.show(
                               context: context,
                               type: CoolAlertType.error,
                               text:
                                   "Credenciales incorrectas, por favor intentalo de nuevo.",
                             );
-                            }
-                          }else{
-                            CoolAlert.show(
+                          }
+                        } else {
+                          CoolAlert.show(
                             context: context,
                             type: CoolAlertType.error,
-                            text: "Este correo electronico no esta registrado, favor verificalo.",
+                            text:
+                                "Este correo electronico no esta registrado, favor verificalo.",
                           );
-                          }
-                          context.loaderOverlay.hide();
+                        }
+                        context.loaderOverlay.hide();
                       },
                       child: const Text(
                         "Entrar",

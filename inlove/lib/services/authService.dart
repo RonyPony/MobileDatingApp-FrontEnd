@@ -112,6 +112,10 @@ class AuthService implements AuthContract{
           'Failed Load Data with status code ${e.response!.statusCode}');
           return User();
     }
+    catch(e){
+      print(e);
+      return User();
+    }
   }
   }
   

@@ -1,8 +1,12 @@
+import 'dart:ffi';
+
 class User {
   int? id;
   String? name;
   String? lastName;
   String? email;
+  String? bio;
+  int? countryId;
   String? password;
   String? lastLogin;
 
@@ -11,6 +15,8 @@ class User {
       this.name,
       this.lastName,
       this.email,
+      this.bio,
+      this.countryId,
       this.password,
       this.lastLogin});
 
@@ -19,6 +25,8 @@ class User {
     name = json['name'];
     lastName = json['lastName'];
     email = json['email'];
+    bio = json['bio'];
+    countryId = json['countryId'];
     password = json['password'];
     lastLogin = json['lastLogin'];
   }
@@ -29,6 +37,8 @@ class User {
     data['name'] = this.name;
     data['lastName'] = this.lastName;
     data['email'] = this.email;
+    data['bio']=this.bio;
+    data['countryId']=this.countryId;
     data['password'] = this.password;
     data['lastLogin'] = this.lastLogin;
     return data;

@@ -1,12 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:inlove/models/country.dart';
+import 'package:inlove/providers/countriesProvider.dart';
+import 'package:provider/provider.dart';
 
 import '../controls/mainbtn.dart';
 import '../controls/menu.dart';
 import '../controls/picker.dart';
 import '../controls/rangeSelect.dart';
 import '../controls/textBox.dart';
+import '../providers/authProvider.dart';
 
 class SettingScreen extends StatefulWidget {
   static String routeName = "/SettingScreen";
@@ -18,6 +22,18 @@ class _SettingScreenState extends State<SettingScreen> {
   bool ghostMode = false;
   bool instagram = false;
   bool whatsapp = false;
+  bool countriesLoaded = false;
+  
+  var countries;
+  // Future<List<Country>> countries;
+
+  @override
+  void initState() {
+    getAvailableCountries();
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,7 +87,7 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   Widget buildFilters() {
-    const List<String> paisesFrom = <String>[
+    const List<String> local_paisesFrom = <String>[
       "DE TODO EL MUNDO",
       "United States",
       "Canada",
@@ -315,7 +331,7 @@ class _SettingScreenState extends State<SettingScreen> {
       "Zambia",
       "Zimbabwe"
     ];
-    const List<String> paises = <String>[
+    const List<String> local_paises = <String>[
       "United States",
       "Canada",
       "Afghanistan",
@@ -598,7 +614,7 @@ class _SettingScreenState extends State<SettingScreen> {
               padding: const EdgeInsets.only(left: 20, top: 10, right: 20),
               child: const CustomPicker(
                 placeHolder: "Pais:",
-                options: paises,
+                options: local_paises,
               ),
             ),
             Row(
@@ -615,12 +631,35 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20, top: 10, right: 20),
-              child: const CustomPicker(
-                placeHolder: "Pais:",
-                options: paisesFrom,
-              ),
+            FutureBuilder<List<Country>>(
+              future: countries,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator(
+                    color: Colors.pink,
+                  );
+                }
+                if (snapshot.hasError) {
+                  return Text("Ups! error getting available countries");
+                }
+                if (snapshot.hasData &&
+                    snapshot.connectionState == ConnectionState.done) {
+                  List<Country>?paises = snapshot.data;
+                  List<String> finalCountries =[];
+                  paises?.forEach((element) {
+                    finalCountries.add(element.name!);
+                  });
+                  return Padding(
+                    padding:
+                        const EdgeInsets.only(left: 20, top: 10, right: 20),
+                    child: CustomPicker(
+                      placeHolder: "Pais:",
+                       options: finalCountries,
+                    ),
+                  );
+                }
+                return Text("Error getting countries");
+              },
             ),
             Row(
               children: [
@@ -711,7 +750,10 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
               Container(
                   width: MediaQuery.of(context).size.width,
-                  child: CustomTextBox(text: "Instagram",controller: TextEditingController(),)),
+                  child: CustomTextBox(
+                    text: "Instagram",
+                    controller: TextEditingController(),
+                  )),
               Row(
                 children: [
                   const Padding(
@@ -740,11 +782,29 @@ class _SettingScreenState extends State<SettingScreen> {
               ),
               Container(
                   width: MediaQuery.of(context).size.width,
-                  child: CustomTextBox(text: "Whatsapp",controller: TextEditingController(),)),
+                  child: CustomTextBox(
+                    text: "Whatsapp",
+                    controller: TextEditingController(),
+                  )),
             ],
           ),
         ),
       ],
     );
+  }
+
+  Future<void> getAvailableCountries() async {
+    try {
+      final countryProvider =
+          Provider.of<CountriesProvider>(context, listen: false);
+      final cou = countryProvider.getAllCountries();
+      countries = cou;
+      countriesLoaded = true;
+    } catch (e) {
+      countriesLoaded = false;
+    }
+    // cou.forEach((element) {
+    //   countries.add(element.name!);
+    // });
   }
 }

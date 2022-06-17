@@ -13,6 +13,31 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [Text("data1")],
+        ),
+      ),
+      Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [Text("data1")],
+        ),
+      ),
+      Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [Text("data1")],
+        ),
+      ),
+    ];
+
+    
     return Scaffold(
       bottomNavigationBar: MainMenu(),
       backgroundColor: Color(0xff020202),
@@ -22,7 +47,10 @@ class _HomePageState extends State<HomePage> {
         title: Text('LoVers'),
       ),
       body: SingleChildScrollView(
-        child: Column(
+        child: 
+        
+        
+        Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -40,7 +68,8 @@ class _HomePageState extends State<HomePage> {
                             top: 010, left: 10, right: 10, bottom: 10),
                         child: Image.asset(
                           "assets/modelo.png",
-                          height: 230,
+                          height: MediaQuery.of(context).size.height * .5,
+                          width: MediaQuery.of(context).size.width * .9,
                         ),
                       )
                     ],
@@ -121,6 +150,8 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
+
+
       ),
     );
   }
