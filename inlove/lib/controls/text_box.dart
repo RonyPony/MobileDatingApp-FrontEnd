@@ -11,14 +11,14 @@ class CustomTextBox extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: TextField(
             controller: controller,
             onChanged: onChange(),
             cursorColor: Colors.black,
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
-              fillColor: Color(0xfc616161),
+              fillColor: const Color(0xfc616161),
               filled: true,
               border: OutlineInputBorder(
                   borderSide: BorderSide.none,

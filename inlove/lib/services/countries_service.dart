@@ -1,8 +1,9 @@
-import 'dart:convert';
+
+// ignore_for_file: unrelated_type_equality_checks, avoid_print
 
 import 'package:dio/dio.dart';
 import 'package:inlove/constant.dart';
-import 'package:inlove/contracts/countriesContrac.dart';
+import 'package:inlove/contracts/countries_contrac.dart';
 import 'package:inlove/models/country.dart';
 
 class CountriesService implements CountriesContract {

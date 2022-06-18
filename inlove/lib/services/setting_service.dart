@@ -1,21 +1,23 @@
+// ignore_for_file: unrelated_type_equality_checks, avoid_print
+
 import 'package:dio/dio.dart';
-import 'package:inlove/contracts/settingsContract.dart';
+import 'package:inlove/contracts/settings_contract.dart';
 import 'package:inlove/models/user.dart';
-import 'package:inlove/services/authService.dart';
+import 'package:inlove/services/auth_service.dart';
 
 import '../constant.dart';
 
 class SettingService implements SettingsContract{
-  AuthService _authService = AuthService();
+  final AuthService _authService = AuthService();
   @override
   Future<bool> activateGhostMode(int userId) async {
     User currentUser = await _authService.readLocalUserInfo();
     currentUser.modoFantasma=true;
     try {
-      var resp = await Dio().put(serverurl + 'api/user/${userId}', data: currentUser.toJson());
+      var resp = await Dio().put(serverurl + 'api/user/$userId', data: currentUser.toJson());
       
       if (resp.statusCode == 200 || resp.statusCode == 204) {
-        _authService.saveLocalUserInfo(await currentUser);
+        _authService.saveLocalUserInfo(currentUser);
         return true;
       }
 
@@ -38,10 +40,10 @@ class SettingService implements SettingsContract{
     User currentUser = await _authService.readLocalUserInfo();
     currentUser.instagramUserEnabled=true;
     try {
-      var resp = await Dio().put(serverurl + 'api/user/${userId}', data: currentUser.toJson());
+      var resp = await Dio().put(serverurl + 'api/user/$userId', data: currentUser.toJson());
       
       if (resp.statusCode == 200 || resp.statusCode == 204) {
-        _authService.saveLocalUserInfo(await currentUser);
+        _authService.saveLocalUserInfo(currentUser);
         return true;
       }
 
@@ -63,10 +65,10 @@ class SettingService implements SettingsContract{
     User currentUser = await _authService.readLocalUserInfo();
     currentUser.whatsappNumberEnabled=true;
     try {
-      var resp = await Dio().put(serverurl + 'api/user/${userId}', data: currentUser.toJson());
+      var resp = await Dio().put(serverurl + 'api/user/$userId', data: currentUser.toJson());
       
       if (resp.statusCode == 200 || resp.statusCode == 204) {
-        _authService.saveLocalUserInfo(await currentUser);
+        _authService.saveLocalUserInfo(currentUser);
         return true;
       }
 
@@ -88,10 +90,10 @@ class SettingService implements SettingsContract{
     User currentUser = await _authService.readLocalUserInfo();
     currentUser.modoFantasma=false;
     try {
-      var resp = await Dio().put(serverurl + 'api/user/${userId}', data: currentUser.toJson());
+      var resp = await Dio().put(serverurl + 'api/user/$userId', data: currentUser.toJson());
       
       if (resp.statusCode == 200 || resp.statusCode == 204) {
-        _authService.saveLocalUserInfo(await currentUser);
+        _authService.saveLocalUserInfo(currentUser);
         return true;
       }
 
@@ -113,10 +115,10 @@ class SettingService implements SettingsContract{
     User currentUser = await _authService.readLocalUserInfo();
     currentUser.instagramUserEnabled=false;
     try {
-      var resp = await Dio().put(serverurl + 'api/user/${userId}', data: currentUser.toJson());
+      var resp = await Dio().put(serverurl + 'api/user/$userId', data: currentUser.toJson());
       
       if (resp.statusCode == 200 || resp.statusCode == 204) {
-        _authService.saveLocalUserInfo(await currentUser);
+        _authService.saveLocalUserInfo(currentUser);
         return true;
       }
 
@@ -138,10 +140,10 @@ class SettingService implements SettingsContract{
     User currentUser = await _authService.readLocalUserInfo();
     currentUser.whatsappNumberEnabled=false;
     try {
-      var resp = await Dio().put(serverurl + 'api/user/${userId}', data: currentUser.toJson());
+      var resp = await Dio().put(serverurl + 'api/user/$userId', data: currentUser.toJson());
       
       if (resp.statusCode == 200 || resp.statusCode == 204) {
-        _authService.saveLocalUserInfo(await currentUser);
+        _authService.saveLocalUserInfo(currentUser);
         return true;
       }
 
@@ -163,10 +165,10 @@ class SettingService implements SettingsContract{
     User currentUser = await _authService.readLocalUserInfo();
     currentUser.instagramUser=instagramUser;
     try {
-      var resp = await Dio().put(serverurl + 'api/user/${userId}', data: currentUser.toJson());
+      var resp = await Dio().put(serverurl + 'api/user/$userId', data: currentUser.toJson());
       
       if (resp.statusCode == 200 || resp.statusCode == 204) {
-        _authService.saveLocalUserInfo(await currentUser);
+        _authService.saveLocalUserInfo(currentUser);
         return true;
       }
 
@@ -188,10 +190,10 @@ class SettingService implements SettingsContract{
     User currentUser = await _authService.readLocalUserInfo();
     currentUser.whatsappNumber=whatsappNumber;
     try {
-      var resp = await Dio().put(serverurl + 'api/user/${userId}', data: currentUser.toJson());
+      var resp = await Dio().put(serverurl + 'api/user/$userId', data: currentUser.toJson());
       
       if (resp.statusCode == 200 || resp.statusCode == 204) {
-        _authService.saveLocalUserInfo(await currentUser);
+        _authService.saveLocalUserInfo(currentUser);
         return true;
       }
 

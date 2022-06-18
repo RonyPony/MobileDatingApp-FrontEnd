@@ -24,13 +24,13 @@ class Country {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['code'] = this.code;
-    data['enabled'] = this.enabled;
-    data['createdOn'] = this.createdOn;
-    data['updatedOn'] = this.updatedOn;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['code'] = code;
+    data['enabled'] = enabled;
+    data['createdOn'] = createdOn;
+    data['updatedOn'] = updatedOn;
     return data;
   }
 }

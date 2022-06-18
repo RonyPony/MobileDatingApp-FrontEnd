@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlove/controls/menu.dart';
@@ -13,38 +14,15 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    final pages = [
-      Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [Text("data1")],
-        ),
-      ),
-      Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [Text("data1")],
-        ),
-      ),
-      Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [Text("data1")],
-        ),
-      ),
-    ];
 
     
     return Scaffold(
-      bottomNavigationBar: MainMenu(),
-      backgroundColor: Color(0xff020202),
+      bottomNavigationBar: const MainMenu(),
+      backgroundColor: const Color(0xff020202),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Color(0xff020202),
-        title: Text('LoVers'),
+        backgroundColor: const Color(0xff020202),
+        title: const Text('LoVers'),
       ),
       body: SingleChildScrollView(
         child: 
@@ -59,7 +37,7 @@ class _HomePageState extends State<HomePage> {
                   width: MediaQuery.of(context).size.width * .9,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(26),
-                    color: Color(0xff1b1b1b),
+                    color: const Color(0xff1b1b1b),
                   ),
                   child: Column(
                     children: [
@@ -77,14 +55,14 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Container(
               width: MediaQuery.of(context).size.width * .9,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(26),
-                color: Color(0xff1b1b1b),
+                color: const Color(0xff1b1b1b),
               ),
               child: Column(
                 children: const [
@@ -115,7 +93,9 @@ class _HomePageState extends State<HomePage> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    print("DENY");
+                    if (kDebugMode) {
+                      print("DENY");
+                    }
                   },
                   child: Container(
                       width: 88,
@@ -131,7 +111,9 @@ class _HomePageState extends State<HomePage> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    print("ACEPTED");
+                    if (kDebugMode) {
+                      print("ACEPTED");
+                    }
                   },
                   child: Container(
                     width: 88,

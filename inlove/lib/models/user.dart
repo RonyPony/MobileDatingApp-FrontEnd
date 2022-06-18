@@ -66,27 +66,27 @@ class User {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['countryId'] = this.countryId;
-    data['modoFantasma'] = this.modoFantasma;
-    data['instagramUserEnabled'] = this.instagramUserEnabled;
-    data['instagramUser'] = this.instagramUser;
-    data['whatsappNumberEnabled'] = this.whatsappNumberEnabled;
-    data['whatsappNumber'] = this.whatsappNumber;
-    data['minimunAgeToMatch'] = this.minimunAgeToMatch;
-    data['maximunAgeToMatch'] = this.maximunAgeToMatch;
-    data['deletedAccount'] = this.deletedAccount;
-    data['loginStatus'] = this.loginStatus;
-    data['name'] = this.name;
-    data['lastName'] = this.lastName;
-    data['bio'] = this.bio;
-    data['email'] = this.email;
-    data['password'] = this.password;
-    data['sexualOrientationId'] = this.sexualOrientationId;
-    data['sexualPreferenceId'] = this.sexualPreferenceId;
-    data['registerDate'] = this.registerDate;
-    data['lastLogin'] = this.lastLogin;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['countryId'] = countryId;
+    data['modoFantasma'] = modoFantasma;
+    data['instagramUserEnabled'] = instagramUserEnabled;
+    data['instagramUser'] = instagramUser;
+    data['whatsappNumberEnabled'] = whatsappNumberEnabled;
+    data['whatsappNumber'] = whatsappNumber;
+    data['minimunAgeToMatch'] = minimunAgeToMatch;
+    data['maximunAgeToMatch'] = maximunAgeToMatch;
+    data['deletedAccount'] = deletedAccount;
+    data['loginStatus'] = loginStatus;
+    data['name'] = name;
+    data['lastName'] = lastName;
+    data['bio'] = bio;
+    data['email'] = email;
+    data['password'] = password;
+    data['sexualOrientationId'] = sexualOrientationId;
+    data['sexualPreferenceId'] = sexualPreferenceId;
+    data['registerDate'] = registerDate;
+    data['lastLogin'] = lastLogin;
     return data;
   }
 }

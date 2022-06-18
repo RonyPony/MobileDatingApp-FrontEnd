@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:inlove/providers/authProvider.dart';
-import 'package:inlove/providers/countriesProvider.dart';
-import 'package:inlove/providers/settingsProvider.dart';
+import 'package:inlove/providers/auth_provider.dart';
+import 'package:inlove/providers/countries_provider.dart';
+import 'package:inlove/providers/settings_provider.dart';
 import 'package:inlove/routes.dart';
 import 'package:inlove/screens/landing.page.dart';
-import 'package:inlove/services/authService.dart';
-import 'package:inlove/services/countriesService.dart';
-import 'package:inlove/services/settingService.dart';
+import 'package:inlove/services/auth_service.dart';
+import 'package:inlove/services/countries_service.dart';
+import 'package:inlove/services/setting_service.dart';
 import 'package:provider/provider.dart';
 
 void main() {

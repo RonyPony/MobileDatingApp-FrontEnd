@@ -1,22 +1,22 @@
 import 'dart:math';
 
 import 'package:cool_alert/cool_alert.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:inlove/controls/linkButtom.dart';
-import 'package:inlove/controls/mainbtn.dart';
-import 'package:inlove/models/userLogin.dart';
+import 'package:inlove/controls/link_buttom.dart';
+import 'package:inlove/models/user_login.dart';
 import 'package:inlove/screens/home.page.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
-import '../controls/textBox.dart';
-import '../models/user.dart';
-import '../providers/authProvider.dart';
+import '../controls/text_box.dart';
+import '../providers/auth_provider.dart';
 
 class LoginPage extends StatefulWidget {
   static String routeName = "/LoginPage";
+
+  const LoginPage({Key? key}) : super(key: key);
   @override
   State<StatefulWidget> createState() => _LoginPageState();
 }
@@ -31,24 +31,22 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   void initState() {
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 2)
+      duration: const Duration(seconds: 2)
     );
       _controller.repeat();
     
-    // TODO: implement initState
     super.initState();
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    // TODO: implement dispose
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final String usersAsset = 'assets/users.svg';
+    const String usersAsset = 'assets/users.svg';
     final Widget user = SvgPicture.asset(
       usersAsset,
       // color: Colors.blue,
@@ -61,14 +59,14 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(50),
           color: Colors.black,
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(color: Colors.pink, spreadRadius: 3),
           ],
         ),
 
         height: MediaQuery.of(context).size.height * .25,
         // color: Colors.black,
-        padding: EdgeInsets.all(29),
+        padding: const EdgeInsets.all(29),
         child: Column(
           // crossAxisAlignment: CrossAxisAlignment.center
           mainAxisAlignment: MainAxisAlignment.center,
@@ -84,7 +82,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               ),
             ),
             // CircularProgressIndicator(color:Colors.pink,),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             const Text(
@@ -99,16 +97,16 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         ),
       )),
       child: Scaffold(
-        backgroundColor: Color(0xff020202),
+        backgroundColor: const Color(0xff020202),
         body: SingleChildScrollView(
             // controller: controller,
             child: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+              children: const [
                 Padding(
-                  padding: const EdgeInsets.only(top: 70, bottom: 20),
+                  padding: EdgeInsets.only(top: 70, bottom: 20),
                   child: Text(
                     "Iniciar Sesion",
                     style: TextStyle(
@@ -123,7 +121,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
               width: MediaQuery.of(context).size.width * .9,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(26),
-                color: Color(0xff1b1b1b),
+                color: const Color(0xff1b1b1b),
               ),
               child: Column(
                 children: [
@@ -166,7 +164,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                       Navigator.pushNamedAndRemoveUntil(
                           context, HomePage.routeName, (route) => false);
                     }),
-                    child: Text(
+                    child: const Text(
                       "Saltar",
                       style: TextStyle(
                         color: Color(0x9effffff),
@@ -184,7 +182,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   }
 
   Widget buildEnterButton() {
-    return Container(
+    return SizedBox(
       width: 181,
       height: 65,
       child: Stack(
@@ -197,7 +195,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 height: 53,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(32),
-                  color: Color(0xff1db9fc),
+                  color: const Color(0xff1db9fc),
                 ),
                 padding: const EdgeInsets.only(
                   left: 37,
@@ -218,7 +216,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         final userExists = await authProvider
                             .userEmailExists(emailController.text);
                         if (userExists) {
-                          print("User Exists");
+                          if (kDebugMode) {
+                            print("User Exists");
+                          }
                           Login info = Login(
                               userEmail: emailController.text,
                               password: passController.text,
@@ -276,12 +276,12 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   }
 
   Widget prebuiltPanel() {
-    final String usersAsset = 'assets/users.svg';
+    const String usersAsset = 'assets/users.svg';
     final Widget user = SvgPicture.asset(
       usersAsset,
       // color: Colors.blue,
     );
-    return Container(
+    return SizedBox(
       width: 348,
       height: 303,
       child: Row(
@@ -294,7 +294,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             height: MediaQuery.of(context).size.height * .7,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(26),
-              color: Color(0xff1b1b1b),
+              color: const Color(0xff1b1b1b),
             ),
             child: Stack(
               children: [
@@ -306,7 +306,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     height: 47,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(13),
-                      color: Color(0xfc616161),
+                      color: const Color(0xfc616161),
                     ),
                   ),
                 ),
@@ -318,11 +318,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     height: 47,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(13),
-                      color: Color(0xfc616161),
+                      color: const Color(0xfc616161),
                     ),
                   ),
                 ),
-                Positioned(
+                const Positioned(
                   left: 87,
                   top: 162,
                   child: SizedBox(
@@ -336,7 +336,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     ),
                   ),
                 ),
-                Positioned(
+                const Positioned(
                   left: 139.99,
                   top: 232,
                   child: SizedBox(

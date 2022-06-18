@@ -34,7 +34,7 @@ class _MainMenuState extends State<MainMenu> {
             height: 60,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(26),
-              color: Color(0xff1b1b1b),
+              color: const Color(0xff1b1b1b),
             ),
             padding: const EdgeInsets.only(
               top: 7,
@@ -76,7 +76,7 @@ class _MainMenuState extends State<MainMenu> {
                     ],
                   ),
                 ),
-                SizedBox(width: 98),
+                const SizedBox(width: 98),
                 GestureDetector(
                   onTap: () {
                     Navigator.pushNamedAndRemoveUntil(
@@ -96,7 +96,7 @@ class _MainMenuState extends State<MainMenu> {
                         : SvgPicture.asset('assets/home.svg'),
                   ),
                 ),
-                SizedBox(width: 98),
+                const SizedBox(width: 98),
                 GestureDetector(
                   onTap: () {
                     Navigator.pushNamedAndRemoveUntil(

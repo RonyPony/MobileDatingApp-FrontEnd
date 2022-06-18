@@ -1,21 +1,24 @@
+// ignore_for_file: constant_identifier_names
+
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:inlove/models/country.dart';
 import 'package:inlove/models/user.dart';
-import 'package:inlove/providers/countriesProvider.dart';
-import 'package:inlove/providers/settingsProvider.dart';
+import 'package:inlove/providers/countries_provider.dart';
+import 'package:inlove/providers/settings_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../controls/mainbtn.dart';
 import '../controls/menu.dart';
 import '../controls/picker.dart';
 import '../controls/rangeSelect.dart';
-import '../controls/textBox.dart';
-import '../providers/authProvider.dart';
+import '../controls/text_box.dart';
+import '../providers/auth_provider.dart';
 
 class SettingScreen extends StatefulWidget {
   static String routeName = "/SettingScreen";
+
+  const SettingScreen({Key? key}) : super(key: key);
   @override
   State<SettingScreen> createState() => _SettingScreenState();
 }
@@ -26,6 +29,7 @@ class _SettingScreenState extends State<SettingScreen> {
   bool whatsapp = false;
   bool countriesLoaded = false;
 
+  // ignore: prefer_typing_uninitialized_variables
   var countries;
   // Future<List<Country>> countries;
 
@@ -33,14 +37,13 @@ class _SettingScreenState extends State<SettingScreen> {
   void initState() {
     readConfig();
     getAvailableCountries();
-    // TODO: implement initState
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: MainMenu(),
+      bottomNavigationBar: const MainMenu(),
       backgroundColor: const Color(0xff020202),
       appBar: AppBar(
           elevation: 0,
@@ -90,250 +93,6 @@ class _SettingScreenState extends State<SettingScreen> {
   }
 
   Widget buildFilters() {
-    const List<String> local_paisesFrom = <String>[
-      "DE TODO EL MUNDO",
-      "United States",
-      "Canada",
-      "Afghanistan",
-      "Albania",
-      "Algeria",
-      "American Samoa",
-      "Andorra",
-      "Angola",
-      "Anguilla",
-      "Antarctica",
-      "Antigua and/or Barbuda",
-      "Argentina",
-      "Armenia",
-      "Aruba",
-      "Australia",
-      "Austria",
-      "Azerbaijan",
-      "Bahamas",
-      "Bahrain",
-      "Bangladesh",
-      "Barbados",
-      "Belarus",
-      "Belgium",
-      "Belize",
-      "Benin",
-      "Bermuda",
-      "Bhutan",
-      "Bolivia",
-      "Bosnia and Herzegovina",
-      "Botswana",
-      "Bouvet Island",
-      "Brazil",
-      "British Indian Ocean Territory",
-      "Brunei Darussalam",
-      "Bulgaria",
-      "Burkina Faso",
-      "Burundi",
-      "Cambodia",
-      "Cameroon",
-      "Cape Verde",
-      "Cayman Islands",
-      "Central African Republic",
-      "Chad",
-      "Chile",
-      "China",
-      "Christmas Island",
-      "Cocos (Keeling) Islands",
-      "Colombia",
-      "Comoros",
-      "Congo",
-      "Cook Islands",
-      "Costa Rica",
-      "Croatia (Hrvatska)",
-      "Cuba",
-      "Cyprus",
-      "Czech Republic",
-      "Denmark",
-      "Djibouti",
-      "Dominica",
-      "Dominican Republic",
-      "East Timor",
-      "Ecudaor",
-      "Egypt",
-      "El Salvador",
-      "Equatorial Guinea",
-      "Eritrea",
-      "Estonia",
-      "Ethiopia",
-      "Falkland Islands (Malvinas)",
-      "Faroe Islands",
-      "Fiji",
-      "Finland",
-      "France",
-      "France, Metropolitan",
-      "French Guiana",
-      "French Polynesia",
-      "French Southern Territories",
-      "Gabon",
-      "Gambia",
-      "Georgia",
-      "Germany",
-      "Ghana",
-      "Gibraltar",
-      "Greece",
-      "Greenland",
-      "Grenada",
-      "Guadeloupe",
-      "Guam",
-      "Guatemala",
-      "Guinea",
-      "Guinea-Bissau",
-      "Guyana",
-      "Haiti",
-      "Heard and Mc Donald Islands",
-      "Honduras",
-      "Hong Kong",
-      "Hungary",
-      "Iceland",
-      "India",
-      "Indonesia",
-      "Iran (Islamic Republic of)",
-      "Iraq",
-      "Ireland",
-      "Israel",
-      "Italy",
-      "Ivory Coast",
-      "Jamaica",
-      "Japan",
-      "Jordan",
-      "Kazakhstan",
-      "Kenya",
-      "Kiribati",
-      "Korea, Democratic People's Republic of",
-      "Korea, Republic of",
-      "Kosovo",
-      "Kuwait",
-      "Kyrgyzstan",
-      "Lao People's Democratic Republic",
-      "Latvia",
-      "Lebanon",
-      "Lesotho",
-      "Liberia",
-      "Libyan Arab Jamahiriya",
-      "Liechtenstein",
-      "Lithuania",
-      "Luxembourg",
-      "Macau",
-      "Macedonia",
-      "Madagascar",
-      "Malawi",
-      "Malaysia",
-      "Maldives",
-      "Mali",
-      "Malta",
-      "Marshall Islands",
-      "Martinique",
-      "Mauritania",
-      "Mauritius",
-      "Mayotte",
-      "Mexico",
-      "Micronesia, Federated States of",
-      "Moldova, Republic of",
-      "Monaco",
-      "Mongolia",
-      "Montserrat",
-      "Morocco",
-      "Mozambique",
-      "Myanmar",
-      "Namibia",
-      "Nauru",
-      "Nepal",
-      "Netherlands",
-      "Netherlands Antilles",
-      "New Caledonia",
-      "New Zealand",
-      "Nicaragua",
-      "Niger",
-      "Nigeria",
-      "Niue",
-      "Norfork Island",
-      "Northern Mariana Islands",
-      "Norway",
-      "Oman",
-      "Pakistan",
-      "Palau",
-      "Panama",
-      "Papua New Guinea",
-      "Paraguay",
-      "Peru",
-      "Philippines",
-      "Pitcairn",
-      "Poland",
-      "Portugal",
-      "Puerto Rico",
-      "Qatar",
-      "Reunion",
-      "Romania",
-      "Russian Federation",
-      "Rwanda",
-      "Saint Kitts and Nevis",
-      "Saint Lucia",
-      "Saint Vincent and the Grenadines",
-      "Samoa",
-      "San Marino",
-      "Sao Tome and Principe",
-      "Saudi Arabia",
-      "Senegal",
-      "Seychelles",
-      "Sierra Leone",
-      "Singapore",
-      "Slovakia",
-      "Slovenia",
-      "Solomon Islands",
-      "Somalia",
-      "South Africa",
-      "South Georgia South Sandwich Islands",
-      "South Sudan",
-      "Spain",
-      "Sri Lanka",
-      "St. Helena",
-      "St. Pierre and Miquelon",
-      "Sudan",
-      "Suriname",
-      "Svalbarn and Jan Mayen Islands",
-      "Swaziland",
-      "Sweden",
-      "Switzerland",
-      "Syrian Arab Republic",
-      "Taiwan",
-      "Tajikistan",
-      "Tanzania, United Republic of",
-      "Thailand",
-      "Togo",
-      "Tokelau",
-      "Tonga",
-      "Trinidad and Tobago",
-      "Tunisia",
-      "Turkey",
-      "Turkmenistan",
-      "Turks and Caicos Islands",
-      "Tuvalu",
-      "Uganda",
-      "Ukraine",
-      "United Arab Emirates",
-      "United Kingdom",
-      "United States minor outlying islands",
-      "Uruguay",
-      "Uzbekistan",
-      "Vanuatu",
-      "Vatican City State",
-      "Venezuela",
-      "Vietnam",
-      "Virigan Islands (British)",
-      "Virgin Islands (U.S.)",
-      "Wallis and Futuna Islands",
-      "Western Sahara",
-      "Yemen",
-      "Yugoslavia",
-      "Zaire",
-      "Zambia",
-      "Zimbabwe"
-    ];
     const List<String> local_paises = <String>[
       "United States",
       "Canada",
@@ -622,7 +381,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   );
                 }
                 if (snapshot.hasError) {
-                  return Text("Ups! error getting available countries");
+                  return const Text("Ups! error getting available countries");
                 }
                 if (snapshot.hasData &&
                     snapshot.connectionState == ConnectionState.done) {
@@ -631,7 +390,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   paises?.forEach((element) {
                     finalCountries.add(element.name!);
                   });
-                  if (finalCountries.length == 0) {
+                  if (finalCountries.isEmpty) {
                     finalCountries = local_paises;
                   }
                   return Padding(
@@ -640,12 +399,14 @@ class _SettingScreenState extends State<SettingScreen> {
                     child: CustomPicker(
                       placeHolder: "Pais:",
                       options: finalCountries, onChange: (){
-                        print("object");
+                        if (kDebugMode) {
+                          print("object");
+                        }
                       },
                     ),
                   );
                 }
-                return Text("Error getting countries");
+                return const Text("Error getting countries");
               },
             ),
             Row(
@@ -671,7 +432,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   );
                 }
                 if (snapshot.hasError) {
-                  return Text("Ups! error getting available countries");
+                  return const Text("Ups! error getting available countries");
                 }
                 if (snapshot.hasData &&
                     snapshot.connectionState == ConnectionState.done) {
@@ -693,7 +454,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     ),
                   );
                 }
-                return Text("Error getting countries");
+                return const Text("Error getting countries");
               },
             ),
             Row(
@@ -720,9 +481,6 @@ class _SettingScreenState extends State<SettingScreen> {
 
   Widget buildBody() {
     Size screenSize = MediaQuery.of(context).size;
-    final configProvider =
-        Provider.of<SettingsProvider>(context, listen: false);
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     TextEditingController instaCtr = TextEditingController();
     TextEditingController whatsCtr = TextEditingController();
     return Row(
@@ -773,7 +531,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           padding: EdgeInsets.only(left: 30, top: 10),
                           child: Text(
                             "Instagram",
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
                               fontSize: 19,
                             ),
@@ -794,7 +552,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         ),
                       ],
                     ),
-                    Container(
+                    SizedBox(
                         width: MediaQuery.of(context).size.width,
                         child: CustomTextBox(
                           text: "Instagram",
@@ -828,7 +586,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         ),
                       ],
                     ),
-                    Container(
+                    SizedBox(
                         width: MediaQuery.of(context).size.width,
                         child: CustomTextBox(
                           text: "Whatsapp",
@@ -839,7 +597,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 );
               }
               if (snapshot.hasError) {
-                return Text("Error 34");
+                return const Text("Error 34");
               }
               if (snapshot.connectionState == ConnectionState.done &&
                   snapshot.hasData) {
@@ -879,11 +637,11 @@ class _SettingScreenState extends State<SettingScreen> {
                               User currentUser =
                                   await authProvider.readLocalUserInfo();
                               if (value) {
-                                final activated = await configProvider
-                                    .activateGhostMode(currentUser.id!);
                                 setState(() {});
+                                await configProvider
+                                    .activateGhostMode(currentUser.id!);
                               } else {
-                                final deactivated = await configProvider
+                                await configProvider
                                     .deactivateGhostMode(currentUser.id!);
                                 setState(() {});
                               }
@@ -899,7 +657,7 @@ class _SettingScreenState extends State<SettingScreen> {
                           padding: EdgeInsets.only(left: 30, top: 10),
                           child: Text(
                             "Instagram",
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
                               fontSize: 19,
                             ),
@@ -923,11 +681,11 @@ class _SettingScreenState extends State<SettingScreen> {
                               User currentUser =
                                   await authProvider.readLocalUserInfo();
                               if (value) {
-                                final activated = await configProvider
+                                await configProvider
                                     .activateInstagram(currentUser.id!);
                                 setState(() {});
                               } else {
-                                final deactivated = await configProvider
+                                await configProvider
                                     .deactivateInstagram(currentUser.id!);
                                 setState(() {});
                               }
@@ -937,7 +695,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         ),
                       ],
                     ),
-                    Container(
+                    SizedBox(
                         width: MediaQuery.of(context).size.width,
                         child: CustomTextBox(
                           text: "Instagram",
@@ -974,11 +732,11 @@ class _SettingScreenState extends State<SettingScreen> {
                               User currentUser =
                                   await authProvider.readLocalUserInfo();
                               if (value) {
-                                final activated = await configProvider
+                                await configProvider
                                     .activateWhatsapp(currentUser.id!);
                                 setState(() {});
                               } else {
-                                final deactivated = await configProvider
+                                await configProvider
                                     .deactivateWhatsapp(currentUser.id!);
                                 setState(() {});
                               }
@@ -988,7 +746,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         ),
                       ],
                     ),
-                    Container(
+                    SizedBox(
                         width: MediaQuery.of(context).size.width,
                         child: CustomTextBox(
                           text: "Whatsapp",
@@ -998,7 +756,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   ],
                 );
               }
-              return Text("Error s04");
+              return const Text("Error s04");
             },
           ),
         ),

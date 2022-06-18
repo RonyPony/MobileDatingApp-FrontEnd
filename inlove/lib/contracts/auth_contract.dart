@@ -1,7 +1,7 @@
 // ignore_for_file: file_names
 
 import '../models/user.dart';
-import '../models/userLogin.dart';
+import '../models/user_login.dart';
 
 abstract class AuthContract {
   Future<bool>userExists(String userEmail);

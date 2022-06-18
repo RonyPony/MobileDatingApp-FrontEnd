@@ -1,19 +1,20 @@
 import 'dart:math';
 
-import 'package:flag/flag_enum.dart';
 import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:inlove/models/country.dart';
 import 'package:inlove/models/user.dart';
-import 'package:inlove/providers/authProvider.dart';
+import 'package:inlove/providers/auth_provider.dart';
 import 'package:inlove/screens/login.page.dart';
 import 'package:provider/provider.dart';
 import '../controls/menu.dart';
-import '../providers/countriesProvider.dart';
+import '../providers/countries_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   static String routeName = '/ProfileScreen';
+
+  const ProfileScreen({Key? key}) : super(key: key);
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
@@ -31,14 +32,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width * 1;
-    double screenHeight = MediaQuery.of(context).size.height * 1;
     return Scaffold(
-      bottomNavigationBar: MainMenu(),
-      backgroundColor: Color(0xff020202),
+      bottomNavigationBar: const MainMenu(),
+      backgroundColor: const Color(0xff020202),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Color(0xff020202),
-        title: Text('LoVers - Perfil'),
+        backgroundColor: const Color(0xff020202),
+        title: const Text('LoVers - Perfil'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -50,7 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   width: MediaQuery.of(context).size.width * .9,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(26),
-                    color: Color(0xff1b1b1b),
+                    color: const Color(0xff1b1b1b),
                   ),
                   child: Column(
                     children: [
@@ -63,7 +63,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           width: MediaQuery.of(context).size.width * .9,
                         ),
                       ),
-                      Container(
+                      SizedBox(
                         // color: Colors.red,
                         height: 80,
                         child: Row(
@@ -73,10 +73,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
-                                  return CircularProgressIndicator(color: Colors.pink,);
+                                  return const CircularProgressIndicator(color: Colors.pink,);
                                 }
                                 if (snapshot.hasError) {
-                                  return Text("Err");
+                                  return const Text("Err");
                                 }
 
                                 if (snapshot.connectionState ==
@@ -107,15 +107,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           //   borderRadius: 100,
                                           // );
                                         }
-                                        return CircularProgressIndicator(
+                                        return const CircularProgressIndicator(
                                           color: Colors.pink,
                                         );
                                       },
                                     );
                                   }
-                                  return Text("Error 3");
+                                  return const Text("Error 3");
                                 }
-                                return Text("error 4");
+                                return const Text("error 4");
                               },
                               future: localUserInfo,
                             ),
@@ -131,7 +131,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(50),
-                                  color: Color(0xff1db9fc),
+                                  color: const Color(0xff1db9fc),
                                 ),
                               ),
                             )
@@ -143,26 +143,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Container(
               width: MediaQuery.of(context).size.width * .9,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(26),
-                color: Color(0xff1b1b1b),
+                color: const Color(0xff1b1b1b),
               ),
               child: Column(
                 children: [
                   FutureBuilder<User>(
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator(
+                        return const CircularProgressIndicator(
                           color: Colors.pink,
                         );
                       }
                       if (snapshot.hasError) {
-                        return Text("Error obteniendo datos");
+                        return const Text("Error obteniendo datos");
                       }
                       if (snapshot.connectionState == ConnectionState.done) {
                         if (snapshot.hasData) {
@@ -173,7 +173,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           }
                           return Column(
                             children: [
-                              SizedBox(
+                              const SizedBox(
                                 height: 10,
                               ),
                               Padding(
@@ -192,21 +192,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 padding: const EdgeInsets.only(left: 20,right: 20),
                                 child: Text(
                                   "${snapshot.data?.bio}",
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 15,
                                   ),
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 20,
                               ),
                             ],
                           );
                         }
-                        return Text("No identificado");
+                        return const Text("No identificado");
                       }
-                      return Text("NO INFO");
+                      return const Text("NO INFO");
                     },
                     future: localUserInfo,
                   ),
@@ -228,7 +228,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
-                    color: Color(0xff1db9fc),
+                    color: const Color(0xff1db9fc),
                   ),
                 ),
               ],
@@ -260,9 +260,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: const [
             Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 10),
+              padding: EdgeInsets.only(top: 10, bottom: 10),
               child: Text(
                 "Cerrar Sesion",
                 style: TextStyle(color: Colors.grey, fontSize: 22),
@@ -284,8 +284,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     var coolEmojies = ['😇', '🤩', '🥳', '😎', '😊'];
     var notCoolEmojies = ['🥺', '😕', '😅', '😩', '😢'];
     // generates a new Random object
-    final _random = new Random();
-    var element;
+    final _random = Random();
+    String element;
     // generate a random index based on the list length
     // and use it to retrieve the element
     if (cool) {

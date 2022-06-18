@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:inlove/models/userLogin.dart';
-import 'package:inlove/services/authService.dart';
+import 'package:inlove/models/user_login.dart';
+import 'package:inlove/services/auth_service.dart';
 
 import '../models/user.dart';
 
 class AuthProvider with ChangeNotifier {
-  AuthService _authService;
+  final AuthService _authService;
 
   AuthProvider(this._authService);
 

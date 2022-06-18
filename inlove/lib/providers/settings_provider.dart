@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../services/settingService.dart';
+import '../services/setting_service.dart';
 
 class SettingsProvider with ChangeNotifier {
- SettingService _service;
+ final SettingService _service;
  SettingsProvider(this._service);
   
   Future<bool> activateGhostMode(int userId) async {

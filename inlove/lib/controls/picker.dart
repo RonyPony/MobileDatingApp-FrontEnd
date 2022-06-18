@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_import
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -57,7 +59,7 @@ class _CustomPickerState extends State<CustomPicker> {
               children: <Widget>[
                 Text(
                   widget.placeHolder + " ",
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                 ),
                 CupertinoButton(
                   padding: EdgeInsets.zero,

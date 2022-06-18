@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:inlove/services/countriesService.dart';
+import 'package:inlove/services/countries_service.dart';
 
 import '../models/country.dart';
 
 class CountriesProvider with ChangeNotifier {
-  CountriesService _service;
+  final CountriesService _service;
 
   CountriesProvider(this._service);
 

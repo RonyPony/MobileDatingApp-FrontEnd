@@ -12,10 +12,10 @@ class Login {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['userEmail'] = this.userEmail;
-    data['password'] = this.password;
-    data['rememberMe'] = this.rememberMe;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['userEmail'] = userEmail;
+    data['password'] = password;
+    data['rememberMe'] = rememberMe;
     return data;
   }
 }

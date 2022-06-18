@@ -1,11 +1,12 @@
+// ignore_for_file: avoid_print, duplicate_ignore, unrelated_type_equality_checks
+
 import 'dart:convert';
-import 'dart:ui';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:inlove/constant.dart';
-import 'package:inlove/contracts/authContract.dart';
+import 'package:inlove/contracts/auth_contract.dart';
 import 'package:inlove/models/user.dart';
-import 'package:inlove/models/userLogin.dart';
-import 'package:inlove/providers/authProvider.dart';
+import 'package:inlove/models/user_login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService implements AuthContract{
@@ -27,16 +28,23 @@ class AuthService implements AuthContract{
         return true;
       }
 
+      // ignore: unrelated_type_equality_checks
       if(resp.statusCode=="404"){
-        print("User Not Found");
+        if (kDebugMode) {
+          print("User Not Found");
+        }
       }
       return false;
     } 
     on DioError catch (e) {
       //http error(statusCode not 20x) will be catched here.
-      print(e.response!.statusCode.toString());
-      print(
+      if (kDebugMode) {
+        print(e.response!.statusCode.toString());
+      }
+      if (kDebugMode) {
+        print(
           'Failed Load Data with status code ${e.response!.statusCode}');
+      }
           return false;
     }
     
@@ -51,7 +59,9 @@ class AuthService implements AuthContract{
         return true;
       }
 
+      // ignore: unrelated_type_equality_checks, duplicate_ignore
       if(resp.statusCode=="404"){
+        // ignore: avoid_print
         print("User Not Found");
       }
       return true;
@@ -83,7 +93,7 @@ class AuthService implements AuthContract{
   Future<User> readLocalUserInfo() async {
     
       final prefs = await SharedPreferences.getInstance();
-      var res = await prefs.getString(savedCurrentUserFlag);
+      var res = prefs.getString(savedCurrentUserFlag);
       User finalUser = User.fromJson(jsonDecode(res!));
       return finalUser;
     
