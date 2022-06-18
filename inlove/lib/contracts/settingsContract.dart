@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 abstract class SettingsContract {
   Future<bool>activateGhostMode(int userId);
   Future<bool> deactivateGhostMode(int userId);

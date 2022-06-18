@@ -1,9 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:provider/provider.dart';
 
-import '../providers/authProvider.dart';
 
 class CustomBtn extends StatelessWidget {
   const CustomBtn({Key? key,required this.onPress}) : super(key: key);
@@ -12,7 +9,7 @@ class CustomBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 181,
       height: 65,
       child: Stack(
@@ -25,7 +22,7 @@ class CustomBtn extends StatelessWidget {
                 height: 53,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(32),
-                  color: Color(0xff1db9fc),
+                  color: const Color(0xff1db9fc),
                 ),
                 padding: const EdgeInsets.only(
                   left: 37,

@@ -5,6 +5,8 @@ import 'package:inlove/screens/profile.page.dart';
 import 'package:inlove/screens/setting.page.dart';
 
 class MainMenu extends StatefulWidget {
+  const MainMenu({Key? key}) : super(key: key);
+
   @override
   State<MainMenu> createState() => _MainMenuState();
 }

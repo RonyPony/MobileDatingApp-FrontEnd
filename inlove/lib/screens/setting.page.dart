@@ -639,7 +639,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         const EdgeInsets.only(left: 20, top: 10, right: 20),
                     child: CustomPicker(
                       placeHolder: "Pais:",
-                      options: finalCountries, onChange: (  ,,m;){
+                      options: finalCountries, onChange: (){
                         print("object");
                       },
                     ),
