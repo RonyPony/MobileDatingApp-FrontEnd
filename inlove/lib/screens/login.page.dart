@@ -130,9 +130,15 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   user,
                   CustomTextBox(
                     text: "Correo Electronico",
+                    onChange: (){
+                      
+                    },
                     controller: emailController,
                   ),
                   CustomTextBox(
+                    onChange: (){
+
+                    },
                     text: "Clave",
                     controller: passController,
                   ),

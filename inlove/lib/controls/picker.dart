@@ -6,9 +6,10 @@ const double _kItemExtent = 32.0;
 
 class CustomPicker extends StatefulWidget {
   const CustomPicker(
-      {Key? key, required this.placeHolder, required this.options})
+      {Key? key, required this.placeHolder, required this.options, required this.onChange})
       : super(key: key);
   final String placeHolder;
+  final Function onChange;
   final List<String> options;
   @override
   State<CustomPicker> createState() => _CustomPickerState();
@@ -20,6 +21,7 @@ class _CustomPickerState extends State<CustomPicker> {
   // This shows a CupertinoModalPopup with a reasonable fixed height which hosts CupertinoPicker.
   void _showDialog(Widget child) {
     showCupertinoModalPopup<void>(
+      
         context: context,
         builder: (BuildContext context) => Container(
               height: 216,
@@ -62,14 +64,19 @@ class _CustomPickerState extends State<CustomPicker> {
                   // Display a CupertinoPicker with list of fruits.
                   onPressed: () => _showDialog(
                     CupertinoPicker(
-                      magnification: 1.22,
-                      squeeze: 1.2,
-                      useMagnifier: true,
+                      // magnification: 2,
+                      // squeeze:1,
+                      // useMagnifier: true,
                       itemExtent: _kItemExtent,
+
+                      // looping: true,
                       // This is called when selected item is changed.
                       onSelectedItemChanged: (int selectedItem) {
+                        widget.onChange();
                         setState(() {
                           _selectedFruit = selectedItem;
+                          
+                          
                         });
                       },
                       children: List<Widget>.generate(widget.options.length,

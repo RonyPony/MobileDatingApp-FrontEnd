@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:inlove/providers/authProvider.dart';
 import 'package:inlove/providers/countriesProvider.dart';
+import 'package:inlove/providers/settingsProvider.dart';
 import 'package:inlove/routes.dart';
 import 'package:inlove/screens/landing.page.dart';
 import 'package:inlove/services/authService.dart';
 import 'package:inlove/services/countriesService.dart';
+import 'package:inlove/services/settingService.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_)=>AuthProvider(AuthService())),
+      ChangeNotifierProvider(create: (_)=>SettingsProvider(SettingService())),
       ChangeNotifierProvider(create: (_)=>CountriesProvider(CountriesService()))
     ],
     child: const MyApp(),

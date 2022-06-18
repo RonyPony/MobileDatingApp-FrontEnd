@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:inlove/models/country.dart';
+import 'package:inlove/models/user.dart';
 import 'package:inlove/providers/countriesProvider.dart';
+import 'package:inlove/providers/settingsProvider.dart';
 import 'package:provider/provider.dart';
 
 import '../controls/mainbtn.dart';
@@ -23,12 +25,13 @@ class _SettingScreenState extends State<SettingScreen> {
   bool instagram = false;
   bool whatsapp = false;
   bool countriesLoaded = false;
-  
+
   var countries;
   // Future<List<Country>> countries;
 
   @override
   void initState() {
+    readConfig();
     getAvailableCountries();
     // TODO: implement initState
     super.initState();
@@ -73,9 +76,9 @@ class _SettingScreenState extends State<SettingScreen> {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        children: const [
           Padding(
-            padding: const EdgeInsets.only(top: 10, bottom: 10),
+            padding: EdgeInsets.only(top: 10, bottom: 10),
             child: Text(
               "Elimina mi cuenta",
               style: TextStyle(color: Colors.red, fontSize: 22),
@@ -583,12 +586,12 @@ class _SettingScreenState extends State<SettingScreen> {
         child: Column(
           children: [
             Row(
-              children: [
-                const Padding(
-                  padding: const EdgeInsets.only(left: 20, top: 20),
+              children: const [
+                Padding(
+                  padding: EdgeInsets.only(left: 20, top: 20),
                   child: Text(
                     "Filtros",
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Color(0xff00b2ff),
                       fontSize: 23,
                     ),
@@ -597,10 +600,10 @@ class _SettingScreenState extends State<SettingScreen> {
               ],
             ),
             Row(
-              children: [
+              children: const [
                 Padding(
-                  padding: const EdgeInsets.only(left: 20, top: 25),
-                  child: const Text(
+                  padding: EdgeInsets.only(left: 20, top: 25),
+                  child: Text(
                     "Soy de",
                     style: TextStyle(
                       color: Colors.white,
@@ -610,18 +613,46 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20, top: 10, right: 20),
-              child: const CustomPicker(
-                placeHolder: "Pais:",
-                options: local_paises,
-              ),
+            FutureBuilder<List<Country>>(
+              future: countries,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator(
+                    color: Colors.pink,
+                  );
+                }
+                if (snapshot.hasError) {
+                  return Text("Ups! error getting available countries");
+                }
+                if (snapshot.hasData &&
+                    snapshot.connectionState == ConnectionState.done) {
+                  List<Country>? paises = snapshot.data;
+                  List<String> finalCountries = [];
+                  paises?.forEach((element) {
+                    finalCountries.add(element.name!);
+                  });
+                  if (finalCountries.length == 0) {
+                    finalCountries = local_paises;
+                  }
+                  return Padding(
+                    padding:
+                        const EdgeInsets.only(left: 20, top: 10, right: 20),
+                    child: CustomPicker(
+                      placeHolder: "Pais:",
+                      options: finalCountries, onChange: (  ,,m;){
+                        print("object");
+                      },
+                    ),
+                  );
+                }
+                return Text("Error getting countries");
+              },
             ),
             Row(
-              children: [
+              children: const [
                 Padding(
-                  padding: const EdgeInsets.only(left: 20, top: 10),
-                  child: const Text(
+                  padding: EdgeInsets.only(left: 20, top: 10),
+                  child: Text(
                     "Muestrame personas de",
                     style: TextStyle(
                       color: Colors.white,
@@ -644,17 +675,21 @@ class _SettingScreenState extends State<SettingScreen> {
                 }
                 if (snapshot.hasData &&
                     snapshot.connectionState == ConnectionState.done) {
-                  List<Country>?paises = snapshot.data;
-                  List<String> finalCountries =[];
+                  List<Country>? paises = snapshot.data;
+                  List<String> finalCountries = ["Todos los paises"];
                   paises?.forEach((element) {
                     finalCountries.add(element.name!);
                   });
+
                   return Padding(
                     padding:
                         const EdgeInsets.only(left: 20, top: 10, right: 20),
                     child: CustomPicker(
                       placeHolder: "Pais:",
-                       options: finalCountries,
+                      onChange: (){
+
+                      },
+                      options: finalCountries,
                     ),
                   );
                 }
@@ -662,11 +697,11 @@ class _SettingScreenState extends State<SettingScreen> {
               },
             ),
             Row(
-              children: [
+              children: const [
                 Padding(
-                  padding: const EdgeInsets.only(left: 20, top: 10),
-                  child: const Text(
-                    "Muestrame rando de edad",
+                  padding: EdgeInsets.only(left: 20, top: 10),
+                  child: Text(
+                    "Muestrame rango de edad",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 19,
@@ -675,8 +710,8 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
               ],
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20, top: 10),
+            const Padding(
+              padding: EdgeInsets.only(left: 20, top: 10),
               child: CustomRangeSelect(),
             )
           ],
@@ -685,6 +720,11 @@ class _SettingScreenState extends State<SettingScreen> {
 
   Widget buildBody() {
     Size screenSize = MediaQuery.of(context).size;
+    final configProvider =
+        Provider.of<SettingsProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    TextEditingController instaCtr = TextEditingController();
+    TextEditingController whatsCtr = TextEditingController();
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -694,99 +734,272 @@ class _SettingScreenState extends State<SettingScreen> {
             borderRadius: BorderRadius.circular(26),
             color: const Color(0xff1b1b1b),
           ),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(left: 30, top: 30),
-                    child: Text(
-                      "Modo fantasma",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 19,
-                      ),
+          child: FutureBuilder<User>(
+            future: readConfig(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(left: 30, top: 30),
+                          child: Text(
+                            "Modo fantasma",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 19,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: 10,
+                              left: MediaQuery.of(context).size.width * .25),
+                          child: CupertinoSwitch(
+                            activeColor: Colors.grey,
+                            value: ghostMode,
+                            onChanged: (value) async {
+                              ghostMode = value;
+                              setState(() {});
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        top: 10, left: MediaQuery.of(context).size.width * .25),
-                    child: CupertinoSwitch(
-                      activeColor: Colors.grey,
-                      value: ghostMode,
-                      onChanged: (value) {
-                        ghostMode = value;
-                        setState(() {});
-                      },
+                    Row(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(left: 30, top: 10),
+                          child: Text(
+                            "Instagram",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 19,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: 10,
+                              left: MediaQuery.of(context).size.width * .4),
+                          child: CupertinoSwitch(
+                            activeColor: Colors.grey,
+                            value: instagram,
+                            onChanged: (value) {
+                              instagram = value;
+                              setState(() {});
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(left: 30, top: 10),
-                    child: Text(
-                      "Instagram",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 19,
-                      ),
+                    Container(
+                        width: MediaQuery.of(context).size.width,
+                        child: CustomTextBox(
+                          text: "Instagram",
+                          onChange: () {},
+                          controller: instaCtr,
+                        )),
+                    Row(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(left: 30, top: 10),
+                          child: Text(
+                            "Whatsapp",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 19,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: 10,
+                              left: MediaQuery.of(context).size.width * .4),
+                          child: CupertinoSwitch(
+                            activeColor: Colors.grey,
+                            value: whatsapp,
+                            onChanged: (value) {
+                              whatsapp = value;
+                              setState(() {});
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        top: 10, left: MediaQuery.of(context).size.width * .4),
-                    child: CupertinoSwitch(
-                      activeColor: Colors.grey,
-                      value: instagram,
-                      onChanged: (value) {
-                        instagram = value;
-                        setState(() {});
-                      },
+                    Container(
+                        width: MediaQuery.of(context).size.width,
+                        child: CustomTextBox(
+                          text: "Whatsapp",
+                          onChange: () {},
+                          controller: whatsCtr,
+                        )),
+                  ],
+                );
+              }
+              if (snapshot.hasError) {
+                return Text("Error 34");
+              }
+              if (snapshot.connectionState == ConnectionState.done &&
+                  snapshot.hasData) {
+                bool ghostMode = snapshot.data!.modoFantasma!;
+                bool instagram = snapshot.data!.instagramUserEnabled!;
+                bool whatsapp = snapshot.data!.whatsappNumberEnabled!;
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(left: 30, top: 30),
+                          child: Text(
+                            "Modo fantasma",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 19,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: 10,
+                              left: MediaQuery.of(context).size.width * .25),
+                          child: CupertinoSwitch(
+                            activeColor: Colors.grey,
+                            value: ghostMode,
+                            onChanged: (value) async {
+                              ghostMode = value;
+
+                              final configProvider =
+                                  Provider.of<SettingsProvider>(context,
+                                      listen: false);
+                              final authProvider = Provider.of<AuthProvider>(
+                                  context,
+                                  listen: false);
+                              User currentUser =
+                                  await authProvider.readLocalUserInfo();
+                              if (value) {
+                                final activated = await configProvider
+                                    .activateGhostMode(currentUser.id!);
+                                setState(() {});
+                              } else {
+                                final deactivated = await configProvider
+                                    .deactivateGhostMode(currentUser.id!);
+                                setState(() {});
+                              }
+                              setState(() {});
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-              Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: CustomTextBox(
-                    text: "Instagram",
-                    controller: TextEditingController(),
-                  )),
-              Row(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(left: 30, top: 10),
-                    child: Text(
-                      "Whatsapp",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 19,
-                      ),
+                    Row(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(left: 30, top: 10),
+                          child: Text(
+                            "Instagram",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 19,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: 10,
+                              left: MediaQuery.of(context).size.width * .4),
+                          child: CupertinoSwitch(
+                            activeColor: Colors.grey,
+                            value: instagram,
+                            onChanged: (value) async {
+                              instagram = value;
+                              final configProvider =
+                                  Provider.of<SettingsProvider>(context,
+                                      listen: false);
+                              final authProvider = Provider.of<AuthProvider>(
+                                  context,
+                                  listen: false);
+                              User currentUser =
+                                  await authProvider.readLocalUserInfo();
+                              if (value) {
+                                final activated = await configProvider
+                                    .activateInstagram(currentUser.id!);
+                                setState(() {});
+                              } else {
+                                final deactivated = await configProvider
+                                    .deactivateInstagram(currentUser.id!);
+                                setState(() {});
+                              }
+                              setState(() {});
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(
-                        top: 10, left: MediaQuery.of(context).size.width * .4),
-                    child: CupertinoSwitch(
-                      activeColor: Colors.grey,
-                      value: whatsapp,
-                      onChanged: (value) {
-                        whatsapp = value;
-                        setState(() {});
-                      },
+                    Container(
+                        width: MediaQuery.of(context).size.width,
+                        child: CustomTextBox(
+                          text: "Instagram",
+                          onChange: () {},
+                          controller: instaCtr,
+                        )),
+                    Row(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(left: 30, top: 10),
+                          child: Text(
+                            "Whatsapp",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 19,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: 10,
+                              left: MediaQuery.of(context).size.width * .4),
+                          child: CupertinoSwitch(
+                            activeColor: Colors.grey,
+                            value: whatsapp,
+                            onChanged: (value) async {
+                              whatsapp = value;
+                              final configProvider =
+                                  Provider.of<SettingsProvider>(context,
+                                      listen: false);
+                              final authProvider = Provider.of<AuthProvider>(
+                                  context,
+                                  listen: false);
+                              User currentUser =
+                                  await authProvider.readLocalUserInfo();
+                              if (value) {
+                                final activated = await configProvider
+                                    .activateWhatsapp(currentUser.id!);
+                                setState(() {});
+                              } else {
+                                final deactivated = await configProvider
+                                    .deactivateWhatsapp(currentUser.id!);
+                                setState(() {});
+                              }
+                              setState(() {});
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-              Container(
-                  width: MediaQuery.of(context).size.width,
-                  child: CustomTextBox(
-                    text: "Whatsapp",
-                    controller: TextEditingController(),
-                  )),
-            ],
+                    Container(
+                        width: MediaQuery.of(context).size.width,
+                        child: CustomTextBox(
+                          text: "Whatsapp",
+                          onChange: () {},
+                          controller: whatsCtr,
+                        )),
+                  ],
+                );
+              }
+              return Text("Error s04");
+            },
           ),
         ),
       ],
@@ -806,5 +1019,14 @@ class _SettingScreenState extends State<SettingScreen> {
     // cou.forEach((element) {
     //   countries.add(element.name!);
     // });
+  }
+
+  Future<User> readConfig() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    User currentUser = await authProvider.readLocalUserInfo();
+    // setState(() {
+
+    // });
+    return currentUser;
   }
 }
