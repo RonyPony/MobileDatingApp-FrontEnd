@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inlove/models/user.dart';
 
 import '../services/setting_service.dart';
 
@@ -36,6 +37,11 @@ class SettingsProvider with ChangeNotifier {
   }
   Future<bool> setWhatsapp(int userId, String whatsappNumber) async {
     var response = await _service.setWhatsapp(userId,whatsappNumber);
+    return response;
+  }
+
+  Future<bool>setFiltersPreferences(int userId,User userWithChanges)async{
+    var response = await _service.setFiltersPreferences(userId, userWithChanges);
     return response;
   }
 }

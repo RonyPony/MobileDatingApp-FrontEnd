@@ -38,6 +38,7 @@ dependencies:
   loader_overlay: ^2.0.7
   cool_alert: ^1.1.0
   shared_preferences: ^2.0.15
+  flutter_launcher_icons: ^0.9.3
 
 dev_dependencies:
   flutter_test:
@@ -78,6 +79,7 @@ flutter:
    - assets/pencil.svg
    - assets/changePhoto.png
    - assets/love3.png
+   - assets/placeHolder.png
    - assets/next.png
    - assets/modelo.png
    - assets/man.png

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:inlove/providers/auth_provider.dart';
 import 'package:inlove/providers/countries_provider.dart';
+import 'package:inlove/providers/match_provider.dart';
 import 'package:inlove/providers/settings_provider.dart';
 import 'package:inlove/routes.dart';
 import 'package:inlove/screens/landing.page.dart';
 import 'package:inlove/services/auth_service.dart';
 import 'package:inlove/services/countries_service.dart';
+import 'package:inlove/services/match_service.dart';
 import 'package:inlove/services/setting_service.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +16,7 @@ void main() {
     providers: [
       ChangeNotifierProvider(create: (_)=>AuthProvider(AuthService())),
       ChangeNotifierProvider(create: (_)=>SettingsProvider(SettingService())),
+      ChangeNotifierProvider(create: (_)=>MatchProvider(MatchService())),
       ChangeNotifierProvider(create: (_)=>CountriesProvider(CountriesService()))
     ],
     child: const MyApp(),

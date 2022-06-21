@@ -74,11 +74,9 @@ class _CustomPickerState extends State<CustomPicker> {
                       // looping: true,
                       // This is called when selected item is changed.
                       onSelectedItemChanged: (int selectedItem) {
-                        widget.onChange();
+                        widget.onChange(selectedItem);
                         setState(() {
                           _selectedFruit = selectedItem;
-                          
-                          
                         });
                       },
                       children: List<Widget>.generate(widget.options.length,

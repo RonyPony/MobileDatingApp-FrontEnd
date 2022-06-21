@@ -210,4 +210,27 @@ class SettingService implements SettingsContract{
     }
   }
   
+  @override
+  Future<bool> setFiltersPreferences(int userId, User userWithChanges) async {
+    try {
+      var resp = await Dio().put(serverurl + 'api/user/$userId', data: userWithChanges.toJson());
+      
+      if (resp.statusCode == 200 || resp.statusCode == 204) {
+        _authService.saveLocalUserInfo(userWithChanges);
+        return true;
+      }
+
+      if (resp.statusCode == "404") {
+        print("User Not modified");
+        return false;
+      }
+      return false;
+    } on DioError catch (e) {
+      //http error(statusCode not 20x) will be catched here.
+      print(e.response!.statusCode.toString());
+      print('Failed Load Data with status code ${e.response!.statusCode}');
+      return false;
+    }
+  }
+  
 }

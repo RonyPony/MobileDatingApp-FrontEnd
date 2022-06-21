@@ -1,6 +1,7 @@
 class User {
   int? id;
   int? countryId;
+  int? preferedCountryId;
   bool? modoFantasma;
   bool? instagramUserEnabled;
   String? instagramUser;
@@ -23,6 +24,7 @@ class User {
   User(
       {this.id,
       this.countryId,
+      this.preferedCountryId,
       this.modoFantasma,
       this.instagramUserEnabled,
       this.instagramUser,
@@ -45,6 +47,7 @@ class User {
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     countryId = json['countryId'];
+    preferedCountryId = json['preferedCountryId'];
     modoFantasma = json['modoFantasma'];
     instagramUserEnabled = json['instagramUserEnabled'];
     instagramUser = json['instagramUser'];
@@ -69,6 +72,7 @@ class User {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['countryId'] = countryId;
+    data['preferedCountryId'] = preferedCountryId;
     data['modoFantasma'] = modoFantasma;
     data['instagramUserEnabled'] = instagramUserEnabled;
     data['instagramUser'] = instagramUser;

@@ -1,5 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:inlove/providers/countries_provider.dart';
 import 'package:inlove/providers/settings_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../controls/main_btn.dart';
 import '../controls/menu.dart';
 import '../controls/picker.dart';
 import '../controls/rangeSelect.dart';
@@ -28,9 +30,20 @@ class _SettingScreenState extends State<SettingScreen> {
   bool instagram = false;
   bool whatsapp = false;
   bool countriesLoaded = false;
+  int selectedOriginCountryId = 0;
+  int showMePeopleFromCountryId = 0;
+  int minimunAgeToMatch = 0;
+  int maximunAgeToMatch = 0;
+  List<String> finalCountries = [];
+  TextEditingController instaCtr = TextEditingController();
+  TextEditingController whatsCtr = TextEditingController();
 
   // ignore: prefer_typing_uninitialized_variables
   var countries;
+
+  bool whatsappChanged = false;
+
+  bool instagramChanged = false;
   // Future<List<Country>> countries;
 
   @override
@@ -60,7 +73,11 @@ class _SettingScreenState extends State<SettingScreen> {
             const SizedBox(
               height: 20,
             ),
-            deleteAccount(),
+            // buildSaveBtn(),
+            saveChanges(),
+            const SizedBox(
+              height: 20,
+            ),
             const SizedBox(
               height: 20,
             ),
@@ -70,24 +87,66 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  Widget deleteAccount() {
-    return Container(
-      width: MediaQuery.of(context).size.width * .8,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(26),
-        color: const Color(0xff242424),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Padding(
-            padding: EdgeInsets.only(top: 10, bottom: 10),
-            child: Text(
-              "Elimina mi cuenta",
-              style: TextStyle(color: Colors.red, fontSize: 22),
+  Widget saveChanges() {
+    return GestureDetector(
+      onTap: () async {
+        try {
+          final settings =
+              Provider.of<SettingsProvider>(context, listen: false);
+          final userProv = Provider.of<AuthProvider>(context, listen: false);
+          User currentUser = await userProv.readLocalUserInfo();
+          Country paisOrigen =
+              await getCountryByName(finalCountries[selectedOriginCountryId]);
+          if (showMePeopleFromCountryId==0) {
+            showMePeopleFromCountryId++;
+          }
+          var pref = showMePeopleFromCountryId - 1;
+
+          Country paisPref = await getCountryByName(finalCountries[pref]);
+          currentUser.countryId = paisOrigen.id;
+          currentUser.preferedCountryId = paisPref.id;
+          currentUser.minimunAgeToMatch = minimunAgeToMatch;
+          currentUser.maximunAgeToMatch = maximunAgeToMatch;
+          var filtersUpdated = await settings.setFiltersPreferences(
+              currentUser.id!, currentUser);
+          if (filtersUpdated) {
+
+            finalCountries.clear();
+            CoolAlert.show(
+                context: context,
+                type: CoolAlertType.success,
+                text: "Configuracion aplicada correctamente",
+                title: "Exito");
+                setState(() {
+                  
+                });
+          }
+        } catch (e) {
+          CoolAlert.show(
+                context: context,
+                type: CoolAlertType.error,
+                text: e.toString(),
+                title: "Error");
+        }
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width * .8,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(26),
+            // color: const Color(0xff242424),
+            color: Colors.blue),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Padding(
+              padding: EdgeInsets.only(top: 10, bottom: 10),
+              child: Text(
+                "Aplicar Filtros",
+                style: TextStyle(color: Colors.white, fontSize: 22),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -386,7 +445,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 if (snapshot.hasData &&
                     snapshot.connectionState == ConnectionState.done) {
                   List<Country>? paises = snapshot.data;
-                  List<String> finalCountries = [];
+
                   paises?.forEach((element) {
                     finalCountries.add(element.name!);
                   });
@@ -398,9 +457,12 @@ class _SettingScreenState extends State<SettingScreen> {
                         const EdgeInsets.only(left: 20, top: 10, right: 20),
                     child: CustomPicker(
                       placeHolder: "Pais:",
-                      options: finalCountries, onChange: (){
+                      options: finalCountries,
+                      onChange: (int x) async {
                         if (kDebugMode) {
-                          print("object");
+                          selectedOriginCountryId = x;
+
+                          print("Selected ${finalCountries[x]}");
                         }
                       },
                     ),
@@ -447,8 +509,9 @@ class _SettingScreenState extends State<SettingScreen> {
                         const EdgeInsets.only(left: 20, top: 10, right: 20),
                     child: CustomPicker(
                       placeHolder: "Pais:",
-                      onChange: (){
-
+                      onChange: (int x) {
+                        showMePeopleFromCountryId = x;
+                        print("Pais de preferencia ${finalCountries[x]}");
                       },
                       options: finalCountries,
                     ),
@@ -471,9 +534,17 @@ class _SettingScreenState extends State<SettingScreen> {
                 ),
               ],
             ),
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(left: 20, top: 10),
-              child: CustomRangeSelect(),
+              child: CustomRangeSelect(
+                onChange: (RangeValues valores) {
+                  minimunAgeToMatch = valores.start.toInt();
+                  maximunAgeToMatch = valores.end.toInt();
+                  if (kDebugMode) {
+                    print("$minimunAgeToMatch - $maximunAgeToMatch");
+                  }
+                },
+              ),
             )
           ],
         ));
@@ -481,8 +552,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
   Widget buildBody() {
     Size screenSize = MediaQuery.of(context).size;
-    TextEditingController instaCtr = TextEditingController();
-    TextEditingController whatsCtr = TextEditingController();
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -604,6 +674,8 @@ class _SettingScreenState extends State<SettingScreen> {
                 bool ghostMode = snapshot.data!.modoFantasma!;
                 bool instagram = snapshot.data!.instagramUserEnabled!;
                 bool whatsapp = snapshot.data!.whatsappNumberEnabled!;
+                String igUser = snapshot.data!.instagramUser!;
+                String whatsappNumber = snapshot.data!.whatsappNumber!;
                 return Column(
                   children: [
                     Row(
@@ -620,8 +692,8 @@ class _SettingScreenState extends State<SettingScreen> {
                         ),
                         Padding(
                           padding: EdgeInsets.only(
-                              top: 10,
-                              left: MediaQuery.of(context).size.width * .25),
+                              top: 15,
+                              left: MediaQuery.of(context).size.width * .3),
                           child: CupertinoSwitch(
                             activeColor: Colors.grey,
                             value: ghostMode,
@@ -695,13 +767,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         ),
                       ],
                     ),
-                    SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        child: CustomTextBox(
-                          text: "Instagram",
-                          onChange: () {},
-                          controller: instaCtr,
-                        )),
+                    buildInstagramField(igUser),
                     Row(
                       children: [
                         const Padding(
@@ -748,11 +814,7 @@ class _SettingScreenState extends State<SettingScreen> {
                     ),
                     SizedBox(
                         width: MediaQuery.of(context).size.width,
-                        child: CustomTextBox(
-                          text: "Whatsapp",
-                          onChange: () {},
-                          controller: whatsCtr,
-                        )),
+                        child: buildWhatsappField(whatsappNumber)),
                   ],
                 );
               }
@@ -786,5 +848,137 @@ class _SettingScreenState extends State<SettingScreen> {
 
     // });
     return currentUser;
+  }
+
+  buildWhatsappField(String number) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding:
+              const EdgeInsets.only(left: 20, top: 16, bottom: 16, right: 20),
+          child: TextField(
+            controller: whatsCtr,
+            autofocus: true,
+            onChanged: (x) {
+              if (x.length >= 10) {
+                whatsappChanged = true;
+                setState(() {});
+              }
+              if (x.length == 0) {
+                whatsappChanged = false;
+                setState(() {});
+              }
+            },
+            cursorColor: Colors.black,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              fillColor: const Color(0xfc616161),
+              filled: true,
+              border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(20)),
+              hintText: number.length >= 10 ? number : "Whatsapp",
+            ),
+          ),
+        ),
+        Padding(
+            padding: EdgeInsets.only(
+                left: MediaQuery.of(context).size.width * .3, bottom: 10),
+            child: Visibility(
+              visible: whatsappChanged,
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  final settings =
+                      Provider.of<SettingsProvider>(context, listen: false);
+                  final userProv =
+                      Provider.of<AuthProvider>(context, listen: false);
+                  User currentUser = await userProv.readLocalUserInfo();
+                  var igSetted = await settings.setWhatsapp(
+                      currentUser.id!, whatsCtr.text);
+                  if (igSetted) {
+                    whatsappChanged = false;
+                    setState(() {});
+                  }
+                },
+                icon: Icon(Icons.save_rounded, size: 18),
+                label: Text("GUARDAR WHATSAPP"),
+              ),
+            ))
+      ],
+    );
+  }
+
+  buildInstagramField(String user) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding:
+              const EdgeInsets.only(left: 20, top: 16, bottom: 16, right: 20),
+          child: TextField(
+            controller: instaCtr,
+            autofocus: true,
+            onChanged: (x) {
+              if (x.length >= 3) {
+                instagramChanged = true;
+                setState(() {});
+              }
+              if (x.length == 0) {
+                instagramChanged = false;
+                setState(() {});
+              }
+            },
+            cursorColor: Colors.black,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              fillColor: const Color(0xfc616161),
+              filled: true,
+              border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(20)),
+              hintText: user.length >= 2 ? user : "Instagram",
+            ),
+          ),
+        ),
+        Padding(
+            padding: EdgeInsets.only(
+                left: MediaQuery.of(context).size.width * .3, bottom: 10),
+            child: Visibility(
+              visible: instagramChanged,
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  final settings =
+                      Provider.of<SettingsProvider>(context, listen: false);
+                  final userProv =
+                      Provider.of<AuthProvider>(context, listen: false);
+                  User currentUser = await userProv.readLocalUserInfo();
+                  var igSetted = await settings.setInstagram(
+                      currentUser.id!, instaCtr.text);
+                  if (igSetted) {
+                    instagramChanged = false;
+                    setState(() {});
+                  }
+                },
+                icon: Icon(Icons.save_rounded, size: 18),
+                label: Text("GUARDAR INSTAGRAM"),
+              ),
+            ))
+      ],
+    );
+  }
+
+  buildSaveBtn() {
+    return ElevatedButton.icon(
+      onPressed: () async {},
+      icon: Icon(Icons.save_rounded, size: 18),
+      label: Text("GUARDAR"),
+    );
+  }
+
+  Future<Country> getCountryByName(String finalCountri) async {
+    final settings = Provider.of<CountriesProvider>(context, listen: false);
+    Country pais = await settings.getCountryByName(finalCountri);
+    return pais;
   }
 }

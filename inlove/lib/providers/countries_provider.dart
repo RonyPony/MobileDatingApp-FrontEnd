@@ -17,4 +17,9 @@ class CountriesProvider with ChangeNotifier {
     var response = await _service.getAllCountries();
     return response;
   }
+
+  Future<Country>getCountryByName(String name)async{
+    var response = await _service.getCountryByName(name);
+    return response;
+  }
 }

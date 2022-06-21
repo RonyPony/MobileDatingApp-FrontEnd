@@ -10,6 +10,7 @@ import 'package:inlove/screens/login.page.dart';
 import 'package:provider/provider.dart';
 import '../controls/menu.dart';
 import '../providers/countries_provider.dart';
+import '../helpers/emojies.dart';
 
 class ProfileScreen extends StatefulWidget {
   static String routeName = '/ProfileScreen';
@@ -164,12 +165,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       if (snapshot.hasError) {
                         return const Text("Error obteniendo datos");
                       }
+                      Emojies emoji = Emojies();
                       if (snapshot.connectionState == ConnectionState.done) {
                         if (snapshot.hasData) {
                           if (snapshot.data?.bio == "N/A") {
                             snapshot.data?.bio =
                                 "No has agregado informacion sobre ti, hazlo " +
-                                    getAnEmmoji(false);
+                                    emoji.getAnEmmoji(false);
                           }
                           return Column(
                             children: [
@@ -240,8 +242,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(
               height: 10,
             ),
+            deleteAccount()
           ],
         ),
+      ),
+    );
+  }
+  Widget deleteAccount() {
+    return Container(
+      width: MediaQuery.of(context).size.width * .8,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(26),
+        color: const Color(0xff242424),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Padding(
+            padding: EdgeInsets.only(top: 10, bottom: 10),
+            child: Text(
+              "Elimina mi cuenta",
+              style: TextStyle(color: Colors.red, fontSize: 22),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -280,21 +304,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return currentUser;
   }
 
-  String getAnEmmoji(bool cool) {
-    var coolEmojies = ['😇', '🤩', '🥳', '😎', '😊'];
-    var notCoolEmojies = ['🥺', '😕', '😅', '😩', '😢'];
-    // generates a new Random object
-    final _random = Random();
-    String element;
-    // generate a random index based on the list length
-    // and use it to retrieve the element
-    if (cool) {
-      element = coolEmojies[_random.nextInt(coolEmojies.length)];
-    } else {
-      element = notCoolEmojies[_random.nextInt(notCoolEmojies.length)];
-    }
-    return element;
-  }
+  
 
   Future<Country> getCountry(String s) async {
     final authProvider = Provider.of<CountriesProvider>(context, listen: false);

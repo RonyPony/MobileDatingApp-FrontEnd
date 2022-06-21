@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 
 class CustomRangeSelect extends StatefulWidget {
-  const CustomRangeSelect({Key? key}) : super(key: key);
-
+  const CustomRangeSelect({Key? key, required this.onChange}) : super(key: key);
+  final Function onChange;
   @override
   State<CustomRangeSelect> createState() => _CustomRangeSelectState();
 }
@@ -28,6 +28,7 @@ class _CustomRangeSelectState extends State<CustomRangeSelect> {
         setState(() {
           _currentRangeValues = values;
         });
+        widget.onChange(values);
       },
     );
   }
