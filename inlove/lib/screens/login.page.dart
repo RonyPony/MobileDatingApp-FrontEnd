@@ -134,6 +134,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     controller: emailController,
                   ),
                   CustomTextBox(
+                    isPassword: true,
                     onChange: (){
 
                     },

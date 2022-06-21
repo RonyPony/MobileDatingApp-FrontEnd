@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 class CustomTextBox extends StatelessWidget {
-  const CustomTextBox({Key? key,required this.text,required this.controller, required this.onChange}) : super(key: key);
+  const CustomTextBox({Key? key,required this.text,required this.controller, required this.onChange, this.isPassword=false}) : super(key: key);
  final String text;
+ final bool isPassword;
  final Function onChange;
  final TextEditingController controller;
   @override
@@ -13,6 +14,7 @@ class CustomTextBox extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: TextField(
+            obscureText: isPassword,
             controller: controller,
             onChanged: onChange(),
             cursorColor: Colors.black,

@@ -69,6 +69,10 @@ class _SettingScreenState extends State<SettingScreen> {
             const SizedBox(
               height: 20,
             ),
+            saveContactChanges(),
+            const SizedBox(
+              height: 20,
+            ),
             buildFilters(),
             const SizedBox(
               height: 20,
@@ -97,7 +101,7 @@ class _SettingScreenState extends State<SettingScreen> {
           User currentUser = await userProv.readLocalUserInfo();
           Country paisOrigen =
               await getCountryByName(finalCountries[selectedOriginCountryId]);
-          if (showMePeopleFromCountryId==0) {
+          if (showMePeopleFromCountryId == 0) {
             showMePeopleFromCountryId++;
           }
           var pref = showMePeopleFromCountryId - 1;
@@ -110,23 +114,20 @@ class _SettingScreenState extends State<SettingScreen> {
           var filtersUpdated = await settings.setFiltersPreferences(
               currentUser.id!, currentUser);
           if (filtersUpdated) {
-
             finalCountries.clear();
             CoolAlert.show(
                 context: context,
                 type: CoolAlertType.success,
                 text: "Configuracion aplicada correctamente",
                 title: "Exito");
-                setState(() {
-                  
-                });
+            setState(() {});
           }
         } catch (e) {
           CoolAlert.show(
-                context: context,
-                type: CoolAlertType.error,
-                text: e.toString(),
-                title: "Error");
+              context: context,
+              type: CoolAlertType.error,
+              text: e.toString(),
+              title: "Error");
         }
       },
       child: Container(
@@ -142,6 +143,67 @@ class _SettingScreenState extends State<SettingScreen> {
               padding: EdgeInsets.only(top: 10, bottom: 10),
               child: Text(
                 "Aplicar Filtros",
+                style: TextStyle(color: Colors.white, fontSize: 22),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget saveContactChanges() {
+    return GestureDetector(
+      onTap: () async {
+        try {
+          final settings =
+              Provider.of<SettingsProvider>(context, listen: false);
+          final userProv = Provider.of<AuthProvider>(context, listen: false);
+          User currentUser = await userProv.readLocalUserInfo();
+          Country paisOrigen =
+              await getCountryByName(finalCountries[selectedOriginCountryId]);
+          if (showMePeopleFromCountryId == 0) {
+            showMePeopleFromCountryId++;
+          }
+          var pref = showMePeopleFromCountryId - 1;
+
+          Country paisPref = await getCountryByName(finalCountries[pref]);
+          currentUser.countryId = paisOrigen.id;
+          currentUser.preferedCountryId = paisPref.id;
+          currentUser.minimunAgeToMatch = minimunAgeToMatch;
+          currentUser.maximunAgeToMatch = maximunAgeToMatch;
+          var filtersUpdated = await settings.setFiltersPreferences(
+              currentUser.id!, currentUser);
+          if (filtersUpdated) {
+            finalCountries.clear();
+            CoolAlert.show(
+                context: context,
+                type: CoolAlertType.success,
+                text: "Configuracion aplicada correctamente",
+                title: "Exito");
+            setState(() {});
+          }
+        } catch (e) {
+          CoolAlert.show(
+              context: context,
+              type: CoolAlertType.error,
+              text: e.toString(),
+              title: "Error");
+        }
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width * .8,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(26),
+            // color: const Color(0xff242424),
+            color: Colors.blue),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Padding(
+              padding: EdgeInsets.only(top: 10, bottom: 10),
+              child: Text(
+                "Guardar",
                 style: TextStyle(color: Colors.white, fontSize: 22),
               ),
             ),
@@ -859,7 +921,7 @@ class _SettingScreenState extends State<SettingScreen> {
               const EdgeInsets.only(left: 20, top: 16, bottom: 16, right: 20),
           child: TextField(
             controller: whatsCtr,
-            autofocus: true,
+            // autofocus: true,
             onChanged: (x) {
               if (x.length >= 10) {
                 whatsappChanged = true;
@@ -918,16 +980,16 @@ class _SettingScreenState extends State<SettingScreen> {
               const EdgeInsets.only(left: 20, top: 16, bottom: 16, right: 20),
           child: TextField(
             controller: instaCtr,
-            autofocus: true,
+            // autofocus: true,
             onChanged: (x) {
-              if (x.length >= 3) {
-                instagramChanged = true;
-                setState(() {});
-              }
-              if (x.length == 0) {
-                instagramChanged = false;
-                setState(() {});
-              }
+              // if (x.length >= 3) {
+              //   instagramChanged = true;
+              //   setState(() {});
+              // }
+              // if (x.length == 0) {
+              //   instagramChanged = false;
+              //   setState(() {});
+              // }
             },
             cursorColor: Colors.black,
             style: const TextStyle(color: Colors.white),
