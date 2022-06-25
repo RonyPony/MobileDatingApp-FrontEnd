@@ -63,6 +63,7 @@ class _CustomPickerState extends State<CustomPicker> {
                 ),
                 CupertinoButton(
                   padding: EdgeInsets.zero,
+                  
                   // Display a CupertinoPicker with list of fruits.
                   onPressed: () => _showDialog(
                     CupertinoPicker(
