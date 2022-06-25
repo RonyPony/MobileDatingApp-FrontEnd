@@ -127,6 +127,37 @@ class AuthService implements AuthContract{
       return User();
     }
   }
+  
+  @override
+  Future<bool> updateUserInfo(User user) async {
+    try {
+      var resp = await Dio().put(
+          serverurl+'api/user/${user.id}',data: user);
+      if(resp.statusCode == 200 || resp.statusCode==204){
+        return true;
+      }
+
+      // ignore: unrelated_type_equality_checks
+      if(resp.statusCode=="404" || resp.statusCode!.toInt()>400){
+        if (kDebugMode) {
+          print("User Not Modified");
+        }
+        return false;
+      }
+      return false;
+    } 
+    on DioError catch (e) {
+      //http error(statusCode not 20x) will be catched here.
+      if (kDebugMode) {
+        print(e.response!.statusCode.toString());
+      }
+      if (kDebugMode) {
+        print(
+          'Failed Load Data with status code ${e.response!.statusCode}');
+      }
+          return false;
+    }
+  }
   }
   
 

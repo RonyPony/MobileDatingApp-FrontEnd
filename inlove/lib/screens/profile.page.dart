@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -7,6 +8,7 @@ import 'package:inlove/models/country.dart';
 import 'package:inlove/models/user.dart';
 import 'package:inlove/providers/auth_provider.dart';
 import 'package:inlove/screens/login.page.dart';
+import 'package:inlove/screens/setting.page.dart';
 import 'package:provider/provider.dart';
 import '../controls/menu.dart';
 import '../providers/countries_provider.dart';
@@ -22,6 +24,18 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late Future<User> localUserInfo;
+  
+  var editMode = false;
+  
+  TextEditingController whatsCtr = TextEditingController();
+  TextEditingController nameCtr = TextEditingController();
+  TextEditingController lastNameCtr = TextEditingController();
+  TextEditingController bioCtr = TextEditingController();
+  String userName = "";
+  String lastName = "";
+  String bio ="";
+  
+  bool isBioEmpty = true;
 
   @override
   void initState() {
@@ -92,12 +106,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             snapshotCountry.connectionState ==
                                                 ConnectionState.done) {
                                           return 
-                                          Flag.fromString(
-                                            "${snapshotCountry. data?.code}",
-                                            fit: BoxFit.fill,
-                                            height: 50,
-                                            width: 50,
-                                            borderRadius: 100,
+                                          GestureDetector(
+                                            onTap: () {
+                                              Navigator.pushNamedAndRemoveUntil(context, SettingScreen.routeName, (route) => false);
+                                            },
+                                            child: Flag.fromString(
+                                              "${snapshotCountry. data?.code}",
+                                              fit: BoxFit.fill,
+                                              height: 50,
+                                              width: 50,
+                                              borderRadius: 100,
+                                            ),
                                           );
 
                                           // Flag.fromCode(
@@ -169,6 +188,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       if (snapshot.connectionState == ConnectionState.done) {
                         if (snapshot.hasData) {
                           if (snapshot.data?.bio == "N/A") {
+                            isBioEmpty = true;
                             snapshot.data?.bio =
                                 "No has agregado informacion sobre ti, hazlo " +
                                     emoji.getAnEmmoji(false);
@@ -181,24 +201,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Padding(
                                 padding: const EdgeInsets.only(
                                     top: 0, left: 20, right: 20, bottom: 20),
-                                child: Text(
+                                child: !editMode?Text(
                                   "${snapshot.data?.name} ${snapshot.data?.lastName}",
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 30,
                                     letterSpacing: 2.10,
                                   ),
+                                ):Column(
+                                  children: [
+                                    _buildNameEditField(),
+                                    _buildLastNameEditField(),
+                                  ],
                                 ),
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(left: 20,right: 20),
-                                child: Text(
+                                child:!editMode? Text(
                                   "${snapshot.data?.bio}",
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 15,
                                   ),
-                                ),
+                                ):_buildBioEditField()
                               ),
                               const SizedBox(
                                 height: 20,
@@ -221,16 +246,70 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 5, top: 2),
-                    child: SvgPicture.asset("assets/pencil.svg"),
+                !editMode?GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      editMode=true;
+                    });
+                  },
+                  child: Container(
+                    width: 80,
+                    height: 80,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 5, top: 2),
+                      child: SvgPicture.asset("assets/pencil.svg"),
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      color: const Color(0xff1db9fc),
+                    ),
                   ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
-                    color: const Color(0xff1db9fc),
+                ):GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      editMode=false;
+                    });
+                  },
+                  child: GestureDetector(
+                    onTap: () async {
+                      final userProvider = Provider.of<AuthProvider>(context,listen: false);
+                      User currentUser = await userProvider.readLocalUserInfo();
+                      if (nameCtr.text==""||nameCtr.text==" ") {
+                        nameCtr.text = userName;
+                      }
+                      if (lastNameCtr.text==""||lastNameCtr.text==" ") {
+                        lastNameCtr.text = lastName;
+                      }
+                      if (bioCtr.text==""||bioCtr.text==" ") {
+                        bioCtr.text = bio;
+                      }
+
+                      currentUser.name = nameCtr.text;
+                      currentUser.lastName=lastNameCtr.text;
+                      currentUser.bio=bioCtr.text;
+                      bool updated = await userProvider.updateUserInfo(currentUser);
+                      if (updated) {
+                        bool updated2 = await userProvider.saveLocalUserInfoUser(currentUser);
+
+                        setState(() {
+                          editMode=false;
+                        });
+                        CoolAlert.show(context: context, type: CoolAlertType.success,title: "Actualizado");
+                        
+                      }
+                    },
+                    child: Container(
+                      width: 80,
+                      height: 80,
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 5, top: 2),
+                        child: Icon(Icons.save_as_rounded,color: Colors.white,size: 50),
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        color: const Color(0xff1db9fc),
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -301,6 +380,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<User> getUserInfo() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     User currentUser = await authProvider.readLocalUserInfo();
+    userName = currentUser.name!;
+    lastName = currentUser.lastName!;
+    bio=currentUser.bio!;
+    isBioEmpty = currentUser.bio=="N/A";
     return currentUser;
   }
 
@@ -310,5 +393,120 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final authProvider = Provider.of<CountriesProvider>(context, listen: false);
     Country pais = await authProvider.findCountryById(s);
     return pais;
+  }
+  
+  Widget _buildNameEditField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding:
+              const EdgeInsets.only(left: 20, top: 16, bottom: 16, right: 20),
+          child: TextField(
+            controller: nameCtr,
+            // autofocus: true,
+            onChanged: (x) {
+              // if (x.length >= 10) {
+              //   profileInfoChanged=true;
+              //   setState(() {});
+              // }
+              // if (x.length == 0) {
+              //   profileInfoChanged=false;
+              //   setState(() {});
+              // }
+            },
+            cursorColor: Colors.black,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              fillColor: const Color(0xfc616161),
+              filled: true,
+              border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(20)),
+              hintText: userName.length >= 1 ? userName : "Nombre",
+            ),
+          ),
+        ),
+        // Padding(
+        //     padding: EdgeInsets.only(
+        //         left: MediaQuery.of(context).size.width * .3, bottom: 10),
+        //     child: Visibility(
+        //       visible: profileInfoChanged,
+        //       child: ElevatedButton.icon(
+        //         onPressed: () async {
+        //           final settings =
+        //               Provider.of<SettingsProvider>(context, listen: false);
+        //           final userProv =
+        //               Provider.of<AuthProvider>(context, listen: false);
+        //           User currentUser = await userProv.readLocalUserInfo();
+        //           var igSetted = await settings.setWhatsapp(
+        //               currentUser.id!, whatsCtr.text);
+        //           if (igSetted) {
+        //             profileInfoChanged= false;
+        //             setState(() {});
+        //           }
+        //         },
+        //         icon: Icon(Icons.save_rounded, size: 18),
+        //         label: Text("GUARDAR WHATSAPP"),
+        //       ),
+        //     ))
+      ],
+    );
+  }
+  Widget _buildLastNameEditField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding:
+              const EdgeInsets.only(left: 20, top: 16, bottom: 16, right: 20),
+          child: TextField(
+            controller: lastNameCtr,
+            onChanged: (x) {
+            },
+            cursorColor: Colors.black,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              fillColor: const Color(0xfc616161),
+              filled: true,
+              border: OutlineInputBorder(
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(20)),
+              hintText: lastName.length >= 1 ? lastName : "Apellido",
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBioEditField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding:
+             EdgeInsets.only(left: 20, top: 16, bottom: 16, right: 20),
+          child: TextField(
+            controller: bioCtr,
+            
+            onChanged: (x) {
+            },
+            cursorColor: Colors.black,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              fillColor: const Color(0xfc616161),
+              filled: true,
+              
+              border: OutlineInputBorder(
+                
+                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(20)),
+              hintText: bio.length >= 1 && !isBioEmpty ? bio : "Sobre ti",
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

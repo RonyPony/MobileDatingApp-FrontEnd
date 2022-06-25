@@ -21,4 +21,13 @@ class AuthProvider with ChangeNotifier {
     final User response = await _authService.readLocalUserInfo();
     return response;
   }
+  Future<bool>updateUserInfo(User user) async {
+    final bool response = await _authService.updateUserInfo(user);
+    return response;
+  }
+
+  Future<bool>saveLocalUserInfoUser(User user) async {
+    final bool response = await _authService.saveLocalUserInfo(user);
+    return response;
+  }
 }

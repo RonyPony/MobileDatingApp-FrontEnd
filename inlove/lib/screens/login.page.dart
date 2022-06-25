@@ -21,7 +21,8 @@ class LoginPage extends StatefulWidget {
   State<StatefulWidget> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin{
+class _LoginPageState extends State<LoginPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   final emailController =
       TextEditingController(text: "ronel.cruz.a8@gmail.com");
@@ -29,12 +30,10 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
   @override
   void initState() {
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2)
-    );
-      _controller.repeat();
-    
+    _controller =
+        AnimationController(vsync: this, duration: const Duration(seconds: 2));
+    _controller.repeat();
+
     super.initState();
   }
 
@@ -73,8 +72,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           children: [
             AnimatedBuilder(
               animation: _controller.view,
-              builder: (context,child){
-                return Transform.rotate(angle: _controller.value*2*pi,child: child,);
+              builder: (context, child) {
+                return Transform.rotate(
+                  angle: _controller.value * 2 * pi,
+                  child: child,
+                );
               },
               child: SvgPicture.asset(
                 'assets/logo-no-name.svg',
@@ -128,16 +130,12 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   user,
                   CustomTextBox(
                     text: "Correo Electronico",
-                    onChange: (){
-                      
-                    },
+                    onChange: () {},
                     controller: emailController,
                   ),
                   CustomTextBox(
                     isPassword: true,
-                    onChange: (){
-
-                    },
+                    onChange: () {},
                     text: "Clave",
                     controller: passController,
                   ),
@@ -211,41 +209,52 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                   children: [
                     GestureDetector(
                       onTap: () async {
-                        context.loaderOverlay.show();
-                        final authProvider =
-                            Provider.of<AuthProvider>(context, listen: false);
-                        final userExists = await authProvider
-                            .userEmailExists(emailController.text);
-                        if (userExists) {
-                          if (kDebugMode) {
-                            print("User Exists");
-                          }
-                          Login info = Login(
-                              userEmail: emailController.text,
-                              password: passController.text,
-                              rememberMe: false);
-                          final bool logged =
-                              await authProvider.performLogin(info);
-                          if (logged) {
-                            Navigator.pushNamedAndRemoveUntil(
-                                context, HomePage.routeName, (route) => false);
+                        try {
+                          context.loaderOverlay.show();
+                          final authProvider =
+                              Provider.of<AuthProvider>(context, listen: false);
+                          final userExists = await authProvider
+                              .userEmailExists(emailController.text);
+                          if (userExists) {
+                            if (kDebugMode) {
+                              print("User Exists");
+                            }
+                            Login info = Login(
+                                userEmail: emailController.text,
+                                password: passController.text,
+                                rememberMe: false);
+                            final bool logged =
+                                await authProvider.performLogin(info);
+                            if (logged) {
+                              Navigator.pushNamedAndRemoveUntil(context,
+                                  HomePage.routeName, (route) => false);
+                            } else {
+                              CoolAlert.show(
+                                context: context,
+                                type: CoolAlertType.error,
+                                text:
+                                    "Credenciales incorrectas, por favor intentalo de nuevo.",
+                              );
+                            }
                           } else {
                             CoolAlert.show(
                               context: context,
                               type: CoolAlertType.error,
                               text:
-                                  "Credenciales incorrectas, por favor intentalo de nuevo.",
+                                  "Este correo electronico no esta registrado, favor verificalo.",
                             );
                           }
-                        } else {
+                          context.loaderOverlay.hide();
+                        } catch (e) {
+                          context.loaderOverlay.hide();
                           CoolAlert.show(
-                            context: context,
-                            type: CoolAlertType.error,
-                            text:
-                                "Este correo electronico no esta registrado, favor verificalo.",
-                          );
+                              context: context,
+                              type: CoolAlertType.error,
+                              title: "ERROR",
+                              text: e.toString());
+                        } finally {
+                          context.loaderOverlay.hide();
                         }
-                        context.loaderOverlay.hide();
                       },
                       child: const Text(
                         "Entrar",

@@ -8,5 +8,6 @@ abstract class AuthContract {
   Future<User>findUserByEmail(String userEmail);
   Future<bool>performLogin(Login userLogin);
   Future<bool>saveLocalUserInfo(User usuario);
+  Future<bool>updateUserInfo(User user);
   Future<User> readLocalUserInfo();
 }
