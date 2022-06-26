@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inlove/models/sexual_orientations.dart';
 import 'package:inlove/models/user_login.dart';
 import 'package:inlove/services/auth_service.dart';
 
@@ -28,6 +29,11 @@ class AuthProvider with ChangeNotifier {
 
   Future<bool>saveLocalUserInfoUser(User user) async {
     final bool response = await _authService.saveLocalUserInfo(user);
+    return response;
+  }
+
+  Future<List<SexualOrientation>>getAllSexualOrientations() async {
+    final List<SexualOrientation> response = await _authService.getAllSexes();
     return response;
   }
 }

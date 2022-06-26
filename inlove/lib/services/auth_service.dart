@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:inlove/constant.dart';
 import 'package:inlove/contracts/auth_contract.dart';
+import 'package:inlove/models/sexual_orientations.dart';
 import 'package:inlove/models/user.dart';
 import 'package:inlove/models/user_login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -158,6 +159,43 @@ class AuthService implements AuthContract{
           return false;
     }
   }
+
+  @override
+  Future<List<SexualOrientation>> getAllSexes() async {
+    List<SexualOrientation> foundSexes = <SexualOrientation>[];
+    try {
+      var resp = await Dio().get(
+          serverurl+'api/SexualOrientations');
+      if(resp.statusCode == 200){
+        
+        var list  = resp.data;
+        foundSexes = list.map<SexualOrientation>((sample) => SexualOrientation(
+          id: sample["id"],
+          enabled: sample["enabled"],
+          name: sample["name"]
+          )).toList();
+        // foundCountry;
+        return foundSexes;
+      }
+
+      if(resp.statusCode=="404"){
+        print("Sex Not Found");
+      }
+      return foundSexes;
+    } 
+    on DioError catch (e) {
+      //http error(statusCode not 20x) will be catched here.
+      print(e.response!.statusCode.toString());
+      print(
+          'Failed Load Data with status code ${e.response!.statusCode}');
+          return foundSexes;
+    }
+    catch(e){
+      print(e);
+      return foundSexes;
+    } 
+  }
+
   }
   
 

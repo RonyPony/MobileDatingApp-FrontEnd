@@ -19,6 +19,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Future<User> _usuario;
+  int _userId=0;
   @override
   void initState() {
     _usuario = getPossibleMatch();
@@ -35,14 +36,19 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: const Color(0xff020202),
         title: const Text('LoVers'),
       ),
-      body: SingleChildScrollView(child: FutureBuilder<User>(
+      body: SingleChildScrollView(
+          child: FutureBuilder<User>(
         future: _usuario,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.none) {
-            return Icon(Icons.close,color: Colors.white,);
+            return Icon(
+              Icons.close,
+              color: Colors.white,
+            );
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Row(mainAxisAlignment: MainAxisAlignment.center,
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircularProgressIndicator(),
               ],
@@ -52,7 +58,8 @@ class _HomePageState extends State<HomePage> {
             return Text("Error ${snapshot.error.toString()}");
           }
           Emojies emoji = Emojies();
-          if (snapshot.connectionState==ConnectionState.done && snapshot.hasData) {
+          if (snapshot.connectionState == ConnectionState.done &&
+              snapshot.hasData) {
             return Column(
               children: [
                 Row(
@@ -90,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                     color: const Color(0xff1b1b1b),
                   ),
                   child: Column(
-                    children:  [
+                    children: [
                       Padding(
                         padding: EdgeInsets.only(
                             top: 0, left: 20, right: 20, bottom: 20),
@@ -106,7 +113,10 @@ class _HomePageState extends State<HomePage> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 20),
                         child: Text(
-                          snapshot.data!.bio!="N/A"?snapshot.data!.bio!:"Aun no ha agregado informacion sobre el "+emoji.getAnEmmoji(false),
+                          snapshot.data!.bio != "N/A"
+                              ? snapshot.data!.bio!
+                              : "Aun no ha agregado informacion sobre el " +
+                                  emoji.getAnEmmoji(false),
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 15,
@@ -124,6 +134,9 @@ class _HomePageState extends State<HomePage> {
                         if (kDebugMode) {
                           print("DENY");
                         }
+                        setState(() {
+                          _usuario = getPossibleMatch();
+                        });
                       },
                       child: Container(
                           width: 88,
@@ -138,7 +151,17 @@ class _HomePageState extends State<HomePage> {
                       width: 10,
                     ),
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
+                        final matchProvider =
+                            Provider.of<MatchProvider>(context, listen: false);
+                        final authProvider =
+                            Provider.of<AuthProvider>(context, listen: false);
+                        User currentUser =
+                            await authProvider.readLocalUserInfo();
+                        bool created = await matchProvider.createMatch(currentUser.id!, _userId);
+                        setState(() {
+                          _usuario = getPossibleMatch();
+                        });
                         if (kDebugMode) {
                           print("ACEPTED");
                         }
@@ -165,7 +188,6 @@ class _HomePageState extends State<HomePage> {
         },
       )),
     );
-
   }
 
   Future<User> getPossibleMatch() async {
@@ -173,7 +195,9 @@ class _HomePageState extends State<HomePage> {
       final matchProvider = Provider.of<MatchProvider>(context, listen: false);
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       User currentUser = await authProvider.readLocalUserInfo();
-      return matchProvider.getPossibleMatch(currentUser.id!);
+      User possibleMatch = await matchProvider.getPossibleMatch(currentUser.id!);
+      _userId = possibleMatch.id!;
+      return possibleMatch;
     } catch (e) {
       print(e);
       return User();

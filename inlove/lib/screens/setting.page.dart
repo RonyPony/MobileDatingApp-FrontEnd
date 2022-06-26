@@ -17,6 +17,7 @@ import 'package:provider/provider.dart';
 import '../controls/menu.dart';
 import '../controls/picker.dart';
 import '../controls/rangeSelect.dart';
+import '../models/sexual_orientations.dart';
 import '../providers/auth_provider.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -46,6 +47,11 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
   var _userInfo;
   // ignore: prefer_typing_uninitialized_variables
   var countries;
+  var sexOrientations;
+  List<String> finalSexOrientations = [];
+  int mySexualOrientationIdFromServer = 0;
+  
+  bool sexLoaded = false;
   
   
   // Future<List<Country>> countries;
@@ -60,6 +66,7 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
     
     _userInfo = readConfig();
     getAvailableCountries();
+    getAvailableSexualPreferences();
     super.initState();
   }
 
@@ -751,7 +758,7 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
               ],
             ),
             Padding(
-              padding: EdgeInsets.only(left: 20, top: 10),
+              padding: const EdgeInsets.only(left: 20, top: 10),
               child: CustomRangeSelect(
                 onChange: (RangeValues valores) {
                   minimunAgeToMatch = valores.start.toInt();
@@ -770,7 +777,88 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
                   }
                 },
               ),
-            )
+            ),
+            Row(
+              children: const [
+                Padding(
+                  padding: EdgeInsets.only(left: 20, top: 10),
+                  child: Text(
+                    "Me identifico como:",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 19,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            FutureBuilder<List<SexualOrientation>>(
+              future: sexOrientations,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator(
+                    color: Colors.pink,
+                  );
+                }
+                if (snapshot.hasError) {
+                  return const Text("Ups! error getting sexual orientations");
+                }
+                if (snapshot.hasData &&
+                    snapshot.connectionState == ConnectionState.done) {
+                  List<SexualOrientation>? sexes = snapshot.data;
+                  List<String> finalSexs = ["No identificado"];
+                  sexes?.forEach((element) {
+                    finalSexOrientations.add(element.name!);
+                  });
+
+                  String? sexName ;
+
+                  if (mySexualOrientationIdFromServer!=0) {
+                    sexName= sexes
+                        ?.where((element) =>
+                            element.id == mySexualOrientationIdFromServer)
+                        .first
+                        .name;
+                  }else{
+                    sexName = "No establecido";
+                  }
+                  // if (showMePeopleFromCountryIdFromServer == 0) {
+                  //   countryName = "Todo el mundo";
+                  // } else {
+                  //   countryName = paises
+                  //       ?.where((element) =>
+                  //           element.id == showMePeopleFromCountryIdFromServer)
+                  //       .first
+                  //       .name;
+                  // }
+
+                  return Padding(
+                    padding:
+                        const EdgeInsets.only(left: 20, top: 10, right: 20),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                        Icon(Icons.flag_rounded,color: Colors.red,),
+                            Text(sexName!,style: TextStyle(color: Colors.white),),
+                          ],
+                        ),
+                        CustomPicker(
+                          placeHolder: "Sexualidad:",
+                          onChange: (int x) {
+                            showMePeopleFromCountryId = x;
+                            print("Sexualidad de preferencia ${finalSexOrientations[x]}");
+                          },
+                          options: finalSexOrientations,
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return const Text("Error getting sex's");
+              },
+            ),
           ],
         ));
   }
@@ -973,6 +1061,7 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
     whatsappSwitch = currentUser.whatsappNumberEnabled!;
     selectedOriginCountryIdFromServer = currentUser.countryId!;
     showMePeopleFromCountryIdFromServer = currentUser.preferedCountryId!;
+    mySexualOrientationIdFromServer = currentUser.sexualOrientationId!;
     return currentUser;
   }
 
@@ -1108,5 +1197,17 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
     final settings = Provider.of<CountriesProvider>(context, listen: false);
     Country pais = await settings.getCountryByName(finalCountri);
     return pais;
+  }
+  
+  getAvailableSexualPreferences() {
+     try {
+      final authProvider =
+          Provider.of<AuthProvider>(context, listen: false);
+      final cou = authProvider.getAllSexualOrientations();
+      sexOrientations = cou;
+      sexLoaded = true;
+    } catch (e) {
+      sexLoaded = false;
+    }
   }
 }

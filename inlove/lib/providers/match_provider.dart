@@ -12,4 +12,9 @@ class MatchProvider with ChangeNotifier {
     var response = await _service.getPossibleMatch(userId);
     return response;
   }
+
+  Future<bool>createMatch(int originUserId,int destinUserId) async {
+    var response = await _service.createMatch(originUserId, destinUserId);
+    return response;
+  }
 }
