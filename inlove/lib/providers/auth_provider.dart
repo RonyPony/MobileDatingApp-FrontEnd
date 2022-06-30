@@ -36,4 +36,9 @@ class AuthProvider with ChangeNotifier {
     final List<SexualOrientation> response = await _authService.getAllSexes();
     return response;
   }
+
+  Future<SexualOrientation>getSexualOrientationByName(String sexName) async {
+    final SexualOrientation response = await _authService.getSexualOrientationByName(sexName);
+    return response;
+  }
 }

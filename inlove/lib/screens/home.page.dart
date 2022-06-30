@@ -1,3 +1,4 @@
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -19,7 +20,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late Future<User> _usuario;
-  int _userId=0;
+  int _userId = 0;
   @override
   void initState() {
     _usuario = getPossibleMatch();
@@ -60,6 +61,35 @@ class _HomePageState extends State<HomePage> {
           Emojies emoji = Emojies();
           if (snapshot.connectionState == ConnectionState.done &&
               snapshot.hasData) {
+            if (snapshot.data!.hasError!) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                      color: Colors.red,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            Text(
+                              snapshot.data!.error!,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 20),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  //TODO report implementation
+                                },
+                                child: Text('Reportalo'),
+                              ),
+                            )
+                          ],
+                        ),
+                      )),
+                ],
+              );
+            }
             return Column(
               children: [
                 Row(
@@ -102,7 +132,7 @@ class _HomePageState extends State<HomePage> {
                         padding: EdgeInsets.only(
                             top: 0, left: 20, right: 20, bottom: 20),
                         child: Text(
-                          "${snapshot.data!.name!} ${snapshot.data!.lastName}",
+                          "${snapshot.data!.name} ${snapshot.data!.lastName}",
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 25,
@@ -158,7 +188,8 @@ class _HomePageState extends State<HomePage> {
                             Provider.of<AuthProvider>(context, listen: false);
                         User currentUser =
                             await authProvider.readLocalUserInfo();
-                        bool created = await matchProvider.createMatch(currentUser.id!, _userId);
+                        bool created = await matchProvider.createMatch(
+                            currentUser.id!, _userId);
                         setState(() {
                           _usuario = getPossibleMatch();
                         });
@@ -195,8 +226,19 @@ class _HomePageState extends State<HomePage> {
       final matchProvider = Provider.of<MatchProvider>(context, listen: false);
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       User currentUser = await authProvider.readLocalUserInfo();
-      User possibleMatch = await matchProvider.getPossibleMatch(currentUser.id!);
-      _userId = possibleMatch.id!;
+      User possibleMatch =
+          await matchProvider.getPossibleMatch(currentUser.id!);
+
+      if (possibleMatch!.hasError!) {
+        CoolAlert.show(
+            context: context,
+            type: CoolAlertType.error,
+            text: possibleMatch.error,
+            title: "Algo salio mal. Pero chill, intenta de nuevo 🤪");
+      } else {
+        _userId = possibleMatch.id!;
+        return possibleMatch;
+      }
       return possibleMatch;
     } catch (e) {
       print(e);

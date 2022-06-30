@@ -77,7 +77,9 @@ flutter:
    - assets/settings.svg
    - assets/changePhoto.svg
    - assets/pencil.svg
+   - assets/pencil2.svg
    - assets/changePhoto.png
+   - assets/changePhoto.svg
    - assets/love3.png
    - assets/placeHolder.png
    - assets/next.png

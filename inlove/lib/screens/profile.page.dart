@@ -24,17 +24,17 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late Future<User> localUserInfo;
-  
+
   var editMode = false;
-  
+
   TextEditingController whatsCtr = TextEditingController();
   TextEditingController nameCtr = TextEditingController();
   TextEditingController lastNameCtr = TextEditingController();
   TextEditingController bioCtr = TextEditingController();
   String userName = "";
   String lastName = "";
-  String bio ="";
-  
+  String bio = "";
+
   bool isBioEmpty = true;
 
   @override
@@ -88,7 +88,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
-                                  return const CircularProgressIndicator(color: Colors.pink,);
+                                  return const CircularProgressIndicator(
+                                    color: Colors.pink,
+                                  );
                                 }
                                 if (snapshot.hasError) {
                                   return const Text("Err");
@@ -105,13 +107,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         if (snapshotCountry.hasData &&
                                             snapshotCountry.connectionState ==
                                                 ConnectionState.done) {
-                                          return 
-                                          GestureDetector(
+                                          return GestureDetector(
                                             onTap: () {
-                                              Navigator.pushNamedAndRemoveUntil(context, SettingScreen.routeName, (route) => false);
+                                              Navigator.pushNamedAndRemoveUntil(
+                                                  context,
+                                                  SettingScreen.routeName,
+                                                  (route) => false);
                                             },
                                             child: Flag.fromString(
-                                              "${snapshotCountry. data?.code}",
+                                              "${snapshotCountry.data?.code}",
                                               fit: BoxFit.fill,
                                               height: 50,
                                               width: 50,
@@ -140,14 +144,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               future: localUserInfo,
                             ),
                             Padding(
-                              padding: EdgeInsets.only(left: screenWidth * .4),
+                              padding: EdgeInsets.only(left: screenWidth * .5),
                               child: Container(
-                                width: 50,
-                                height: 50,
+                                width: 60,
+                                height: 60,
                                 child: Padding(
                                   padding:
-                                      const EdgeInsets.only(left: 5, top: 2),
-                                  child: Image.asset("assets/changePhoto.png",),
+                                      const EdgeInsets.all(8),
+                                  // child: Image.asset("assets/changePhoto.png",),
+                                  child: SvgPicture.asset(
+                                    "assets/changePhoto.svg",
+                                    height: 50,
+                                  ),
                                 ),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(50),
@@ -201,30 +209,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Padding(
                                 padding: const EdgeInsets.only(
                                     top: 0, left: 20, right: 20, bottom: 20),
-                                child: !editMode?Text(
-                                  "${snapshot.data?.name} ${snapshot.data?.lastName}",
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 30,
-                                    letterSpacing: 2.10,
-                                  ),
-                                ):Column(
-                                  children: [
-                                    _buildNameEditField(),
-                                    _buildLastNameEditField(),
-                                  ],
-                                ),
+                                child: !editMode
+                                    ? Text(
+                                        "${snapshot.data?.name} ${snapshot.data?.lastName}",
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 30,
+                                          letterSpacing: 2.10,
+                                        ),
+                                      )
+                                    : Column(
+                                        children: [
+                                          _buildNameEditField(),
+                                          _buildLastNameEditField(),
+                                        ],
+                                      ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(left: 20,right: 20),
-                                child:!editMode? Text(
-                                  "${snapshot.data?.bio}",
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 15,
-                                  ),
-                                ):_buildBioEditField()
-                              ),
+                                  padding: const EdgeInsets.only(
+                                      left: 20, right: 20),
+                                  child: !editMode
+                                      ? Text(
+                                          "${snapshot.data?.bio}",
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 15,
+                                          ),
+                                        )
+                                      : _buildBioEditField()),
                               const SizedBox(
                                 height: 20,
                               ),
@@ -246,72 +258,86 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                !editMode?GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      editMode=true;
-                    });
-                  },
-                  child: Container(
-                    width: 80,
-                    height: 80,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 5, top: 2),
-                      child: SvgPicture.asset("assets/pencil.svg"),
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: const Color(0xff1db9fc),
-                    ),
-                  ),
-                ):GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      editMode=false;
-                    });
-                  },
-                  child: GestureDetector(
-                    onTap: () async {
-                      final userProvider = Provider.of<AuthProvider>(context,listen: false);
-                      User currentUser = await userProvider.readLocalUserInfo();
-                      if (nameCtr.text==""||nameCtr.text==" ") {
-                        nameCtr.text = userName;
-                      }
-                      if (lastNameCtr.text==""||lastNameCtr.text==" ") {
-                        lastNameCtr.text = lastName;
-                      }
-                      if (bioCtr.text==""||bioCtr.text==" ") {
-                        bioCtr.text = bio;
-                      }
+                !editMode
+                    ? GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            editMode = true;
+                          });
+                        },
+                        child: Container(
+                          height: 90,
+                          width: 90,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: const Color(0xff1db9fc),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: SvgPicture.asset(
+                                "assets/pencil2.svg",
+                                width: 50,
+                                height: 50,
+                              ),
+                            )),
+                      )
+                    : GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            editMode = false;
+                          });
+                        },
+                        child: GestureDetector(
+                          onTap: () async {
+                            final userProvider = Provider.of<AuthProvider>(
+                                context,
+                                listen: false);
+                            User currentUser =
+                                await userProvider.readLocalUserInfo();
+                            if (nameCtr.text == "" || nameCtr.text == " ") {
+                              nameCtr.text = userName;
+                            }
+                            if (lastNameCtr.text == "" ||
+                                lastNameCtr.text == " ") {
+                              lastNameCtr.text = lastName;
+                            }
+                            if (bioCtr.text == "" || bioCtr.text == " ") {
+                              bioCtr.text = bio;
+                            }
 
-                      currentUser.name = nameCtr.text;
-                      currentUser.lastName=lastNameCtr.text;
-                      currentUser.bio=bioCtr.text;
-                      bool updated = await userProvider.updateUserInfo(currentUser);
-                      if (updated) {
-                        bool updated2 = await userProvider.saveLocalUserInfoUser(currentUser);
+                            currentUser.name = nameCtr.text;
+                            currentUser.lastName = lastNameCtr.text;
+                            currentUser.bio = bioCtr.text;
+                            bool updated =
+                                await userProvider.updateUserInfo(currentUser);
+                            if (updated) {
+                              bool updated2 = await userProvider
+                                  .saveLocalUserInfoUser(currentUser);
 
-                        setState(() {
-                          editMode=false;
-                        });
-                        CoolAlert.show(context: context, type: CoolAlertType.success,title: "Actualizado");
-                        
-                      }
-                    },
-                    child: Container(
-                      width: 80,
-                      height: 80,
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 5, top: 2),
-                        child: Icon(Icons.save_as_rounded,color: Colors.white,size: 50),
+                              setState(() {
+                                editMode = false;
+                              });
+                              CoolAlert.show(
+                                  context: context,
+                                  type: CoolAlertType.success,
+                                  title: "Actualizado");
+                            }
+                          },
+                          child: Container(
+                            width: 80,
+                            height: 80,
+                            child: const Padding(
+                              padding: EdgeInsets.only(left: 5, top: 2),
+                              child: Icon(Icons.save_as_rounded,
+                                  color: Colors.white, size: 50),
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: const Color(0xff1db9fc),
+                            ),
+                          ),
+                        ),
                       ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: const Color(0xff1db9fc),
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
             const SizedBox(
@@ -327,6 +353,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+
   Widget deleteAccount() {
     return Container(
       width: MediaQuery.of(context).size.width * .8,
@@ -382,19 +409,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     User currentUser = await authProvider.readLocalUserInfo();
     userName = currentUser.name!;
     lastName = currentUser.lastName!;
-    bio=currentUser.bio!;
-    isBioEmpty = currentUser.bio=="N/A";
+    bio = currentUser.bio!;
+    isBioEmpty = currentUser.bio == "N/A";
     return currentUser;
   }
-
-  
 
   Future<Country> getCountry(String s) async {
     final authProvider = Provider.of<CountriesProvider>(context, listen: false);
     Country pais = await authProvider.findCountryById(s);
     return pais;
   }
-  
+
   Widget _buildNameEditField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -453,6 +478,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ],
     );
   }
+
   Widget _buildLastNameEditField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -462,8 +488,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const EdgeInsets.only(left: 20, top: 16, bottom: 16, right: 20),
           child: TextField(
             controller: lastNameCtr,
-            onChanged: (x) {
-            },
+            onChanged: (x) {},
             cursorColor: Colors.black,
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
@@ -485,21 +510,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding:
-             EdgeInsets.only(left: 20, top: 16, bottom: 16, right: 20),
+          padding: EdgeInsets.only(left: 20, top: 16, bottom: 16, right: 20),
           child: TextField(
             controller: bioCtr,
-            
-            onChanged: (x) {
-            },
+            onChanged: (x) {},
             cursorColor: Colors.black,
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               fillColor: const Color(0xfc616161),
               filled: true,
-              
               border: OutlineInputBorder(
-                
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.circular(20)),
               hintText: bio.length >= 1 && !isBioEmpty ? bio : "Sobre ti",

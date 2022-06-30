@@ -195,6 +195,39 @@ class AuthService implements AuthContract{
       return foundSexes;
     } 
   }
+  
+  @override
+  Future<SexualOrientation> getSexualOrientationByName(String sexName) async {
+    SexualOrientation foundSex = SexualOrientation();
+    try {
+      var resp = await Dio().get(
+          serverurl+'api/SexualOrientations/byName/$sexName');
+      if(resp.statusCode == 200){
+        
+        var list  = resp.data;
+         var jsoned = jsonEncode(resp.data);
+        foundSex = SexualOrientation.fromJson(resp.data[0]);
+        // foundCountry;
+        return foundSex;
+      }
+
+      if(resp.statusCode=="404"){
+        print("Sex Not Found");
+      }
+      return foundSex;
+    } 
+    on DioError catch (e) {
+      //http error(statusCode not 20x) will be catched here.
+      print(e.response!.statusCode.toString());
+      print(
+          'Failed Load Data with status code ${e.response!.statusCode}');
+          return foundSex;
+    }
+    catch(e){
+      print(e);
+      return foundSex;
+    } 
+  }
 
   }
   

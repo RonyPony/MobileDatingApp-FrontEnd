@@ -1,3 +1,4 @@
+import 'package:cool_alert/cool_alert.dart';
 import 'package:dio/dio.dart';
 import 'package:inlove/contracts/match_contract.dart';
 import 'package:inlove/models/user.dart';
@@ -20,14 +21,27 @@ class MatchService implements MatchContract {
       if(resp.statusCode=="404"){
         print("User Not Found");
       }
+      foundUser.hasError = true;
+      foundUser.error="unknown";
       return foundUser;
     } 
     on DioError catch (e) {
       //http error(statusCode not 20x) will be catched here.
+      var responseInfo=e.response!.data;
+      // if (responseInfo.contains("R386")) {
+
+      // }
       print(e.response!.statusCode.toString());
-      print(
-          'Failed Load Data with status code ${e.response!.statusCode}');
-          return foundUser;
+      print('Failed Load Data with status code ${e.response!.statusCode}');
+      foundUser.hasError = true;
+      
+      foundUser.error = responseInfo;
+      return foundUser;
+    }catch(e){
+      print(e);
+      foundUser.hasError = true;
+      foundUser.error = e.toString();
+      return foundUser;
     }
   }
   
@@ -38,6 +52,7 @@ class MatchService implements MatchContract {
       var resp = await Dio().post(
           serverurl+'api/matches',data: match);
       if(resp.statusCode == 200 || resp.statusCode == 201){
+        print(resp.statusMessage);
         return true;
       }
 

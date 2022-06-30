@@ -20,6 +20,8 @@ class User {
   int? sexualPreferenceId;
   String? registerDate;
   String? lastLogin;
+  bool? hasError=false;
+  String? error="";
 
   User(
       {this.id,
@@ -42,7 +44,9 @@ class User {
       this.sexualOrientationId,
       this.sexualPreferenceId,
       this.registerDate,
-      this.lastLogin});
+      this.lastLogin,
+      this.hasError,
+      this.error});
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];

@@ -28,13 +28,16 @@ class SettingScreen extends StatefulWidget {
   State<SettingScreen> createState() => _SettingScreenState();
 }
 
-class _SettingScreenState extends State<SettingScreen> with SingleTickerProviderStateMixin {
+class _SettingScreenState extends State<SettingScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   bool ghostModeSwitch = false;
   bool instagramSwitch = false;
   bool whatsappSwitch = false;
   bool countriesLoaded = false;
   int selectedOriginCountryId = 0;
+  int selectedSexualityId = 0;
+  int selectedSexualityInterestId = 0;
   int showMePeopleFromCountryId = 0;
   int selectedOriginCountryIdFromServer = 0;
   int showMePeopleFromCountryIdFromServer = 0;
@@ -49,28 +52,26 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
   var countries;
   var sexOrientations;
   List<String> finalSexOrientations = [];
+  List<String> finalPreferedSexOrientations = [];
   int mySexualOrientationIdFromServer = 0;
-  
+
   bool sexLoaded = false;
-  
-  
+
   // Future<List<Country>> countries;
 
   @override
   void initState() {
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2)
-    );
-      _controller.repeat();
-    
+    _controller =
+        AnimationController(vsync: this, duration: const Duration(seconds: 2));
+    _controller.repeat();
+
     _userInfo = readConfig();
     getAvailableCountries();
     getAvailableSexualPreferences();
     super.initState();
   }
 
-   @override
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -78,7 +79,6 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    
     return LoaderOverlay(
       useDefaultLoading: false,
       overlayWidget: Center(
@@ -100,8 +100,11 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
           children: [
             AnimatedBuilder(
               animation: _controller.view,
-              builder: (context,child){
-                return Transform.rotate(angle: _controller.value*2*pi,child: child,);
+              builder: (context, child) {
+                return Transform.rotate(
+                  angle: _controller.value * 2 * pi,
+                  child: child,
+                );
               },
               child: SvgPicture.asset(
                 'assets/logo-no-name.svg',
@@ -171,6 +174,14 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
           User currentUser = await userProv.readLocalUserInfo();
           Country paisOrigen =
               await getCountryByName(finalCountries[selectedOriginCountryId]);
+          SexualOrientation mySexuality;
+          if (selectedSexualityId != 0) {
+            mySexuality = await getSexualityByName(
+                finalSexOrientations[selectedSexualityId]);
+          } else {
+            mySexuality = SexualOrientation(
+                enabled: true, id: 0, name: "No Identificado");
+          }
           // if (showMePeopleFromCountryId == 0) {
           //   showMePeopleFromCountryId++;
           //   allCountries = true;
@@ -184,7 +195,7 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
           }
 
           currentUser.countryId = paisOrigen.id;
-
+          currentUser.sexualOrientationId = mySexuality.id;
           currentUser.minimunAgeToMatch = minimunAgeToMatch;
           currentUser.maximunAgeToMatch = maximunAgeToMatch;
           var filtersUpdated = await settings.setFiltersPreferences(
@@ -207,8 +218,7 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
               type: CoolAlertType.error,
               text: e.toString(),
               title: "Error");
-        }
-        finally{
+        } finally {
           context.loaderOverlay.hide();
         }
       },
@@ -301,7 +311,6 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
               type: CoolAlertType.error,
               text: e.toString(),
               title: "Error");
-              
         }
       },
       child: Container(
@@ -591,11 +600,10 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
                           fontSize: 23,
                         ),
                       ),
-                      Icon(Icons.filter_list_alt,color: Color(0xff00b2ff))
+                      Icon(Icons.filter_list_alt, color: Color(0xff00b2ff))
                     ],
                   ),
                 ),
-
               ],
             ),
             Row(
@@ -647,7 +655,10 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.location_on_rounded,color: Colors.red,),
+                            Icon(
+                              Icons.location_on_rounded,
+                              color: Colors.red,
+                            ),
                             Text(
                               countryName!,
                               style: TextStyle(color: Colors.white),
@@ -724,8 +735,14 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                        Icon(Icons.location_on_rounded,color: Colors.red,),
-                            Text(countryName!,style: TextStyle(color: Colors.white),),
+                            Icon(
+                              Icons.location_on_rounded,
+                              color: Colors.red,
+                            ),
+                            Text(
+                              countryName!,
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ],
                         ),
                         CustomPicker(
@@ -763,13 +780,23 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
                 onChange: (RangeValues valores) {
                   minimunAgeToMatch = valores.start.toInt();
                   maximunAgeToMatch = valores.end.toInt();
-                  bool ageAdviced=false;
-                  if (minimunAgeToMatch==18 && !ageAdviced) {
-                    CoolAlert.show(context: context, type: CoolAlertType.info,title: "Informacion 👮🏽‍♂️",text: "Ups! por politicas de la aplicacion nuestros usuarios deben ser mayores de edad, por tal razon no deberiamos permitir filtrado para menores de 18 🚓");
+                  bool ageAdviced = false;
+                  if (minimunAgeToMatch == 18 && !ageAdviced) {
+                    CoolAlert.show(
+                        context: context,
+                        type: CoolAlertType.info,
+                        title: "Informacion 👮🏽‍♂️",
+                        text:
+                            "Ups! por politicas de la aplicacion nuestros usuarios deben ser mayores de edad, por tal razon no deberiamos permitir filtrado para menores de 18 🚓");
                     ageAdviced = true;
                   }
-                  if (maximunAgeToMatch==100) {
-                    CoolAlert.show(context: context, type: CoolAlertType.info,title: "Informacion 🫣",text: "Hey! te gustan los extremos, no creemos que vayas a encontrar alguien que los alcance, pero por si las moscas. 👴🏼👵🏽");
+                  if (maximunAgeToMatch == 100) {
+                    CoolAlert.show(
+                        context: context,
+                        type: CoolAlertType.info,
+                        title: "Informacion 🫣",
+                        text:
+                            "Hey! te gustan los extremos, no creemos que vayas a encontrar alguien que los alcance, pero por si las moscas. 👴🏼👵🏽");
                     ageAdviced = true;
                   }
                   if (kDebugMode) {
@@ -806,20 +833,21 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
                 if (snapshot.hasData &&
                     snapshot.connectionState == ConnectionState.done) {
                   List<SexualOrientation>? sexes = snapshot.data;
-                  List<String> finalSexs = ["No identificado"];
+                  // List<String> finalSexs = ["No identificado"];
+                  finalSexOrientations.add("No identificado");
                   sexes?.forEach((element) {
                     finalSexOrientations.add(element.name!);
                   });
 
-                  String? sexName ;
+                  String? sexName;
 
-                  if (mySexualOrientationIdFromServer!=0) {
-                    sexName= sexes
+                  if (mySexualOrientationIdFromServer != 0) {
+                    sexName = sexes
                         ?.where((element) =>
                             element.id == mySexualOrientationIdFromServer)
                         .first
                         .name;
-                  }else{
+                  } else {
                     sexName = "No establecido";
                   }
                   // if (showMePeopleFromCountryIdFromServer == 0) {
@@ -840,15 +868,21 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                        Icon(Icons.flag_rounded,color: Colors.red,),
-                            Text(sexName!,style: TextStyle(color: Colors.white),),
+                            Icon(
+                              Icons.flag_rounded,
+                              color: Colors.red,
+                            ),
+                            Text(
+                              sexName!,
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ],
                         ),
                         CustomPicker(
                           placeHolder: "Sexualidad:",
                           onChange: (int x) {
-                            showMePeopleFromCountryId = x;
-                            print("Sexualidad de preferencia ${finalSexOrientations[x]}");
+                            selectedSexualityId = x;
+                            print("Sexualidad  ${finalSexOrientations[x]}");
                           },
                           options: finalSexOrientations,
                         ),
@@ -859,6 +893,7 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
                 return const Text("Error getting sex's");
               },
             ),
+
           ],
         ));
   }
@@ -1198,16 +1233,22 @@ class _SettingScreenState extends State<SettingScreen> with SingleTickerProvider
     Country pais = await settings.getCountryByName(finalCountri);
     return pais;
   }
-  
+
   getAvailableSexualPreferences() {
-     try {
-      final authProvider =
-          Provider.of<AuthProvider>(context, listen: false);
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final cou = authProvider.getAllSexualOrientations();
       sexOrientations = cou;
       sexLoaded = true;
     } catch (e) {
       sexLoaded = false;
     }
+  }
+
+  getSexualityByName(String finalSexOrientation) async {
+    final auth = Provider.of<AuthProvider>(context, listen: false);
+    SexualOrientation sex =
+        await auth.getSexualOrientationByName(finalSexOrientation);
+    return sex;
   }
 }

@@ -12,5 +12,6 @@ abstract class AuthContract {
   Future<bool>saveLocalUserInfo(User usuario);
   Future<bool>updateUserInfo(User user);
   Future<List<SexualOrientation>>getAllSexes();
+  Future<SexualOrientation>getSexualOrientationByName(String name);
   Future<User> readLocalUserInfo();
 }
