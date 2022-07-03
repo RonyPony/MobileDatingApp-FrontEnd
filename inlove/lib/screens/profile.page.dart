@@ -1,18 +1,26 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:inlove/models/country.dart';
+import 'package:inlove/models/photoToUpload.dart';
 import 'package:inlove/models/user.dart';
 import 'package:inlove/providers/auth_provider.dart';
 import 'package:inlove/screens/login.page.dart';
 import 'package:inlove/screens/setting.page.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import '../controls/menu.dart';
+import '../models/photo.dart';
 import '../providers/countries_provider.dart';
 import '../helpers/emojies.dart';
+import '../providers/photo_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   static String routeName = '/ProfileScreen';
@@ -22,9 +30,11 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<ProfileScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
   late Future<User> localUserInfo;
-
+  final ImagePicker _picker = ImagePicker();
   var editMode = false;
 
   TextEditingController whatsCtr = TextEditingController();
@@ -39,6 +49,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void initState() {
+    _controller =
+        AnimationController(vsync: this, duration: const Duration(seconds: 2));
+    _controller.repeat();
     super.initState();
     Future<User> userInfo = getUserInfo();
     localUserInfo = userInfo;
@@ -47,308 +60,496 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width * 1;
-    return Scaffold(
-      bottomNavigationBar: const MainMenu(),
-      backgroundColor: const Color(0xff020202),
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: const Color(0xff020202),
-        title: const Text('LoVers - Perfil'),
-      ),
-      body: SingleChildScrollView(
+    Future<Widget> profilePic = getUserImage(localUserInfo);
+    return LoaderOverlay(
+      useDefaultLoading: false,
+      overlayWidget: Center(
+          child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50),
+          color: Colors.black,
+          boxShadow: const [
+            BoxShadow(color: Colors.pink, spreadRadius: 3),
+          ],
+        ),
+
+        height: MediaQuery.of(context).size.height * .25,
+        // color: Colors.black,
+        padding: const EdgeInsets.all(29),
         child: Column(
+          // crossAxisAlignment: CrossAxisAlignment.center
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: MediaQuery.of(context).size.width * .9,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(26),
-                    color: const Color(0xff1b1b1b),
-                  ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 010, left: 10, right: 10, bottom: 10),
-                        child: Image.asset(
-                          "assets/man.png",
-                          height: MediaQuery.of(context).size.height * .5,
-                          width: MediaQuery.of(context).size.width * .9,
-                        ),
-                      ),
-                      SizedBox(
-                        // color: Colors.red,
-                        height: 80,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            FutureBuilder<User>(
+            AnimatedBuilder(
+              animation: _controller.view,
+              builder: (context, child) {
+                return Transform.rotate(
+                  angle: _controller.value * 2 * pi,
+                  child: child,
+                );
+              },
+              child: SvgPicture.asset(
+                'assets/logo-no-name.svg',
+                height: MediaQuery.of(context).size.height * .12,
+              ),
+            ),
+            // CircularProgressIndicator(color:Colors.pink,),
+            const SizedBox(
+              height: 10,
+            ),
+            const Text(
+              "Subiendo tu foto...",
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.white,
+                  decoration: TextDecoration.none),
+            )
+          ],
+        ),
+      )),
+      child: Scaffold(
+        bottomNavigationBar: const MainMenu(),
+        backgroundColor: const Color(0xff020202),
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: const Color(0xff020202),
+          title: const Text('LoVers - Perfil'),
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width * .9,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(26),
+                      color: const Color(0xff1b1b1b),
+                    ),
+                    child: Column(
+                      children: [
+                        Padding(
+                            padding: const EdgeInsets.only(
+                                top: 010, left: 10, right: 10, bottom: 10),
+                            child: FutureBuilder<Widget>(
+                              future: profilePic,
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
-                                  return const CircularProgressIndicator(
-                                    color: Colors.pink,
-                                  );
+                                  return CircularProgressIndicator();
                                 }
                                 if (snapshot.hasError) {
-                                  return const Text("Err");
+                                  return Text("Error Occured");
                                 }
-
                                 if (snapshot.connectionState ==
                                     ConnectionState.done) {
                                   if (snapshot.hasData) {
-                                    Future<Country> pais = getCountry(
-                                        "${snapshot.data?.countryId}");
-                                    return FutureBuilder<Country>(
-                                      future: pais,
-                                      builder: (context, snapshotCountry) {
-                                        if (snapshotCountry.hasData &&
-                                            snapshotCountry.connectionState ==
-                                                ConnectionState.done) {
-                                          return GestureDetector(
-                                            onTap: () {
-                                              Navigator.pushNamedAndRemoveUntil(
-                                                  context,
-                                                  SettingScreen.routeName,
-                                                  (route) => false);
-                                            },
-                                            child: Flag.fromString(
-                                              "${snapshotCountry.data?.code}",
-                                              fit: BoxFit.fill,
-                                              height: 50,
-                                              width: 50,
-                                              borderRadius: 100,
-                                            ),
-                                          );
-
-                                          // Flag.fromCode(
-                                          //   FlagsCode.CA,
-                                          //   fit: BoxFit.fill,
-                                          //   height: 50,
-                                          //   width: 50,
-                                          //   borderRadius: 100,
-                                          // );
-                                        }
-                                        return const CircularProgressIndicator(
-                                          color: Colors.pink,
-                                        );
-                                      },
+                                    return snapshot.data!;
+                                  }
+                                }
+                                return Text("Unknown error");
+                              },
+                            )),
+                        SizedBox(
+                          // color: Colors.red,
+                          height: 80,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              FutureBuilder<User>(
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return const CircularProgressIndicator(
+                                      color: Colors.pink,
                                     );
                                   }
-                                  return const Text("Error 3");
-                                }
-                                return const Text("error 4");
-                              },
-                              future: localUserInfo,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(left: screenWidth * .5),
-                              child: Container(
-                                width: 60,
-                                height: 60,
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.all(8),
-                                  // child: Image.asset("assets/changePhoto.png",),
-                                  child: SvgPicture.asset(
-                                    "assets/changePhoto.svg",
-                                    height: 50,
+                                  if (snapshot.hasError) {
+                                    return const Text("Err");
+                                  }
+
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                    if (snapshot.hasData) {
+                                      Future<Country> pais = getCountry(
+                                          "${snapshot.data?.countryId}");
+                                      return FutureBuilder<Country>(
+                                        future: pais,
+                                        builder: (context, snapshotCountry) {
+                                          if (snapshotCountry.hasData &&
+                                              snapshotCountry.connectionState ==
+                                                  ConnectionState.done) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                Navigator
+                                                    .pushNamedAndRemoveUntil(
+                                                        context,
+                                                        SettingScreen.routeName,
+                                                        (route) => false);
+                                              },
+                                              child: Flag.fromString(
+                                                "${snapshotCountry.data?.code}",
+                                                fit: BoxFit.fill,
+                                                height: 50,
+                                                width: 50,
+                                                borderRadius: 100,
+                                              ),
+                                            );
+
+                                            // Flag.fromCode(
+                                            //   FlagsCode.CA,
+                                            //   fit: BoxFit.fill,
+                                            //   height: 50,
+                                            //   width: 50,
+                                            //   borderRadius: 100,
+                                            // );
+                                          }
+                                          return const CircularProgressIndicator(
+                                            color: Colors.pink,
+                                          );
+                                        },
+                                      );
+                                    }
+                                    return const Text("Error 3");
+                                  }
+                                  return const Text("error 4");
+                                },
+                                future: localUserInfo,
+                              ),
+                              Padding(
+                                padding:
+                                    EdgeInsets.only(left: screenWidth * .5),
+                                child: Container(
+                                  width: 60,
+                                  height: 60,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    // child: Image.asset("assets/changePhoto.png",),
+                                    child: GestureDetector(
+                                      onTap: () async {
+                                        // final XFile? image =
+                                        //     await _picker.pickImage(
+                                        //         source: ImageSource.gallery);
+                                        try {
+                                          context.loaderOverlay.show();
+                                          final userProvider =
+                                              Provider.of<AuthProvider>(context,
+                                                  listen: false);
+                                          final photoProvider =
+                                              Provider.of<PhotoProvider>(
+                                                  context,
+                                                  listen: false);
+                                          User currentUser = await userProvider
+                                              .readLocalUserInfo();
+                                          ImagePicker imagePicker =
+                                              ImagePicker();
+                                          final imageFile =
+                                              await imagePicker.getImage(
+                                                  source: ImageSource.gallery,imageQuality: 25);
+                                          // File imagen = File(imageFile!.path);
+                                          // String fileExt = getFileExtension(imagen.path);
+                                          // String fileRoute = getFileRoute(imagen.path);
+                                          // File compressed =await
+                                          //     photoProvider.compressImage(
+                                          //         imagen, fileRoute+"2"+fileExt);
+                                          PhotoToUpload photoToUpload =
+                                              PhotoToUpload();
+                                          photoToUpload.image = imageFile!.path;
+                                          photoToUpload.userId = currentUser.id;
+                                          bool uploaded = await photoProvider
+                                              .uploadPhoto(photoToUpload);
+                                          if (uploaded) {
+                                            CoolAlert.show(
+                                                context: context,
+                                                animType: CoolAlertAnimType
+                                                    .slideInDown,
+                                                backgroundColor: Colors.white,
+                                                loopAnimation: false,
+                                                type: CoolAlertType.success,
+                                                title: "Completado",
+                                                text:
+                                                    "Se ha completado la carga de la imagen 📷");
+                                          }
+                                          context.loaderOverlay.hide();
+                                          setState(() {
+                                            
+                                          });
+                                        } catch (e) {
+                                          CoolAlert.show(
+                                              context: context,
+                                              animType:
+                                                  CoolAlertAnimType.slideInDown,
+                                              backgroundColor: Colors.white,
+                                              loopAnimation: false,
+                                              type: CoolAlertType.error,
+                                              title: "Ups!",
+                                              text:e.toString());
+                                              setState(() {
+                                                
+                                              });
+                                        }finally{
+                                          context.loaderOverlay.hide();
+                                          setState(() {
+                                            
+                                          });
+                                        }
+                                      },
+                                      child: SvgPicture.asset(
+                                        "assets/changePhoto.svg",
+                                        height: 50,
+                                      ),
+                                    ),
+                                  ),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50),
+                                    color: const Color(0xff1db9fc),
                                   ),
                                 ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  color: const Color(0xff1db9fc),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width * .9,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(26),
-                color: const Color(0xff1b1b1b),
-              ),
-              child: Column(
-                children: [
-                  FutureBuilder<User>(
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const CircularProgressIndicator(
-                          color: Colors.pink,
-                        );
-                      }
-                      if (snapshot.hasError) {
-                        return const Text("Error obteniendo datos");
-                      }
-                      Emojies emoji = Emojies();
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        if (snapshot.hasData) {
-                          if (snapshot.data?.bio == "N/A") {
-                            isBioEmpty = true;
-                            snapshot.data?.bio =
-                                "No has agregado informacion sobre ti, hazlo " +
-                                    emoji.getAnEmmoji(false);
-                          }
-                          return Column(
-                            children: [
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 0, left: 20, right: 20, bottom: 20),
-                                child: !editMode
-                                    ? Text(
-                                        "${snapshot.data?.name} ${snapshot.data?.lastName}",
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 30,
-                                          letterSpacing: 2.10,
-                                        ),
-                                      )
-                                    : Column(
-                                        children: [
-                                          _buildNameEditField(),
-                                          _buildLastNameEditField(),
-                                        ],
-                                      ),
-                              ),
-                              Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 20, right: 20),
-                                  child: !editMode
-                                      ? Text(
-                                          "${snapshot.data?.bio}",
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 15,
-                                          ),
-                                        )
-                                      : _buildBioEditField()),
-                              const SizedBox(
-                                height: 20,
-                              ),
+                              )
                             ],
-                          );
-                        }
-                        return const Text("No identificado");
-                      }
-                      return const Text("NO INFO");
-                    },
-                    future: localUserInfo,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                !editMode
-                    ? GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            editMode = true;
-                          });
-                        },
-                        child: Container(
-                          height: 90,
-                          width: 90,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              color: const Color(0xff1db9fc),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: SvgPicture.asset(
-                                "assets/pencil2.svg",
-                                width: 50,
-                                height: 50,
-                              ),
-                            )),
-                      )
-                    : GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            editMode = false;
-                          });
-                        },
-                        child: GestureDetector(
-                          onTap: () async {
-                            final userProvider = Provider.of<AuthProvider>(
-                                context,
-                                listen: false);
-                            User currentUser =
-                                await userProvider.readLocalUserInfo();
-                            if (nameCtr.text == "" || nameCtr.text == " ") {
-                              nameCtr.text = userName;
+              const SizedBox(
+                height: 10,
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width * .9,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(26),
+                  color: const Color(0xff1b1b1b),
+                ),
+                child: Column(
+                  children: [
+                    FutureBuilder<User>(
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator(
+                            color: Colors.pink,
+                          );
+                        }
+                        if (snapshot.hasError) {
+                          return const Text("Error obteniendo datos");
+                        }
+                        Emojies emoji = Emojies();
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          if (snapshot.hasData) {
+                            if (snapshot.data?.bio == "N/A") {
+                              isBioEmpty = true;
+                              snapshot.data?.bio =
+                                  "No has agregado informacion sobre ti, hazlo " +
+                                      emoji.getAnEmmoji(false);
                             }
-                            if (lastNameCtr.text == "" ||
-                                lastNameCtr.text == " ") {
-                              lastNameCtr.text = lastName;
-                            }
-                            if (bioCtr.text == "" || bioCtr.text == " ") {
-                              bioCtr.text = bio;
-                            }
-
-                            currentUser.name = nameCtr.text;
-                            currentUser.lastName = lastNameCtr.text;
-                            currentUser.bio = bioCtr.text;
-                            bool updated =
-                                await userProvider.updateUserInfo(currentUser);
-                            if (updated) {
-                              bool updated2 = await userProvider
-                                  .saveLocalUserInfoUser(currentUser);
-
-                              setState(() {
-                                editMode = false;
-                              });
-                              CoolAlert.show(
-                                  context: context,
-                                  type: CoolAlertType.success,
-                                  title: "Actualizado");
-                            }
+                            return Column(
+                              children: [
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 0, left: 20, right: 20, bottom: 20),
+                                  child: !editMode
+                                      ? Text(
+                                          "${snapshot.data?.name} ${snapshot.data?.lastName}",
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 30,
+                                            letterSpacing: 2.10,
+                                          ),
+                                        )
+                                      : Column(
+                                          children: [
+                                            _buildNameEditField(),
+                                            _buildLastNameEditField(),
+                                          ],
+                                        ),
+                                ),
+                                Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 20, right: 20),
+                                    child: !editMode
+                                        ? Text(
+                                            "${snapshot.data?.bio}",
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15,
+                                            ),
+                                          )
+                                        : _buildBioEditField()),
+                                Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 30, left: 20, right: 20),
+                                    child: !editMode
+                                        ? Column(
+                                          children: [
+                                            Text(
+                                                "Correo Electronico: ${snapshot.data?.email}",
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              snapshot.data!.instagramUserEnabled!?
+                                              Text(
+                                                "Instagram: ${snapshot.data?.instagramUser}",
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15,
+                                                ),
+                                              ):Text(
+                                                "Instagram: ${snapshot.data?.instagramUser} (Oculto)",
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 10,
+                                              ),
+                                              snapshot.data!.whatsappNumberEnabled!?
+                                              Text(
+                                                "Whatsapp: ${snapshot.data?.whatsappNumber}",
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15,
+                                                ),
+                                              ):
+                                              Text(
+                                                      "Whatsapp: ${snapshot.data?.whatsappNumber} (Oculto)",
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 15,
+                                                      ),
+                                                    )
+                                          ],
+                                        )
+                                        : SizedBox()),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                              ],
+                            );
+                          }
+                          return const Text("No identificado");
+                        }
+                        return const Text("NO INFO");
+                      },
+                      future: localUserInfo,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  !editMode
+                      ? GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              editMode = true;
+                            });
                           },
                           child: Container(
-                            width: 80,
-                            height: 80,
-                            child: const Padding(
-                              padding: EdgeInsets.only(left: 5, top: 2),
-                              child: Icon(Icons.save_as_rounded,
-                                  color: Colors.white, size: 50),
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              color: const Color(0xff1db9fc),
+                              height: 90,
+                              width: 90,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                color: const Color(0xff1db9fc),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: SvgPicture.asset(
+                                  "assets/pencil2.svg",
+                                  width: 50,
+                                  height: 50,
+                                ),
+                              )),
+                        )
+                      : GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              editMode = false;
+                            });
+                          },
+                          child: GestureDetector(
+                            onTap: () async {
+                              final userProvider = Provider.of<AuthProvider>(
+                                  context,
+                                  listen: false);
+                              User currentUser =
+                                  await userProvider.readLocalUserInfo();
+                              if (nameCtr.text == "" || nameCtr.text == " ") {
+                                nameCtr.text = userName;
+                              }
+                              if (lastNameCtr.text == "" ||
+                                  lastNameCtr.text == " ") {
+                                lastNameCtr.text = lastName;
+                              }
+                              if (bioCtr.text == "" || bioCtr.text == " ") {
+                                bioCtr.text = bio;
+                              }
+
+                              currentUser.name = nameCtr.text;
+                              currentUser.lastName = lastNameCtr.text;
+                              currentUser.bio = bioCtr.text;
+                              bool updated = await userProvider
+                                  .updateUserInfo(currentUser);
+                              if (updated) {
+                                bool updated2 = await userProvider
+                                    .saveLocalUserInfoUser(currentUser);
+
+                                setState(() {
+                                  editMode = false;
+                                });
+                                CoolAlert.show(
+                                    context: context,
+                                    animType: CoolAlertAnimType.slideInDown,
+                                    backgroundColor: Colors.white,
+                                    loopAnimation: false,
+                                    type: CoolAlertType.success,
+                                    title: "Actualizado 👍🏼");
+                              }
+                            },
+                            child: Container(
+                              width: 80,
+                              height: 80,
+                              child: const Padding(
+                                padding: EdgeInsets.only(left: 5, top: 2),
+                                child: Icon(Icons.save_as_rounded,
+                                    color: Colors.white, size: 50),
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                color: const Color(0xff1db9fc),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-              ],
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            logout(),
-            const SizedBox(
-              height: 10,
-            ),
-            deleteAccount()
-          ],
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              logout(),
+              const SizedBox(
+                height: 10,
+              ),
+              deleteAccount()
+            ],
+          ),
         ),
       ),
     );
@@ -529,4 +730,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ],
     );
   }
+
+  Future<Widget> getUserImage(Future<User?> data) async {
+    final photoProvider = Provider.of<PhotoProvider>(context, listen: false);
+    User? usuario = await data;
+    Photo userPhoto = await photoProvider.getUserProfilePicture(usuario!.id!);
+    if (userPhoto.image == null) {
+      return Image.asset(
+        "assets/placeHolder.png",
+        height: MediaQuery.of(context).size.height * .5,
+        width: MediaQuery.of(context).size.width * .9,
+      );
+    } else {
+      return Image.memory(
+        base64Decode(userPhoto.image!),
+        height: MediaQuery.of(context).size.height * .5,
+        width: MediaQuery.of(context).size.width * .9,
+      );
+    }
+  }
+  String getFileExtension(String fileName) {
+    try {
+      String filename = fileName.split('.').first;
+      String ext= "." + fileName.split('.').last;
+      return ext;
+    } catch (e) {
+      return "";
+    }
+  }
+
+  String getFileRoute(String fileName) {
+    try {
+      String filename = fileName.substring(2,4);
+      return filename;
+    } catch (e) {
+      return "";
+    }
+  }
+
 }

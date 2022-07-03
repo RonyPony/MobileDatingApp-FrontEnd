@@ -1,14 +1,21 @@
+import 'dart:convert';
+
 import 'package:cool_alert/cool_alert.dart';
+import 'package:flag/flag_widget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlove/controls/menu.dart';
+import 'package:inlove/models/photo.dart';
 import 'package:inlove/providers/auth_provider.dart';
 import 'package:inlove/providers/match_provider.dart';
+import 'package:inlove/providers/photo_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../helpers/emojies.dart';
+import '../models/country.dart';
 import '../models/user.dart';
+import '../providers/countries_provider.dart';
 
 class HomePage extends StatefulWidget {
   static String routeName = "/homePage";
@@ -90,6 +97,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               );
             }
+            Future<Widget> profilePic = getUserImage(snapshot.data);
             return Column(
               children: [
                 Row(
@@ -104,13 +112,72 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         children: [
                           Padding(
-                            padding: const EdgeInsets.only(
-                                top: 010, left: 10, right: 10, bottom: 10),
-                            child: Image.asset(
-                              "assets/placeHolder.png",
-                              height: MediaQuery.of(context).size.height * .5,
-                              width: MediaQuery.of(context).size.width * .9,
-                            ),
+                              padding: const EdgeInsets.only(
+                                  top: 010, left: 10, right: 10, bottom: 10),
+                              child: FutureBuilder<Widget>(
+                                future: profilePic,
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return CircularProgressIndicator();
+                                  } else {
+                                    if (snapshot.hasError) {
+                                      return Text("Error found");
+                                    }
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.done) {
+                                      if (snapshot.hasData) {
+                                        return snapshot.data!;
+                                      }
+                                      return Text("no data error");
+                                    }
+                                  }
+                                  return Text("unknown error");
+                                },
+                              )
+                              // Image.asset(
+                              //   "assets/placeHolder.png",
+                              //   height: MediaQuery.of(context).size.height * .5,
+                              //   width: MediaQuery.of(context).size.width * .9,
+                              // ),
+                              ),
+                          FutureBuilder<User>(
+                            future: _usuario,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return CircularProgressIndicator();
+                              }
+                              if (snapshot.hasError) {
+                                return Text("Error Ocurred");
+                              }
+                              if (snapshot.connectionState ==
+                                  ConnectionState.done) {
+                                if (snapshot.hasData) {
+                                  Future<String> countryCode = getCountryCode(snapshot.data!.countryId);
+                                  return FutureBuilder<String>(
+                                    future: countryCode,
+                                    builder: (context,snapshot){
+                                      if (snapshot.connectionState == ConnectionState.waiting) {
+                                        return CircularProgressIndicator();
+                                      }
+                                      if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                                        return Flag.fromString(
+                                    "${snapshot.data}",
+                                    fit: BoxFit.fill,
+                                    height: 50,
+                                    width: 50,
+                                    borderRadius: 100,
+                                  );
+                                      }
+                                      return Text("Error");
+                                    },
+                                  );
+                                }
+                                return Text("Error 3320");
+                              }
+                              return Text("Error 455");
+                            },
                           )
                         ],
                       ),
@@ -142,14 +209,18 @@ class _HomePageState extends State<HomePage> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 20),
-                        child: Text(
-                          snapshot.data!.bio != "N/A"
-                              ? snapshot.data!.bio!
-                              : "Aun no ha agregado informacion sobre el " +
-                                  emoji.getAnEmmoji(false),
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              top: 0, bottom: 8, left: 10, right: 10),
+                          child: Text(
+                            snapshot.data!.bio != "N/A"
+                                ? snapshot.data!.bio!
+                                : "Aun no ha agregado informacion sobre el " +
+                                    emoji.getAnEmmoji(false),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                            ),
                           ),
                         ),
                       )
@@ -229,9 +300,12 @@ class _HomePageState extends State<HomePage> {
       User possibleMatch =
           await matchProvider.getPossibleMatch(currentUser.id!);
 
-      if (possibleMatch!.hasError!) {
+      if (possibleMatch.hasError!) {
         CoolAlert.show(
             context: context,
+            animType: CoolAlertAnimType.slideInDown,
+            backgroundColor: Colors.white,
+            loopAnimation: false,
             type: CoolAlertType.error,
             text: possibleMatch.error,
             title: "Algo salio mal. Pero chill, intenta de nuevo 🤪");
@@ -244,5 +318,33 @@ class _HomePageState extends State<HomePage> {
       print(e);
       return User();
     }
+  }
+
+  Future<Widget> getUserImage(User? data) async {
+    final photoProvider = Provider.of<PhotoProvider>(context, listen: false);
+    Photo userPhoto = await photoProvider.getUserProfilePicture(data!.id!);
+    if (userPhoto.image == null) {
+      return Image.asset(
+        "assets/placeHolder.png",
+        height: MediaQuery.of(context).size.height * .5,
+        width: MediaQuery.of(context).size.width * .9,
+      );
+    } else {
+      return Image.memory(
+        base64Decode(userPhoto.image!),
+        height: MediaQuery.of(context).size.height * .5,
+        width: MediaQuery.of(context).size.width * .9,
+      );
+    }
+  }
+  
+  Future<String> getCountryCode(int? countryId) async {
+    if (countryId == 0) {
+      return "NULL";
+    }
+    final authProvider = Provider.of<CountriesProvider>(context, listen: false);
+    Country pais = await authProvider.findCountryById('$countryId');
+    return pais.code!;
+  
   }
 }

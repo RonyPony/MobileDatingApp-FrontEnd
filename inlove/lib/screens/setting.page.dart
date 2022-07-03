@@ -16,7 +16,7 @@ import 'package:provider/provider.dart';
 
 import '../controls/menu.dart';
 import '../controls/picker.dart';
-import '../controls/rangeSelect.dart';
+import '../controls/range_select.dart';
 import '../models/sexual_orientations.dart';
 import '../providers/auth_provider.dart';
 
@@ -116,7 +116,7 @@ class _SettingScreenState extends State<SettingScreen>
               height: 10,
             ),
             const Text(
-              "Cargando...",
+              "Aplicando cambios...",
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.normal,
@@ -205,6 +205,9 @@ class _SettingScreenState extends State<SettingScreen>
             context.loaderOverlay.hide();
             CoolAlert.show(
                 context: context,
+                animType: CoolAlertAnimType.slideInDown,
+                backgroundColor: Colors.white,
+                loopAnimation: false,
                 type: CoolAlertType.success,
                 text: "Configuracion aplicada correctamente",
                 title: "Exito");
@@ -215,6 +218,9 @@ class _SettingScreenState extends State<SettingScreen>
           context.loaderOverlay.hide();
           CoolAlert.show(
               context: context,
+              animType: CoolAlertAnimType.slideInDown,
+              backgroundColor: Colors.white,
+              loopAnimation: false,
               type: CoolAlertType.error,
               text: e.toString(),
               title: "Error");
@@ -297,6 +303,9 @@ class _SettingScreenState extends State<SettingScreen>
             context.loaderOverlay.hide();
             CoolAlert.show(
                 context: context,
+                animType: CoolAlertAnimType.slideInDown,
+                backgroundColor: Colors.white,
+                loopAnimation: false,
                 type: CoolAlertType.error,
                 text:
                     "Ha ocurrido un error al someter el cambio, verifique la informacion",
@@ -309,6 +318,9 @@ class _SettingScreenState extends State<SettingScreen>
           CoolAlert.show(
               context: context,
               type: CoolAlertType.error,
+              animType: CoolAlertAnimType.slideInDown,
+              backgroundColor: Colors.white,
+              loopAnimation: false,
               text: e.toString(),
               title: "Error");
         }
@@ -641,11 +653,16 @@ class _SettingScreenState extends State<SettingScreen>
                   if (finalCountries.isEmpty) {
                     finalCountries = local_paises;
                   }
-                  String? countryName = paises
-                      ?.where((element) =>
-                          element.id == selectedOriginCountryIdFromServer)
-                      .first
-                      .name;
+                  String? countryName;
+                  if (selectedOriginCountryIdFromServer!=0) {
+                    countryName = paises
+                        ?.where((element) =>
+                            element.id == selectedOriginCountryIdFromServer)
+                        .first
+                        .name;
+                  }else{
+                    countryName="Desconocido";
+                  }
                   // int x = finalCountries.indexWhere((country) => country==countryName);
                   return Padding(
                     padding:
@@ -784,6 +801,9 @@ class _SettingScreenState extends State<SettingScreen>
                   if (minimunAgeToMatch == 18 && !ageAdviced) {
                     CoolAlert.show(
                         context: context,
+                        animType: CoolAlertAnimType.slideInDown,
+                        backgroundColor: Colors.white,
+                        loopAnimation: false,
                         type: CoolAlertType.info,
                         title: "Informacion 👮🏽‍♂️",
                         text:
@@ -793,6 +813,9 @@ class _SettingScreenState extends State<SettingScreen>
                   if (maximunAgeToMatch == 100) {
                     CoolAlert.show(
                         context: context,
+                        animType: CoolAlertAnimType.slideInDown,
+                        backgroundColor: Colors.white,
+                        loopAnimation: false,
                         type: CoolAlertType.info,
                         title: "Informacion 🫣",
                         text:

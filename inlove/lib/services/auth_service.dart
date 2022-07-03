@@ -10,6 +10,8 @@ import 'package:inlove/models/user.dart';
 import 'package:inlove/models/user_login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/user_register.dart';
+
 class AuthService implements AuthContract{
   String savedCurrentUserFlag = "la verdadera para tuya";
 
@@ -227,6 +229,12 @@ class AuthService implements AuthContract{
       print(e);
       return foundSex;
     } 
+  }
+  
+  @override
+  Future<bool> registerUser(Register user) {
+    // TODO: implement registerUser
+    throw UnimplementedError();
   }
 
   }

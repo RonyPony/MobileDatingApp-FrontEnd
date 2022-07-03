@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CustomRangeSelect extends StatefulWidget {
-  const CustomRangeSelect({Key? key}) : super(key: key);
+  const CustomRangeSelect({Key? key, required Null Function(RangeValues valores) onChange}) : super(key: key);
 
   @override
   State<CustomRangeSelect> createState() => _CustomRangeSelectState();

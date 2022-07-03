@@ -5,8 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlove/controls/link_buttom.dart';
+import 'package:inlove/helpers/emojies.dart';
 import 'package:inlove/models/user_login.dart';
 import 'package:inlove/screens/home.page.dart';
+import 'package:inlove/screens/register.page.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
@@ -88,7 +90,7 @@ class _LoginPageState extends State<LoginPage>
               height: 10,
             ),
             const Text(
-              "Cargando...",
+              "Iniciando Sesion...",
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.normal,
@@ -150,8 +152,13 @@ class _LoginPageState extends State<LoginPage>
             const SizedBox(
               height: 10,
             ),
-            const CustomLinkButton(
-              tittle: "O Registrate",
+            GestureDetector(
+              onTap: (){
+                Navigator.pushNamed(context, RegisterPage.routeName);
+              },
+              child: const CustomLinkButton(
+                tittle: "O Registrate",
+              ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -229,29 +236,41 @@ class _LoginPageState extends State<LoginPage>
                               Navigator.pushNamedAndRemoveUntil(context,
                                   HomePage.routeName, (route) => false);
                             } else {
+                              Emojies emo = Emojies();
                               CoolAlert.show(
                                 context: context,
+                                animType: CoolAlertAnimType.slideInDown,
+                                backgroundColor: Colors.white,
+                                loopAnimation: false,
                                 type: CoolAlertType.error,
                                 text:
-                                    "Credenciales incorrectas, por favor intentalo de nuevo.",
+                                    "Credenciales incorrectas, por favor intentalo de nuevo ${emo.getAnEmmoji(false)}",
                               );
                             }
                           } else {
+                            Emojies emo = Emojies();
                             CoolAlert.show(
                               context: context,
+                              animType: CoolAlertAnimType.slideInDown,
+                              backgroundColor: Colors.white,
+                              loopAnimation: false,
                               type: CoolAlertType.error,
                               text:
-                                  "Este correo electronico no esta registrado, favor verificalo.",
+                                  "Este correo electronico no esta registrado, favor verificalo ${emo.getAnEmmoji(false)}",
                             );
                           }
                           context.loaderOverlay.hide();
                         } catch (e) {
+                          Emojies emo = Emojies();
                           context.loaderOverlay.hide();
                           CoolAlert.show(
                               context: context,
+                              animType: CoolAlertAnimType.slideInDown,
+                              backgroundColor: Colors.white,
+                              loopAnimation: false,
                               type: CoolAlertType.error,
                               title: "ERROR",
-                              text: e.toString());
+                              text: e.toString()+emo.getAnEmmoji(false));
                         } finally {
                           context.loaderOverlay.hide();
                         }
