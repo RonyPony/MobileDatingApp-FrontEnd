@@ -23,9 +23,39 @@ class PhotoService implements PhotosContract {
   }
 
   @override
-  Future<Photo> getPhoto(int photoId) {
-    // TODO: implement getPhoto
-    throw UnimplementedError();
+  Future<Photo> getPhoto(int photoId) async {
+    Photo _photo = Photo();
+    try {
+      var resp = await Dio().get(
+          serverurl+'api/photos/$photoId');
+      
+      if(resp.statusCode == 200){
+        var lista = resp.data;
+        if (lista.length>0) {
+          _photo.userId = photoId;
+          // String jsoned = jsonDecode(lista);
+          _photo = Photo.fromJson(lista);
+        }else{
+          _photo.userId = photoId;
+        }
+        return _photo;
+      }
+
+      if(resp.statusCode=="404"){
+        print("Photo Not Found");
+      }
+      return _photo;
+    } 
+    on DioError catch (e) {
+      //http error(statusCode not 20x) will be catched here.
+      print(e.response!.statusCode.toString());
+      print(
+          'Failed Load Data with status code ${e.response!.statusCode}');
+          return _photo;
+    }catch(ex){
+      print("error "+ex.toString());
+      return _photo;
+    }
   }
 
   @override

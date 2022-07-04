@@ -232,9 +232,64 @@ class AuthService implements AuthContract{
   }
   
   @override
-  Future<bool> registerUser(Register user) {
-    // TODO: implement registerUser
-    throw UnimplementedError();
+  Future<bool> registerUser(Register user) async {
+    User finalUser = User();
+    try {
+      var resp = await Dio().post(
+          serverurl+'api/user',data: user);
+      if(resp.statusCode == 200||resp.statusCode == 201){
+        return true;
+      }
+
+      if(resp.statusCode=="404"){
+        print("User Not Found");
+      }
+      return false;
+    } 
+    on DioError catch (e) {
+      //http error(statusCode not 20x) will be catched here.
+      print(e.response!.statusCode.toString());
+      print(
+          'Failed Load Data with status code ${e.response!.statusCode}');
+          return false;
+    }
+    catch(e){
+      print(e);
+      return false;
+    }
+  }
+  
+  @override
+  Future<SexualOrientation> getSexualOrientationById(int id) async {
+    SexualOrientation foundSex = SexualOrientation();
+    try {
+      var resp = await Dio().get(
+          serverurl+'api/SexualOrientations/$id');
+      if(resp.statusCode == 200){
+        
+        var list  = resp.data;
+         var jsoned = jsonEncode(resp.data);
+        foundSex = SexualOrientation.fromJson(list);
+        // foundCountry;
+        return foundSex;
+      }
+
+      if(resp.statusCode=="404"){
+        print("Sex Not Found");
+      }
+      return foundSex;
+    } 
+    on DioError catch (e) {
+      //http error(statusCode not 20x) will be catched here.
+      print(e.response!.statusCode.toString());
+      print(
+          'Failed Load Data with status code ${e.response!.statusCode}');
+          return foundSex;
+    }
+    catch(e){
+      print(e);
+      return foundSex;
+    } 
   }
 
   }

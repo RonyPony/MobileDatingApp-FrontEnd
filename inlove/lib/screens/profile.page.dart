@@ -10,6 +10,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:inlove/models/country.dart';
 import 'package:inlove/models/photoToUpload.dart';
+import 'package:inlove/models/sexual_orientations.dart';
 import 'package:inlove/models/user.dart';
 import 'package:inlove/providers/auth_provider.dart';
 import 'package:inlove/screens/login.page.dart';
@@ -181,6 +182,16 @@ class _ProfileScreenState extends State<ProfileScreen>
                                           if (snapshotCountry.hasData &&
                                               snapshotCountry.connectionState ==
                                                   ConnectionState.done) {
+                                            int? sexOrId = snapshot
+                                                .data!.sexualOrientationId;
+                                            final authProvider =
+                                                Provider.of<AuthProvider>(
+                                                    context,
+                                                    listen: false);
+                                            Future<SexualOrientation> so =
+                                                authProvider
+                                                    .getSexualOrientationById(
+                                                        sexOrId!);
                                             return GestureDetector(
                                               onTap: () {
                                                 Navigator
@@ -189,12 +200,96 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                         SettingScreen.routeName,
                                                         (route) => false);
                                               },
-                                              child: Flag.fromString(
-                                                "${snapshotCountry.data?.code}",
-                                                fit: BoxFit.fill,
-                                                height: 50,
-                                                width: 50,
-                                                borderRadius: 100,
+                                              child: Row(
+                                                children: [
+                                                  Flag.fromString(
+                                                    "${snapshotCountry.data?.code}",
+                                                    fit: BoxFit.fill,
+                                                    height: 50,
+                                                    width: 50,
+                                                    borderRadius: 100,
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: Container(
+                                                      padding: EdgeInsets.only(left: MediaQuery.of(context).size.width*.2,right: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                .2),
+                                                        child: sexOrId!=0?FutureBuilder<
+                                                            SexualOrientation>(
+                                                      future: so,
+                                                      builder: (context,
+                                                          _sexualOrientation) {
+                                                        if (_sexualOrientation
+                                                                .connectionState ==
+                                                            ConnectionState
+                                                                .waiting) {
+                                                          return CircularProgressIndicator();
+                                                        }
+                                                        if (_sexualOrientation
+                                                            .hasError) {
+                                                          return Text("Err");
+                                                        }
+                                                        if (_sexualOrientation
+                                                                    .connectionState ==
+                                                                ConnectionState
+                                                                    .done &&
+                                                            _sexualOrientation
+                                                                .hasData) {
+                                                          final photoProv = Provider
+                                                              .of<PhotoProvider>(
+                                                                  context,
+                                                                  listen:
+                                                                      false);
+                                                          int currentFlagImageId =
+                                                              _sexualOrientation
+                                                                  .data!
+                                                                  .imageId!;
+                                                          Future<Photo> flag =
+                                                              photoProv.getPhoto(
+                                                                  currentFlagImageId);
+                                                          return FutureBuilder<
+                                                              Photo>(
+                                                            future: flag,
+                                                            builder: (context,
+                                                                _flag) {
+                                                              if (_flag
+                                                                      .connectionState ==
+                                                                  ConnectionState
+                                                                      .waiting) {
+                                                                return CircularProgressIndicator();
+                                                              }
+                                                              if (_flag
+                                                                  .hasError) {
+                                                                return Text(
+                                                                    "Err");
+                                                              }
+                                                              if (_flag.connectionState ==
+                                                                      ConnectionState
+                                                                          .done &&
+                                                                  _flag
+                                                                      .hasData) {
+                                                                return CircleAvatar(
+                                                                  backgroundImage:MemoryImage(base64Decode(_flag
+                                                                          .data!
+                                                                          .image!)),
+                                                                );
+                                                              }
+                                                              return Text(
+                                                                  "no data");
+                                                            },
+                                                          );
+                                                        }
+                                                        return Text(
+                                                            "no data 45");
+                                                      },
+                                                    ):SizedBox()),
+                                                  ), //CircleAvatar
+                                                ],
                                               ),
                                             );
 
@@ -219,8 +314,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                 future: localUserInfo,
                               ),
                               Padding(
-                                padding:
-                                    EdgeInsets.only(left: screenWidth * .5),
+                                padding: EdgeInsets.only(),
                                 child: Container(
                                   width: 60,
                                   height: 60,
@@ -247,7 +341,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                                               ImagePicker();
                                           final imageFile =
                                               await imagePicker.getImage(
-                                                  source: ImageSource.gallery,imageQuality: 25);
+                                                  source: ImageSource.gallery,
+                                                  imageQuality: 25);
                                           // File imagen = File(imageFile!.path);
                                           // String fileExt = getFileExtension(imagen.path);
                                           // String fileRoute = getFileRoute(imagen.path);
@@ -273,9 +368,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                     "Se ha completado la carga de la imagen 📷");
                                           }
                                           context.loaderOverlay.hide();
-                                          setState(() {
-                                            
-                                          });
+                                          setState(() {});
                                         } catch (e) {
                                           CoolAlert.show(
                                               context: context,
@@ -285,15 +378,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                                               loopAnimation: false,
                                               type: CoolAlertType.error,
                                               title: "Ups!",
-                                              text:e.toString());
-                                              setState(() {
-                                                
-                                              });
-                                        }finally{
+                                              text: e.toString());
+                                          setState(() {});
+                                        } finally {
                                           context.loaderOverlay.hide();
-                                          setState(() {
-                                            
-                                          });
+                                          setState(() {});
                                         }
                                       },
                                       child: SvgPicture.asset(
@@ -388,8 +477,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                                         top: 30, left: 20, right: 20),
                                     child: !editMode
                                         ? Column(
-                                          children: [
-                                            Text(
+                                            children: [
+                                              Text(
                                                 "Correo Electronico: ${snapshot.data?.email}",
                                                 style: const TextStyle(
                                                   color: Colors.white,
@@ -399,40 +488,43 @@ class _ProfileScreenState extends State<ProfileScreen>
                                               SizedBox(
                                                 height: 10,
                                               ),
-                                              snapshot.data!.instagramUserEnabled!?
-                                              Text(
-                                                "Instagram: ${snapshot.data?.instagramUser}",
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 15,
-                                                ),
-                                              ):Text(
-                                                "Instagram: ${snapshot.data?.instagramUser} (Oculto)",
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 15,
-                                                ),
-                                              ),
+                                              snapshot.data!
+                                                      .instagramUserEnabled!
+                                                  ? Text(
+                                                      "Instagram: ${snapshot.data?.instagramUser}",
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 15,
+                                                      ),
+                                                    )
+                                                  : Text(
+                                                      "Instagram: ${snapshot.data?.instagramUser} (Oculto)",
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 15,
+                                                      ),
+                                                    ),
                                               SizedBox(
                                                 height: 10,
                                               ),
-                                              snapshot.data!.whatsappNumberEnabled!?
-                                              Text(
-                                                "Whatsapp: ${snapshot.data?.whatsappNumber}",
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 15,
-                                                ),
-                                              ):
-                                              Text(
+                                              snapshot.data!
+                                                      .whatsappNumberEnabled!
+                                                  ? Text(
+                                                      "Whatsapp: ${snapshot.data?.whatsappNumber}",
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 15,
+                                                      ),
+                                                    )
+                                                  : Text(
                                                       "Whatsapp: ${snapshot.data?.whatsappNumber} (Oculto)",
                                                       style: const TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 15,
                                                       ),
                                                     )
-                                          ],
-                                        )
+                                            ],
+                                          )
                                         : SizedBox()),
                                 const SizedBox(
                                   height: 20,
@@ -749,10 +841,11 @@ class _ProfileScreenState extends State<ProfileScreen>
       );
     }
   }
+
   String getFileExtension(String fileName) {
     try {
       String filename = fileName.split('.').first;
-      String ext= "." + fileName.split('.').last;
+      String ext = "." + fileName.split('.').last;
       return ext;
     } catch (e) {
       return "";
@@ -761,11 +854,10 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   String getFileRoute(String fileName) {
     try {
-      String filename = fileName.substring(2,4);
+      String filename = fileName.substring(2, 4);
       return filename;
     } catch (e) {
       return "";
     }
   }
-
 }

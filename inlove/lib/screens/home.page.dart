@@ -10,10 +10,13 @@ import 'package:inlove/models/photo.dart';
 import 'package:inlove/providers/auth_provider.dart';
 import 'package:inlove/providers/match_provider.dart';
 import 'package:inlove/providers/photo_provider.dart';
+import 'package:inlove/screens/setting.page.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
 import '../helpers/emojies.dart';
 import '../models/country.dart';
+import '../models/sexual_orientations.dart';
 import '../models/user.dart';
 import '../providers/countries_provider.dart';
 
@@ -113,7 +116,7 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           Padding(
                               padding: const EdgeInsets.only(
-                                  top: 010, left: 10, right: 10, bottom: 10),
+                                  top: 010, left: 10, right: 10, bottom: 0),
                               child: FutureBuilder<Widget>(
                                 future: profilePic,
                                 builder: (context, snapshot) {
@@ -154,24 +157,159 @@ class _HomePageState extends State<HomePage> {
                               if (snapshot.connectionState ==
                                   ConnectionState.done) {
                                 if (snapshot.hasData) {
-                                  Future<String> countryCode = getCountryCode(snapshot.data!.countryId);
-                                  return FutureBuilder<String>(
-                                    future: countryCode,
-                                    builder: (context,snapshot){
-                                      if (snapshot.connectionState == ConnectionState.waiting) {
-                                        return CircularProgressIndicator();
-                                      }
-                                      if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-                                        return Flag.fromString(
-                                    "${snapshot.data}",
-                                    fit: BoxFit.fill,
-                                    height: 50,
-                                    width: 50,
-                                    borderRadius: 100,
-                                  );
-                                      }
-                                      return Text("Error");
-                                    },
+                                  Future<String> countryCode =
+                                      getCountryCode(snapshot.data!.countryId);
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 10),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            FutureBuilder<User>(
+                                              builder: (context, snapshot) {
+                                                if (snapshot.connectionState ==
+                                                    ConnectionState.waiting) {
+                                                  return const CircularProgressIndicator(
+                                                    color: Colors.pink,
+                                                  );
+                                                }
+                                                if (snapshot.hasError) {
+                                                  return const Text("Err");
+                                                }
+
+                                                if (snapshot.connectionState ==
+                                                    ConnectionState.done) {
+                                                  if (snapshot.hasData) {
+                                                    Future<Country> pais =
+                                                        getCountry(
+                                                            "${snapshot.data?.countryId}");
+                                                    return FutureBuilder<
+                                                        Country>(
+                                                      future: pais,
+                                                      builder: (context,
+                                                          snapshotCountry) {
+                                                        if (snapshotCountry
+                                                                .hasData &&
+                                                            snapshotCountry
+                                                                    .connectionState ==
+                                                                ConnectionState
+                                                                    .done) {
+                                                          int? sexOrId = snapshot
+                                                              .data!
+                                                              .sexualOrientationId;
+                                                          final authProvider =
+                                                              Provider.of<
+                                                                      AuthProvider>(
+                                                                  context,
+                                                                  listen:
+                                                                      false);
+                                                          Future<SexualOrientation>
+                                                              so = authProvider
+                                                                  .getSexualOrientationById(
+                                                                      sexOrId!);
+                                                          return GestureDetector(
+                                                            onTap: () {
+                                                              Navigator.pushNamedAndRemoveUntil(
+                                                                  context,
+                                                                  SettingScreen
+                                                                      .routeName,
+                                                                  (route) =>
+                                                                      false);
+                                                            },
+                                                            child: Row(
+                                                              children: [
+                                                                Flag.fromString(
+                                                                  "${snapshotCountry.data?.code}",
+                                                                  fit: BoxFit
+                                                                      .fill,
+                                                                  height: 50,
+                                                                  width: 50,
+                                                                  borderRadius:
+                                                                      100,
+                                                                ),
+                                                                Padding(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                              .all(
+                                                                          8.0),
+                                                                  child: Container(
+                                                                      padding: EdgeInsets.only(),
+                                                                      child: sexOrId != 0
+                                                                          ? FutureBuilder<SexualOrientation>(
+                                                                              future: so,
+                                                                              builder: (context, _sexualOrientation) {
+                                                                                if (_sexualOrientation.connectionState == ConnectionState.waiting) {
+                                                                                  return CircularProgressIndicator();
+                                                                                }
+                                                                                if (_sexualOrientation.hasError) {
+                                                                                  return Text("Err");
+                                                                                }
+                                                                                if (_sexualOrientation.connectionState == ConnectionState.done && _sexualOrientation.hasData) {
+                                                                                  final photoProv = Provider.of<PhotoProvider>(context, listen: false);
+                                                                                  int currentFlagImageId = _sexualOrientation.data!.imageId!;
+                                                                                  Future<Photo> flag = photoProv.getPhoto(currentFlagImageId);
+                                                                                  return FutureBuilder<Photo>(
+                                                                                    future: flag,
+                                                                                    builder: (context, _flag) {
+                                                                                      if (_flag.connectionState == ConnectionState.waiting) {
+                                                                                        return CircularProgressIndicator();
+                                                                                      }
+                                                                                      if (_flag.hasError) {
+                                                                                        return Text("Err");
+                                                                                      }
+                                                                                      if (_flag.connectionState == ConnectionState.done && _flag.hasData) {
+                                                                                        return CircleAvatar(
+                                                                                            
+                                                                                            backgroundImage: MemoryImage(base64Decode(_flag.data!.image!)),
+                                                                                          
+                                                                                        );
+                                                                                      }
+                                                                                      return Text("no data");
+                                                                                    },
+                                                                                  );
+                                                                                }
+                                                                                return Text("no data 45");
+                                                                              },
+                                                                            )
+                                                                          : SizedBox()),
+                                                                ), //CircleAvatar
+                                                              ],
+                                                            ),
+                                                          );
+
+                                                          // Flag.fromCode(
+                                                          //   FlagsCode.CA,
+                                                          //   fit: BoxFit.fill,
+                                                          //   height: 50,
+                                                          //   width: 50,
+                                                          //   borderRadius: 100,
+                                                          // );
+                                                        }
+                                                        return const CircularProgressIndicator(
+                                                          color: Colors.pink,
+                                                        );
+                                                      },
+                                                    );
+                                                  }
+                                                  return const Text("Error 3");
+                                                }
+                                                return const Text("error 4");
+                                              },
+                                              future: _usuario,
+                                            ),
+                                          ],
+                                        ),
+                                        
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      
+                                    ],
                                   );
                                 }
                                 return Text("Error 3320");
@@ -222,6 +360,43 @@ class _HomePageState extends State<HomePage> {
                               fontSize: 15,
                             ),
                           ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            snapshot.data!.instagramUserEnabled!
+                                ? SvgPicture.asset(
+                                    'assets/instagram.svg',
+                                    color: Colors.white,
+                                    height: 18,
+                                  )
+                                : SizedBox(),
+                            snapshot.data!.instagramUserEnabled!
+                                ? Text(
+                                    " ${snapshot.data!.instagramUser!}",
+                                    style: TextStyle(color: Colors.white),
+                                  )
+                                : SizedBox(),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            snapshot.data!.whatsappNumberEnabled!
+                                ? SvgPicture.asset(
+                                    'assets/whatsapp.svg',
+                                    color: Colors.white,
+                                    height: 18,
+                                  )
+                                : SizedBox(),
+                            snapshot.data!.whatsappNumberEnabled!
+                                ? Text(
+                                    " ${snapshot.data!.whatsappNumber!}",
+                                    style: TextStyle(color: Colors.white),
+                                  )
+                                : SizedBox(),
+                          ],
                         ),
                       )
                     ],
@@ -337,7 +512,13 @@ class _HomePageState extends State<HomePage> {
       );
     }
   }
-  
+
+  Future<Country> getCountry(String s) async {
+    final authProvider = Provider.of<CountriesProvider>(context, listen: false);
+    Country pais = await authProvider.findCountryById(s);
+    return pais;
+  }
+
   Future<String> getCountryCode(int? countryId) async {
     if (countryId == 0) {
       return "NULL";
@@ -345,6 +526,5 @@ class _HomePageState extends State<HomePage> {
     final authProvider = Provider.of<CountriesProvider>(context, listen: false);
     Country pais = await authProvider.findCountryById('$countryId');
     return pais.code!;
-  
   }
 }
