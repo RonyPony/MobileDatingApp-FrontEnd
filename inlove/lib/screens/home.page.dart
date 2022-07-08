@@ -211,18 +211,37 @@ class _HomePageState extends State<HomePage> {
                                                               so = authProvider
                                                                   .getSexualOrientationById(
                                                                       sexOrId!);
-                                                          return GestureDetector(
-                                                            onTap: () {
-                                                              Navigator.pushNamedAndRemoveUntil(
-                                                                  context,
-                                                                  SettingScreen
-                                                                      .routeName,
-                                                                  (route) =>
-                                                                      false);
-                                                            },
-                                                            child: Row(
-                                                              children: [
-                                                                Flag.fromString(
+                                                          return Row(
+                                                            children: [
+                                                              GestureDetector(
+                                                                onTap: () {
+                                                                  CoolAlert.show(
+                                                                      context:
+                                                                          context,
+                                                                      type: CoolAlertType
+                                                                          .info,
+                                                                      backgroundColor:
+                                                                          Colors
+                                                                              .white,
+                                                                      loopAnimation:
+                                                                          false,
+                                                                          cancelBtnText: "Configurar mi pais",
+                                                                          showCancelBtn: true,
+                                                                          onCancelBtnTap: (){
+                                                                            Navigator.pushNamedAndRemoveUntil(
+                                                                            context,
+                                                                            SettingScreen
+                                                                                .routeName,
+                                                                            (route) =>
+                                                                                false);
+                                                                          },
+                                                                      title: snapshotCountry.data!.name!,
+                                                                      text:
+                                                                          '${snapshot.data!.name!} ${snapshot.data!.lastName!} ha seleccionado su pais como ${snapshotCountry.data!.name}');
+                                                                  
+                                                                },
+                                                                child: Flag
+                                                                    .fromString(
                                                                   "${snapshotCountry.data?.code}",
                                                                   fit: BoxFit
                                                                       .fill,
@@ -231,54 +250,65 @@ class _HomePageState extends State<HomePage> {
                                                                   borderRadius:
                                                                       100,
                                                                 ),
-                                                                Padding(
-                                                                  padding:
-                                                                      const EdgeInsets
-                                                                              .all(
-                                                                          8.0),
-                                                                  child: Container(
-                                                                      padding: EdgeInsets.only(),
-                                                                      child: sexOrId != 0
-                                                                          ? FutureBuilder<SexualOrientation>(
-                                                                              future: so,
-                                                                              builder: (context, _sexualOrientation) {
-                                                                                if (_sexualOrientation.connectionState == ConnectionState.waiting) {
-                                                                                  return CircularProgressIndicator();
-                                                                                }
-                                                                                if (_sexualOrientation.hasError) {
-                                                                                  return Text("Err");
-                                                                                }
-                                                                                if (_sexualOrientation.connectionState == ConnectionState.done && _sexualOrientation.hasData) {
-                                                                                  final photoProv = Provider.of<PhotoProvider>(context, listen: false);
-                                                                                  int currentFlagImageId = _sexualOrientation.data!.imageId!;
-                                                                                  Future<Photo> flag = photoProv.getPhoto(currentFlagImageId);
-                                                                                  return FutureBuilder<Photo>(
-                                                                                    future: flag,
-                                                                                    builder: (context, _flag) {
-                                                                                      if (_flag.connectionState == ConnectionState.waiting) {
-                                                                                        return CircularProgressIndicator();
-                                                                                      }
-                                                                                      if (_flag.hasError) {
-                                                                                        return Text("Err");
-                                                                                      }
-                                                                                      if (_flag.connectionState == ConnectionState.done && _flag.hasData) {
-                                                                                        return CircleAvatar(
-                                                                                            
-                                                                                            backgroundImage: MemoryImage(base64Decode(_flag.data!.image!)),
-                                                                                          
-                                                                                        );
-                                                                                      }
-                                                                                      return Text("no data");
-                                                                                    },
-                                                                                  );
-                                                                                }
-                                                                                return Text("no data 45");
-                                                                              },
-                                                                            )
-                                                                          : SizedBox()),
-                                                                ), //CircleAvatar
-                                                              ],
-                                                            ),
+                                                              ),
+                                                              Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                            .all(
+                                                                        8.0),
+                                                                child: Container(
+                                                                    padding: EdgeInsets.only(),
+                                                                    child: sexOrId != 0
+                                                                        ? FutureBuilder<SexualOrientation>(
+                                                                            future:
+                                                                                so,
+                                                                            builder:
+                                                                                (context, _sexualOrientation) {
+                                                                              if (_sexualOrientation.connectionState == ConnectionState.waiting) {
+                                                                                return CircularProgressIndicator();
+                                                                              }
+                                                                              if (_sexualOrientation.hasError) {
+                                                                                return Text("Err");
+                                                                              }
+                                                                              if (_sexualOrientation.connectionState == ConnectionState.done && _sexualOrientation.hasData) {
+                                                                                final photoProv = Provider.of<PhotoProvider>(context, listen: false);
+                                                                                int currentFlagImageId = _sexualOrientation.data!.imageId!;
+                                                                                Future<Photo> flag = photoProv.getPhoto(currentFlagImageId);
+                                                                                return FutureBuilder<Photo>(
+                                                                                  future: flag,
+                                                                                  builder: (context, _flag) {
+                                                                                    if (_flag.connectionState == ConnectionState.waiting) {
+                                                                                      return CircularProgressIndicator();
+                                                                                    }
+                                                                                    if (_flag.hasError) {
+                                                                                      return Text("Err");
+                                                                                    }
+                                                                                    if (_flag.connectionState == ConnectionState.done && _flag.hasData) {
+                                                                                      return GestureDetector(
+                                                                                        onTap: () {
+                                                                                          CoolAlert.show(
+                                                                                            context: context,
+                                                                                             type: CoolAlertType.info,
+                                                                                             backgroundColor: Colors.white,
+                                                                                             loopAnimation: false,
+                                                                                             title: _sexualOrientation.data!.name!,                                                    
+                                                                                             text: '${snapshot.data!.name!} ${snapshot.data!.lastName!} ha seleccionado su sexualidad como ${_sexualOrientation.data!.name}');
+                                                                                        },
+                                                                                        child: CircleAvatar(
+                                                                                          backgroundImage: MemoryImage(base64Decode(_flag.data!.image!)),
+                                                                                        ),
+                                                                                      );
+                                                                                    }
+                                                                                    return Text("no data");
+                                                                                  },
+                                                                                );
+                                                                              }
+                                                                              return Text("no data 45");
+                                                                            },
+                                                                          )
+                                                                        : SizedBox()),
+                                                              ), //CircleAvatar
+                                                            ],
                                                           );
 
                                                           // Flag.fromCode(
@@ -303,12 +333,10 @@ class _HomePageState extends State<HomePage> {
                                             ),
                                           ],
                                         ),
-                                        
                                       ),
                                       SizedBox(
                                         width: 10,
                                       ),
-                                      
                                     ],
                                   );
                                 }

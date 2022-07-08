@@ -32,6 +32,7 @@ class _SettingScreenState extends State<SettingScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   bool ghostModeSwitch = false;
+  bool showSexualitySwitch = false;
   bool instagramSwitch = false;
   bool whatsappSwitch = false;
   bool countriesLoaded = false;
@@ -273,7 +274,8 @@ class _SettingScreenState extends State<SettingScreen>
           } else {
             whatsappResponse = true;
           }
-
+          currentUser.showMySexuality = showSexualitySwitch;
+          bool showMySexualityResponse = await  settings.showMySexuality(showSexualitySwitch);
           bool ghostModeResponse = ghostModeSwitch
               ? await settings.activateGhostMode(currentUser.id!)
               : await settings.deactivateGhostMode(currentUser.id!);
@@ -289,6 +291,7 @@ class _SettingScreenState extends State<SettingScreen>
               whatsappResponse &&
               ghostModeResponse &&
               manageInstagram &&
+              showMySexualityResponse &&
               manageWhatsapp) {
             // finalCountries.clear();
             context.loaderOverlay.hide();
@@ -967,7 +970,7 @@ class _SettingScreenState extends State<SettingScreen>
                         Padding(
                           padding: EdgeInsets.only(
                               top: 15,
-                              left: MediaQuery.of(context).size.width * .3),
+                              left: MediaQuery.of(context).size.width * .28),
                           child: Row(
                             children: [
                               SizedBox(
@@ -977,6 +980,40 @@ class _SettingScreenState extends State<SettingScreen>
                                   onChanged: (value) {
                                     setState(() {
                                       ghostModeSwitch = value;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(left: 30, top: 10),
+                          child: Text(
+                            "Mostrar mi sexualidad",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 19,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(
+                              top: 10,
+                              left: MediaQuery.of(context).size.width * .16),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.15,
+                                child: CupertinoSwitch(
+                                  value: showSexualitySwitch,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      showSexualitySwitch = value;
                                     });
                                   },
                                 ),
@@ -1116,6 +1153,7 @@ class _SettingScreenState extends State<SettingScreen>
     // });
     ghostModeSwitch = currentUser.modoFantasma!;
     instagramSwitch = currentUser.instagramUserEnabled!;
+    showSexualitySwitch = currentUser.showMySexuality!;
     whatsappSwitch = currentUser.whatsappNumberEnabled!;
     selectedOriginCountryIdFromServer = currentUser.countryId!;
     showMePeopleFromCountryIdFromServer = currentUser.preferedCountryId!;

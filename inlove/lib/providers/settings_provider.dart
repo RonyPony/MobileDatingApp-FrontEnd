@@ -44,4 +44,9 @@ class SettingsProvider with ChangeNotifier {
     var response = await _service.setFiltersPreferences(userId, userWithChanges);
     return response;
   }
+
+  Future<bool>showMySexuality(bool showMySexuality)async{
+    var response = await _service.updateSexuality(showMySexuality);
+    return response;
+  }
 }

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "721194391218",
+    "project_id": "inlove-r",
+    "storage_bucket": "inlove-r.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:721194391218:android:4cdabc187b0164835edbab",
+        "android_client_info": {
+          "package_name": "com.ronytuquizz.inlove"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "721194391218-hdjnae0if0fdostg2fr0065ei0v96q7j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDGqYG_LofwbQWpGqe9EncUPUd1eYIBU8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "721194391218-hdjnae0if0fdostg2fr0065ei0v96q7j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

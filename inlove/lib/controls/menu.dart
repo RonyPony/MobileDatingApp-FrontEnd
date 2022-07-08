@@ -4,6 +4,8 @@ import 'package:inlove/screens/home.page.dart';
 import 'package:inlove/screens/profile.page.dart';
 import 'package:inlove/screens/setting.page.dart';
 
+import '../screens/chat.page.dart';
+
 class MainMenu extends StatefulWidget {
   const MainMenu({Key? key}) : super(key: key);
 
@@ -12,11 +14,15 @@ class MainMenu extends StatefulWidget {
 }
 
 class _MainMenuState extends State<MainMenu> {
+  double spaceBtweenItems = .15;
+
   @override
   Widget build(BuildContext context) {
     bool isProfile =
         ModalRoute.of(context)?.settings.name == ProfileScreen.routeName;
     bool isHome = ModalRoute.of(context)?.settings.name == HomePage.routeName;
+
+    bool isChat = ModalRoute.of(context)?.settings.name == ChatScreen.routeName;
     bool isSettings =
         ModalRoute.of(context)?.settings.name == SettingScreen.routeName;
 
@@ -45,21 +51,21 @@ class _MainMenuState extends State<MainMenu> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  width: 50,
-                  height: 40,
-                  padding: const EdgeInsets.all(2),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pushNamedAndRemoveUntil(context,
-                              ProfileScreen.routeName, (route) => false);
-                        },
-                        child: Container(
+                GestureDetector(
+                  onTap: (){
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, ProfileScreen.routeName, (route) => false);
+                  },
+                  child: Container(
+                    width: 50,
+                    height: 40,
+                    padding: const EdgeInsets.all(2),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
                           width: 36.67,
                           height: 36.67,
                           decoration: BoxDecoration(
@@ -72,11 +78,11 @@ class _MainMenuState extends State<MainMenu> {
                                 )
                               : SvgPicture.asset('assets/profile.svg'),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(width: 98),
+                SizedBox(width: MediaQuery.of(context).size.width*spaceBtweenItems),
                 GestureDetector(
                   onTap: () {
                     Navigator.pushNamedAndRemoveUntil(
@@ -96,7 +102,26 @@ class _MainMenuState extends State<MainMenu> {
                         : SvgPicture.asset('assets/home.svg'),
                   ),
                 ),
-                const SizedBox(width: 98),
+                 SizedBox(width: MediaQuery.of(context).size.width * spaceBtweenItems),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, ChatScreen.routeName, (route) => false);
+                  },
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: isChat?SvgPicture.asset(
+                            'assets/chat.svg',
+                            color: Colors.white,
+                          )
+                        : SvgPicture.asset('assets/chat.svg'),
+                  ),
+                ),
+                 SizedBox(width: MediaQuery.of(context).size.width * spaceBtweenItems),
                 GestureDetector(
                   onTap: () {
                     Navigator.pushNamedAndRemoveUntil(

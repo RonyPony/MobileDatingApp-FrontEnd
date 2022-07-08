@@ -7,6 +7,8 @@ class User {
   String? instagramUser;
   bool? whatsappNumberEnabled;
   String? whatsappNumber;
+  String? bornDate;
+  bool? showMySexuality;
   int? minimunAgeToMatch;
   int? maximunAgeToMatch;
   bool? deletedAccount;
@@ -36,6 +38,8 @@ class User {
       this.maximunAgeToMatch,
       this.deletedAccount,
       this.loginStatus,
+      this.bornDate,
+      this.showMySexuality,
       this.name,
       this.lastName,
       this.bio,
@@ -57,9 +61,11 @@ class User {
     instagramUser = json['instagramUser'];
     whatsappNumberEnabled = json['whatsappNumberEnabled'];
     whatsappNumber = json['whatsappNumber'];
+    bornDate = json['bornDate'];
     minimunAgeToMatch = json['minimunAgeToMatch'];
     maximunAgeToMatch = json['maximunAgeToMatch'];
     deletedAccount = json['deletedAccount'];
+    showMySexuality = json['showMySexuality'];
     loginStatus = json['loginStatus'];
     name = json['name'];
     lastName = json['lastName'];
@@ -83,7 +89,9 @@ class User {
     data['whatsappNumberEnabled'] = whatsappNumberEnabled;
     data['whatsappNumber'] = whatsappNumber;
     data['minimunAgeToMatch'] = minimunAgeToMatch;
+    data['bornDate'] =bornDate;
     data['maximunAgeToMatch'] = maximunAgeToMatch;
+    data['showMySexuality']=showMySexuality;
     data['deletedAccount'] = deletedAccount;
     data['loginStatus'] = loginStatus;
     data['name'] = name;

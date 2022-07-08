@@ -11,5 +11,6 @@ abstract class SettingsContract {
   Future<bool> deactivateWhatsapp(int userId);
   Future<bool> setInstagram(int userId,String instagramUser);
   Future<bool> setWhatsapp(int userId,String whatsappNumber);
+  Future<bool>updateSexuality(bool showSexuality);
   Future<bool>setFiltersPreferences(int userId,User userWithChanges);
 }
