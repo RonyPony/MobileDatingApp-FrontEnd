@@ -1,5 +1,8 @@
+import 'package:cool_alert/cool_alert.dart';
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:inlove/screens/setting.page.dart';
 
 import '../controls/menu.dart';
 
@@ -10,98 +13,113 @@ class Conversation extends StatefulWidget {
 }
 
 class _buildState extends State<Conversation> {
+  bool hasText = false;
+  TextEditingController messageToSend = TextEditingController();
+  double _inputHeight = 50;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // messageToSend.addListener(_checkInputHeight);
+  }
+
   @override
   Widget build(BuildContext context) {
+    double _width = MediaQuery.of(context).size.width;
+    double _heigth = MediaQuery.of(context).size.height;
     return Scaffold(
-        bottomNavigationBar:  _buildMessageBox(),
+      backgroundColor: const Color(0xff020202),
+      appBar: AppBar(
+        elevation: 0,
         backgroundColor: const Color(0xff020202),
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: const Color(0xff020202),
-          title: const Text(''),
-        ),
-        body: Column(
+        title:  Row(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
-                  children: [
-                    _buildPhoto(),
-                  ],
+            Text(''),
+          ],
+        ),
+        toolbarHeight: 30,
+      ),
+      body: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Column(
+                children: [
+                  _buildPhoto(),
+                ],
+              ),
+              SizedBox(width: _width*.1,),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _buildName(),
+                  _buildSocialInfo(),
+                ],
+              ),
+              SizedBox(
+                width: _width * .1,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _buildFlag(),
+                ],
+              )
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: SingleChildScrollView(
+              child: Container(
+                width: _width*.95,
+                height: _heigth*.72,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(26),
+                  color: Color(0xff1b1b1b),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                child: Column(
                   children: [
-                    _buildName(),
-                    _buildSocialInfo(),
+                    _messageReceibed("Hola.", "11:45 PM"),
+                    _messageReceibed("Como estas?", "11:46 PM"),
+                    _messageSent("Hola.", "11:45 PM"),
                   ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    _buildFlag(),
-                  ],
-                )
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: SingleChildScrollView(
-                child: Container(
-                  width: 348,
-                  height: 542,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(26),
-                    color: Color(0xff1b1b1b),
-                  ),
-                  child: Column(
-                    children: [
-                      _messageReceibed("Hola.", "11:45 PM"),
-                      _messageReceibed("Como estas?", "11:46 PM"),
-                      _messageSent("Hola.", "11:45 PM"),
-                    ],
-                  ),
                 ),
               ),
-            )
-          ],
-        ));
+            ),
+          )
+        ],
+      ),
+      bottomNavigationBar: _buildMessageBox(),
+    );
   }
 
   _buildPhoto() {
-    return Padding(
-      padding: EdgeInsets.only(
-          left: MediaQuery.of(context).size.width * 1 / 9,
-          right: MediaQuery.of(context).size.width * .05),
-      child: Container(
-        width: 67,
-        height: 67,
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: Color(0xff838383),
-        ),
+    return Container(
+      width: 67,
+      height: 67,
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        color: Color(0xff838383),
       ),
     );
   }
 
   _buildName() {
-    return Padding(
-      padding: const EdgeInsets.only(),
-      child: Text(
-        "Ronel Cruz",
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 33,
-          fontFamily: "Jaldi",
-          fontWeight: FontWeight.w700,
-        ),
+    return const Text(
+      "Ronel Cruz",
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: 33,
+        fontFamily: "Jaldi",
+        fontWeight: FontWeight.w700,
       ),
     );
   }
 
   _buildSocialInfo() {
-    return Text(
+    return const Text(
       "@wipo | 809-9905832",
       style: TextStyle(
         color: Colors.white,
@@ -111,8 +129,23 @@ class _buildState extends State<Conversation> {
   }
 
   _buildFlag() {
-    return Padding(
-      padding: EdgeInsets.only(left: MediaQuery.of(context).size.width * .1),
+    return GestureDetector(
+      onTap: (){
+        CoolAlert.show(
+            context: context,
+            type: CoolAlertType.info,
+            backgroundColor: Colors.white,
+            loopAnimation: false,
+            cancelBtnText: "Configurar mi pais",
+            showCancelBtn: true,
+            onCancelBtnTap: () {
+              Navigator.pushNamedAndRemoveUntil(
+                  context, SettingScreen.routeName, (route) => false);
+            },
+            title: "Pais",
+            text:
+                'este usuario ha seleccionado su pais como PAIS');
+      },
       child: Flag.fromString(
         "DO",
         fit: BoxFit.fill,
@@ -127,7 +160,7 @@ class _buildState extends State<Conversation> {
     double _baseWidth = MediaQuery.of(context).size.width;
     double _baseHeight = MediaQuery.of(context).size.height;
     return Padding(
-      padding: EdgeInsets.only(top: 20, right: 120),
+      padding: EdgeInsets.only(top: 20, right: _baseWidth*.5),
       child: Container(
           width: _baseWidth * .4,
           height: 65,
@@ -166,12 +199,12 @@ class _buildState extends State<Conversation> {
               ))),
     );
   }
-  
+
   _messageSent(String s, String t) {
     double _baseWidth = MediaQuery.of(context).size.width;
     double _baseHeight = MediaQuery.of(context).size.height;
     return Padding(
-      padding: EdgeInsets.only(top: 20, left: 150),
+      padding: EdgeInsets.only(top: 20, left: _baseWidth*.5),
       child: Container(
           width: _baseWidth * .4,
           height: 65,
@@ -210,21 +243,46 @@ class _buildState extends State<Conversation> {
               ))),
     );
   }
-  
+
   _buildMessageBox() {
+    double _width = MediaQuery.of(context).size.width;
+    double _heigth = MediaQuery.of(context).size.height;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10,left: 10,right: 10),
+      padding: const EdgeInsets.only(bottom: 10, left: 10, right: 10),
       child: Container(
-      width: 374,
-      height: 61,
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: Container(
-                  width: 265,
-                  height: 36,
-                  child: TextField(),
+          height: 70,
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: Container(
+                  width: _width-100,
+                  height: 50,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      
+                      controller: messageToSend,
+                      // keyboardType: TextInputType.,
+                      cursorColor: Colors.pink,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintStyle:
+                            TextStyle(color: Colors.pink.withOpacity(.5)),
+                        hintText: 'Escribe un mensaje...',
+                      ),
+                      style: const TextStyle(color: Colors.white,fontSize: 18),
+                      onChanged: (t) {
+                        setState(() {
+                          if (t != "") {
+                            hasText = true;
+                          } else {
+                            hasText = false;
+                          }
+                        });
+                      },
+                    ),
+                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(13),
                     border: Border.all(
@@ -233,13 +291,43 @@ class _buildState extends State<Conversation> {
                     ),
                   ),
                 ),
-          )
-        ],
-      ),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(26),
-          color: Color(0xff1b1b1b),
-      )),
+              ),
+              SizedBox(
+                width: 13,
+              ),
+              hasText
+                  ? SvgPicture.asset(
+                      'assets/send.svg',
+                      color: Colors.pink,
+                      height: 40,
+                    )
+                  : SvgPicture.asset(
+                      'assets/send.svg',
+                      color: Colors.grey,
+                      height: 40,
+                    )
+            ],
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(26),
+            color: Color(0xff1b1b1b),
+          )),
     );
+  }
+
+  void _checkInputHeight() async {
+    int count = messageToSend.text.split('\n').length;
+
+    if (count == 0 && _inputHeight == 50.0) {
+      return;
+    }
+    if (count <= 5) {
+      // use a maximum height of 6 rows
+      // height values can be adapted based on the font size
+      var newHeight = count == 0 ? 50.0 : 28.0 + (count * 18.0);
+      setState(() {
+        _inputHeight = newHeight;
+      });
+    }
   }
 }

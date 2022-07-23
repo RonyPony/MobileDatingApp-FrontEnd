@@ -27,15 +27,18 @@ class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   final emailController =
-      TextEditingController(text: "ronel.cruz.a8@gmail.com");
-  final passController = TextEditingController(text: "ronel0808");
+      TextEditingController(text: "");
+  final passController = TextEditingController(text: "");
 
   @override
   void initState() {
     _controller =
         AnimationController(vsync: this, duration: const Duration(seconds: 2));
     _controller.repeat();
-
+  if (kDebugMode) {
+    emailController.text="ronel.cruz.a8@gmail.com";
+    passController.text = "ronel0808";
+  }
     super.initState();
   }
 

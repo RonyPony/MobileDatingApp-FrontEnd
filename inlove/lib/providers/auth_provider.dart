@@ -57,4 +57,9 @@ class AuthProvider with ChangeNotifier {
         await _authService.getSexualOrientationById(id);
     return response;
   }
+
+  Future<User> findUserById(int userId) async {
+    var response =  await _authService.findUserById(userId);
+    return response;
+  }
 }

@@ -109,8 +109,8 @@ class _MainMenuState extends State<MainMenu> {
                         context, ChatScreen.routeName, (route) => false);
                   },
                   child: Container(
-                    width: 40,
-                    height: 40,
+                    width: 35,
+                    height: 35,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                     ),

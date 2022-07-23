@@ -1,4 +1,4 @@
-package com.example.inlove
+package com.ronytuquizz.inlove
 
 import io.flutter.embedding.android.FlutterActivity
 

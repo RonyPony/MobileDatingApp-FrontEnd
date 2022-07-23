@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/user.dart';
+import '../models/userMatch.dart';
 import '../services/match_service.dart';
 
 class MatchProvider with ChangeNotifier {
@@ -15,6 +16,10 @@ class MatchProvider with ChangeNotifier {
 
   Future<bool>createMatch(int originUserId,int destinUserId) async {
     var response = await _service.createMatch(originUserId, destinUserId);
+    return response;
+  }
+  Future<List<UserMatch>> getUserMatches(int userId) async {
+    var response  = await _service.getUserMatches(userId);
     return response;
   }
 }

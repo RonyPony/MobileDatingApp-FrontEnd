@@ -70,6 +70,7 @@ flutter:
    - assets/r8.svg
    - assets/mainLanding.svg
    - assets/users.svg
+   - assets/send.svg
    - assets/flecha.svg
    - assets/deny.svg
    - assets/love.svg

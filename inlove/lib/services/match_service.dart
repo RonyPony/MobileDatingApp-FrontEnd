@@ -71,4 +71,48 @@ class MatchService implements MatchContract {
     }
   }
   
+  @override
+  Future<List<UserMatch>> getUserMatches(int userId) async {
+    List<UserMatch> foundUser = [];
+    try {
+      var resp = await Dio().get(
+          serverurl+'api/matches/userMatches/$userId');
+      if(resp.statusCode == 200){
+        var list  = resp.data;
+        foundUser = list.map<UserMatch>((sample) => UserMatch(
+          id: sample["id"],
+          finalUserId: sample["finalUserId"],
+          isAcepted: sample["isAcepted"],
+          originUserId: sample["originUserId"],
+          )).toList();
+        return foundUser;
+      }
+
+      if(resp.statusCode=="404"){
+        print("User Not Found");
+      }
+      // foundUser.hasError = true;
+      // foundUser.error="unknown";
+      return foundUser;
+    } 
+    on DioError catch (e) {
+      //http error(statusCode not 20x) will be catched here.
+      var responseInfo=e.response!.data;
+      // if (responseInfo.contains("R386")) {
+
+      // }
+      print(e.response!.statusCode.toString());
+      print('Failed Load Data with status code ${e.response!.statusCode}');
+      // foundUser.hasError = true;
+      
+      // foundUser.error = responseInfo;
+      return foundUser;
+    }catch(e){
+      print(e);
+      // foundUser.hasError = true;
+      // foundUser.error = e.toString();
+      return foundUser;
+    }
+  }
+  
 }

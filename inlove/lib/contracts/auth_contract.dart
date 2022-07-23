@@ -9,6 +9,7 @@ import '../models/user_register.dart';
 abstract class AuthContract {
   Future<bool>userExists(String userEmail);
   Future<User>findUserByEmail(String userEmail);
+  Future<User>findUserById(int userId);
   Future<bool>performLogin(Login userLogin);
   Future<bool>saveLocalUserInfo(User usuario);
   Future<bool>updateUserInfo(User user);
