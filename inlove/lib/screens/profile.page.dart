@@ -62,54 +62,54 @@ class _ProfileScreenState extends State<ProfileScreen>
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width * 1;
     Future<Widget> profilePic = getUserImage(localUserInfo);
-    return LoaderOverlay(
-      useDefaultLoading: false,
-      overlayWidget: Center(
-          child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(50),
-          color: Colors.black,
-          boxShadow: const [
-            BoxShadow(color: Colors.pink, spreadRadius: 3),
-          ],
-        ),
+      return LoaderOverlay(
+        useDefaultLoading: false,
+        overlayWidget: Center(
+            child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50),
+            color: Colors.black,
+            boxShadow: const [
+              BoxShadow(color: Colors.pink, spreadRadius: 3),
+            ],
+          ),
 
-        height: MediaQuery.of(context).size.height * .25,
-        // color: Colors.black,
-        padding: const EdgeInsets.all(29),
-        child: Column(
-          // crossAxisAlignment: CrossAxisAlignment.center
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AnimatedBuilder(
-              animation: _controller.view,
-              builder: (context, child) {
-                return Transform.rotate(
-                  angle: _controller.value * 2 * pi,
-                  child: child,
-                );
-              },
-              child: SvgPicture.asset(
-                'assets/logo-no-name.svg',
-                height: MediaQuery.of(context).size.height * .12,
+          height: MediaQuery.of(context).size.height * .25,
+          // color: Colors.black,
+          padding: const EdgeInsets.all(29),
+          child: Column(
+            // crossAxisAlignment: CrossAxisAlignment.center
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedBuilder(
+                animation: _controller.view,
+                builder: (context, child) {
+                  return Transform.rotate(
+                    angle: _controller.value * 2 * pi,
+                    child: child,
+                  );
+                },
+                child: SvgPicture.asset(
+                  'assets/logo-no-name.svg',
+                  height: MediaQuery.of(context).size.height * .12,
+                ),
               ),
-            ),
-            // CircularProgressIndicator(color:Colors.pink,),
-            const SizedBox(
-              height: 10,
-            ),
-            const Text(
-              "Subiendo tu foto...",
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.white,
-                  decoration: TextDecoration.none),
-            )
-          ],
-        ),
-      )),
-      child: Scaffold(
+              // CircularProgressIndicator(color:Colors.pink,),
+              const SizedBox(
+                height: 10,
+              ),
+              const Text(
+                "Subiendo tu foto...",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.normal,
+                    color: Colors.white,
+                    decoration: TextDecoration.none),
+              )
+            ],
+          ),
+        )),
+        child: Scaffold(
         bottomNavigationBar: const MainMenu(),
         backgroundColor: const Color(0xff020202),
         appBar: AppBar(

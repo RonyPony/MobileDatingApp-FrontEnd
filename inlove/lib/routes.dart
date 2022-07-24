@@ -8,6 +8,7 @@ import 'package:inlove/screens/login.page.dart';
 import 'package:inlove/screens/profile.page.dart';
 import 'package:inlove/screens/register.page.dart';
 import 'package:inlove/screens/setting.page.dart';
+import 'package:inlove/screens/userProfile.page.dart';
 
 final Map<String, WidgetBuilder> routes = {
   LandingPage.routeName: (context) => const LandingPage(),
@@ -18,4 +19,5 @@ final Map<String, WidgetBuilder> routes = {
   RegisterPage.routeName:(context)=> RegisterPage(),
   ChatScreen.routeName:(context)=>ChatScreen(),
   Conversation.routeName:(context)=>Conversation(),
+  UserProfileScreen.routeName:(context)=>UserProfileScreen(),
 };
