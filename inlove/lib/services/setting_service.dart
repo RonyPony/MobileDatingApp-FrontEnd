@@ -14,6 +14,7 @@ class SettingService implements SettingsContract{
     User currentUser = await _authService.readLocalUserInfo();
     currentUser.modoFantasma=true;
     try {
+      
       var resp = await Dio().put(serverurl + 'api/user/$userId', data: currentUser.toJson());
       
       if (resp.statusCode == 200 || resp.statusCode == 204) {

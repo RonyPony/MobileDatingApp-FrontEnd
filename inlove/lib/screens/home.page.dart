@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircularProgressIndicator(),
+                CircularProgressIndicator(color: Colors.pink),
               ],
             );
           }
@@ -122,7 +122,8 @@ class _HomePageState extends State<HomePage> {
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
-                                    return CircularProgressIndicator();
+                                    return CircularProgressIndicator(
+                                        color: Colors.pink);
                                   } else {
                                     if (snapshot.hasError) {
                                       return Text("Error found");
@@ -149,7 +150,8 @@ class _HomePageState extends State<HomePage> {
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return CircularProgressIndicator();
+                                return CircularProgressIndicator(
+                                    color: Colors.pink);
                               }
                               if (snapshot.hasError) {
                                 return Text("Error Ocurred");
@@ -265,7 +267,7 @@ class _HomePageState extends State<HomePage> {
                                                                             builder:
                                                                                 (context, _sexualOrientation) {
                                                                               if (_sexualOrientation.connectionState == ConnectionState.waiting) {
-                                                                                return CircularProgressIndicator();
+                                                                                return CircularProgressIndicator(color:Colors.pink);
                                                                               }
                                                                               if (_sexualOrientation.hasError) {
                                                                                 return Text("Err");
@@ -278,7 +280,7 @@ class _HomePageState extends State<HomePage> {
                                                                                   future: flag,
                                                                                   builder: (context, _flag) {
                                                                                     if (_flag.connectionState == ConnectionState.waiting) {
-                                                                                      return CircularProgressIndicator();
+                                                                                      return CircularProgressIndicator(color:Colors.pink);
                                                                                     }
                                                                                     if (_flag.hasError) {
                                                                                       return Text("Err");

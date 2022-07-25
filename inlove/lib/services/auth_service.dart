@@ -44,6 +44,9 @@ class AuthService implements AuthContract {
       if (kDebugMode) {
         print('Failed Load Data with status code ${e.response!.statusCode}');
       }
+      if (e.response!.statusCode==423) {
+        setErrorMessage(e.response!.data);
+      }
       return false;
     }
   }
@@ -81,6 +84,31 @@ class AuthService implements AuthContract {
     } catch (e) {
       print(e);
       return false;
+    }
+  }
+
+Future<bool> setErrorMessage(String? error) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      var res =
+          await prefs.setString("ErrorMsg", error!);
+      return res;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  Future<String?> getErrorMessage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      var res =
+          await prefs.getString("ErrorMsg");
+          setErrorMessage("");
+      return res;
+    } catch (e) {
+      print(e);
+      return "";
     }
   }
 

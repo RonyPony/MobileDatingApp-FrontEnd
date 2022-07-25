@@ -58,6 +58,11 @@ class AuthProvider with ChangeNotifier {
     return response;
   }
 
+  Future<String?>getErrorMsg() async {
+    final String? msg = await _authService.getErrorMessage();
+    return msg;
+  }
+
   Future<User> findUserById(int userId) async {
     var response =  await _authService.findUserById(userId);
     return response;

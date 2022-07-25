@@ -45,10 +45,10 @@ class _StateChatScreen extends State<ChatScreen> {
           child: Column(
             children: [
               _buildMatches(),
-              _aChat("Ronel Cruz C.", "Hola que tal, todo bien?"),
-              _aChat("Juana Almanzar", "Hola que tal, todo bien?"),
-              _aChat("Michelle Jimenez", "Hola que tal, todo bien?"),
-
+              // _aChat("Ronel Cruz C.", "Hola que tal, todo bien?"),
+              // _aChat("Juana Almanzar", "Hola que tal, todo bien?"),
+              // _aChat("Michelle Jimenez", "Hola que tal, todo bien?"),
+              _buildEmptyChats(),
             ],
           ),
         ));
@@ -66,6 +66,7 @@ class _StateChatScreen extends State<ChatScreen> {
     } else {
       return Image.memory(
         base64Decode(userPhoto.image!),
+        fit: BoxFit.fill,
         height: MediaQuery.of(context).size.height * .5,
         width: MediaQuery.of(context).size.width * .9,
       );
@@ -97,12 +98,13 @@ class _StateChatScreen extends State<ChatScreen> {
             snapshot.connectionState == ConnectionState.done) {
           return Padding(
             padding: const EdgeInsets.only(right: 10, left: 10),
-            child: GestureDetector(
-              onTap: (){
-                Navigator.pushNamed(context, UserProfileScreen.routeName,arguments: usuario.id);
-              },
-              child: Stack(children: [
-                Container(
+            child: Stack(children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, UserProfileScreen.routeName,
+                      arguments: usuario.id);
+                },
+                child: Container(
                   width: 150,
                   height: 120,
                   child: snapshot.data,
@@ -113,29 +115,29 @@ class _StateChatScreen extends State<ChatScreen> {
                           width: 3,
                           color: active ? Colors.pinkAccent : Colors.grey)),
                 ),
-                Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 70,left: 3),
-                      child: Container(
-                          padding: EdgeInsets.only(left: 20, right: 20),
-                          decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(.5),
-                              borderRadius: BorderRadius.only(
-                                  bottomRight: Radius.circular(10),
-                                  // topLeft: Radius.circular(10),
-                                  topRight: Radius.circular(10),
-                                  // bottomLeft: Radius.circular(10)
-                                  )),
-                          child: Text(
-                            usuario.name!,
-                            style: TextStyle(color: Colors.white),
-                          )),
-                    ),
-                  ],
-                )
-              ]),
-            ),
+              ),
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 70, left: 3),
+                    child: Container(
+                        padding: EdgeInsets.only(left: 20, right: 20),
+                        decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(.5),
+                            borderRadius: BorderRadius.only(
+                              bottomRight: Radius.circular(10),
+                              // topLeft: Radius.circular(10),
+                              topRight: Radius.circular(10),
+                              // bottomLeft: Radius.circular(10)
+                            )),
+                        child: Text(
+                          usuario.name!,
+                          style: TextStyle(color: Colors.white),
+                        )),
+                  ),
+                ],
+              )
+            ]),
           );
         }
         return Text("Error");
@@ -246,7 +248,7 @@ class _StateChatScreen extends State<ChatScreen> {
                 future: matches,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
+                    return CircularProgressIndicator(color: Colors.pink);
                   }
                   if (snapshot.hasError) {
                     return Text("Error");
@@ -274,15 +276,14 @@ class _StateChatScreen extends State<ChatScreen> {
                         height: 100,
                         width: 300,
                         child: ListView.builder(
-                          scrollDirection:Axis.horizontal,
+                          scrollDirection: Axis.horizontal,
                           // Let the ListView know how many items it needs to build.
                           itemCount: usuariosId.length,
                           // Provide a builder function. This is where the magic happens.
                           // Convert each item into a widget based on the type of item it is.
                           itemBuilder: (context, index) {
                             final item = usuariosId[index];
-                            Future<User> usr =
-                                authProvider.findUserById(item!);
+                            Future<User> usr = authProvider.findUserById(item!);
                             return FutureBuilder<User>(
                               future: usr,
                               builder: (context, snapshot) {
@@ -290,8 +291,7 @@ class _StateChatScreen extends State<ChatScreen> {
                                     ConnectionState.waiting) {
                                   Emojies ee = Emojies();
                                   return Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
                                         ee.getAnEmmoji(true),
@@ -384,6 +384,43 @@ class _StateChatScreen extends State<ChatScreen> {
             },
             child: Text("Consigue matches"))
       ],
+    );
+  }
+
+  _buildEmptyChats() {
+    return Padding(
+      padding:  EdgeInsets.only(top: MediaQuery.of(context).size.height*.2),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.chat,
+                size: 45,
+                color: Colors.white.withOpacity(.2),
+              ),
+              
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              
+              Text(
+                "Oh-Oh!",
+                style: TextStyle(color: Colors.white.withOpacity(.2),fontSize: 25),
+              )
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Estas lento con los chats",style: TextStyle(color: Colors.white.withOpacity(.2),fontSize: 18),)
+            ],
+          )
+        ],
+      ),
     );
   }
 }

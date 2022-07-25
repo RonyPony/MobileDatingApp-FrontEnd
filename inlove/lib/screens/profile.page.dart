@@ -139,7 +139,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
-                                  return CircularProgressIndicator();
+                                  return CircularProgressIndicator(color:Colors.pink);
                                 }
                                 if (snapshot.hasError) {
                                   return Text("Error Occured");
@@ -228,7 +228,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                                 .connectionState ==
                                                             ConnectionState
                                                                 .waiting) {
-                                                          return CircularProgressIndicator();
+                                                          return CircularProgressIndicator(color:Colors.pink);
                                                         }
                                                         if (_sexualOrientation
                                                             .hasError) {
@@ -261,7 +261,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                                       .connectionState ==
                                                                   ConnectionState
                                                                       .waiting) {
-                                                                return CircularProgressIndicator();
+                                                                return CircularProgressIndicator(color:Colors.pink);
                                                               }
                                                               if (_flag
                                                                   .hasError) {

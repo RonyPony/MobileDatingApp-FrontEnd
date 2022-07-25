@@ -792,8 +792,10 @@ class _SettingScreenState extends State<SettingScreen>
                     ),
                   ),
                 ),
+                
               ],
             ),
+            Text(minimunAgeToMatch.toString()),
             Padding(
               padding: const EdgeInsets.only(left: 20, top: 10),
               child: CustomRangeSelect(
@@ -940,7 +942,7 @@ class _SettingScreenState extends State<SettingScreen>
             future: _userInfo,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
+                return CircularProgressIndicator(color:Colors.pink);
               }
               if (snapshot.hasError) {
                 return const Text("Error 34");
@@ -1151,6 +1153,8 @@ class _SettingScreenState extends State<SettingScreen>
     // setState(() {
 
     // });
+    minimunAgeToMatch = currentUser.minimunAgeToMatch!;
+    maximunAgeToMatch = currentUser.maximunAgeToMatch!;
     ghostModeSwitch = currentUser.modoFantasma!;
     instagramSwitch = currentUser.instagramUserEnabled!;
     showSexualitySwitch = currentUser.showMySexuality!;

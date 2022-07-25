@@ -133,16 +133,22 @@ class _LoginPageState extends State<LoginPage>
               child: Column(
                 children: [
                   user,
-                  CustomTextBox(
-                    text: "Correo Electronico",
-                    onChange: () {},
-                    controller: emailController,
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10,right: 10),
+                    child: CustomTextBox(
+                      text: "Correo Electronico",
+                      onChange: () {},
+                      controller: emailController,
+                    ),
                   ),
-                  CustomTextBox(
-                    isPassword: true,
-                    onChange: () {},
-                    text: "Clave",
-                    controller: passController,
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10,right: 10,bottom: 10),
+                    child: CustomTextBox(
+                      isPassword: true,
+                      onChange: () {},
+                      text: "Clave",
+                      controller: passController,
+                    ),
                   ),
                 ],
               ),
@@ -239,16 +245,30 @@ class _LoginPageState extends State<LoginPage>
                               Navigator.pushNamedAndRemoveUntil(context,
                                   HomePage.routeName, (route) => false);
                             } else {
+                              String? errMsg = await authProvider.getErrorMsg();
                               Emojies emo = Emojies();
-                              CoolAlert.show(
-                                context: context,
-                                animType: CoolAlertAnimType.slideInDown,
-                                backgroundColor: Colors.white,
-                                loopAnimation: false,
-                                type: CoolAlertType.error,
-                                text:
-                                    "Credenciales incorrectas, por favor intentalo de nuevo ${emo.getAnEmmoji(false)}",
-                              );
+                              if (errMsg=="") {
+                                CoolAlert.show(
+                                  context: context,
+                                  animType: CoolAlertAnimType.slideInDown,
+                                  backgroundColor: Colors.white,
+                                  loopAnimation: false,
+                                  type: CoolAlertType.error,
+                                  text:
+                                      "Credenciales incorrectas, por favor intentalo de nuevo ${emo.getAnEmmoji(false)}",
+                                );
+                              }else{
+                                CoolAlert.show(
+                                  context: context,
+                                  animType: CoolAlertAnimType.slideInDown,
+                                  backgroundColor: Colors.white,
+                                  loopAnimation: false,
+                                  type: CoolAlertType.info,
+                                  title: "Informacion",
+                                  text:
+                                      errMsg,
+                                );
+                              }
                             }
                           } else {
                             Emojies emo = Emojies();
