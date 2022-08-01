@@ -11,6 +11,7 @@ abstract class AuthContract {
   Future<User>findUserByEmail(String userEmail);
   Future<User>findUserById(int userId);
   Future<bool>performLogin(Login userLogin);
+  Future<bool> performLogout();
   Future<bool>saveLocalUserInfo(User usuario);
   Future<bool>updateUserInfo(User user);
   Future<bool>registerUser(Register user);

@@ -1,8 +1,11 @@
 // ignore_for_file: avoid_print, duplicate_ignore, unrelated_type_equality_checks
 
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fbAuth;
 import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:inlove/constant.dart';
 import 'package:inlove/contracts/auth_contract.dart';
 import 'package:inlove/models/sexual_orientations.dart';
@@ -11,10 +14,14 @@ import 'package:inlove/models/user_login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/user_register.dart';
+import '../screens/chat_spike.dart';
 
 class AuthService implements AuthContract {
   String savedCurrentUserFlag = "la verdadera para tuya";
+final fbAuth.FirebaseAuth firebaseAuth;
+  final FirebaseFirestore firebaseFirestore;
 
+  AuthService(this.firebaseAuth, this.firebaseFirestore);
   @override
   Future<bool> performLogin(Login userLogin) async {
     try {
@@ -24,9 +31,33 @@ class AuthService implements AuthContract {
         "rememberMe": userLogin.rememberMe
       });
       if (resp.statusCode == 200) {
-        Future<User> usua = findUserByEmail(userLogin.userEmail!);
-        saveLocalUserInfo(await usua);
-        return true;
+        
+        fbAuth.User? firebaseUser =
+            (await firebaseAuth.signInWithEmailAndPassword(email: userLogin.userEmail!,password:userLogin.password! )).user;
+        if (firebaseUser != null) {
+       final QuerySnapshot result = await firebaseFirestore
+           .collection(FirestoreConstants.pathUserCollection)
+           .where(FirestoreConstants.id, isEqualTo: firebaseUser.uid)
+           .get();
+       final List<DocumentSnapshot> document = result.docs;
+       if (document.isEmpty) {
+         firebaseFirestore
+             .collection(FirestoreConstants.pathUserCollection)
+             .doc(firebaseUser.uid)
+             .set({
+           FirestoreConstants.displayName: firebaseUser.displayName,
+           FirestoreConstants.photoUrl: firebaseUser.photoURL,
+           FirestoreConstants.email:firebaseUser.email,
+           FirestoreConstants.id: firebaseUser.uid,
+           "createdAt: ": DateTime.now().millisecondsSinceEpoch.toString(),
+           FirestoreConstants.chattingWith: null
+         });}
+         User usua = await findUserByEmail(firebaseUser.email!);
+        if (usua != User()) {
+          saveLocalUserInfo( usua);
+          return true;
+        }
+        }
       }
 
       // ignore: unrelated_type_equality_checks
@@ -48,7 +79,29 @@ class AuthService implements AuthContract {
         setErrorMessage(e.response!.data);
       }
       return false;
+    }on fbAuth.FirebaseAuthException catch(fbE){
+      print(fbE.message);
+      if (fbE.code == "user-not-found"||fbE.code=="wrong-password") {
+        print("Registering new firebase user");
+        bool registered = registerFirebaseUser(userLogin);
+        if (registered) {
+          User usua = await findUserByEmail(userLogin.userEmail!);
+          if (usua != User()) {
+            saveLocalUserInfo(usua);
+            return true;
+          }else{
+            return false;
+          }
+        }
+      }
+      
+      return false;
     }
+    catch(e){
+      print("ERROR"+e.toString());
+      return false;
+    }
+  
   }
 
   @override
@@ -309,6 +362,31 @@ Future<bool> setErrorMessage(String? error) async {
     } catch (e) {
       print(e);
       return foundUser;
+    }
+  }
+  
+  @override
+  Future<bool> performLogout() async {
+    try {
+      final fbAuth.FirebaseAuth _auth = fbAuth.FirebaseAuth.instance;
+      GoogleSignIn ss = GoogleSignIn();
+      ss.disconnect();
+      await _auth.signOut();
+      saveLocalUserInfo(User());
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+  
+  bool registerFirebaseUser(Login userLogin) {
+    try {
+      final fbAuth.FirebaseAuth _auth = fbAuth.FirebaseAuth.instance;
+      _auth.createUserWithEmailAndPassword(
+          email: userLogin.userEmail!, password: userLogin.password!);
+          return true;
+    } catch (e) {
+      return false;
     }
   }
 }

@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "721194391218-4i6apc1615r0cqqprojob4v14md3cduj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ronytuquizz.inlove",
+            "certificate_hash": "c445108c5ee515240adeb0eef8bb96ee9f06d108"
+          }
+        },
+        {
           "client_id": "721194391218-hdjnae0if0fdostg2fr0065ei0v96q7j.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +37,13 @@
             {
               "client_id": "721194391218-hdjnae0if0fdostg2fr0065ei0v96q7j.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "721194391218-o2cm2tp1grk80c2qihprva6qdtbamias.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ronytuquizz.inlove"
+              }
             }
           ]
         }

@@ -671,9 +671,13 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   Widget logout() {
     return GestureDetector(
-      onTap: () {
-        Navigator.pushNamedAndRemoveUntil(
+      onTap: () async {
+        final authProvider = Provider.of<AuthProvider>(context,listen: false);
+        bool response =await authProvider.logout();
+        if(response){
+          Navigator.pushNamedAndRemoveUntil(
             context, LoginPage.routeName, (route) => false);
+        }
       },
       child: Container(
         width: MediaQuery.of(context).size.width * .8,

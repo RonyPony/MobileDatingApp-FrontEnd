@@ -1,12 +1,17 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fba;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:inlove/controls/menu.dart';
 import 'package:inlove/helpers/emojies.dart';
+import 'package:inlove/models/chat_arguments.dart';
 import 'package:inlove/models/userMatch.dart';
 import 'package:inlove/providers/auth_provider.dart';
 import 'package:inlove/providers/match_provider.dart';
+import 'package:inlove/screens/chat_spike.dart';
 import 'package:inlove/screens/conversation.page.dart';
 import 'package:inlove/screens/home.page.dart';
 import 'package:inlove/screens/userProfile.page.dart';
@@ -14,6 +19,7 @@ import 'package:provider/provider.dart';
 
 import '../models/photo.dart';
 import '../models/user.dart';
+import '../providers/chat_provider.dart';
 import '../providers/photo_provider.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -25,6 +31,8 @@ class ChatScreen extends StatefulWidget {
 class _StateChatScreen extends State<ChatScreen> {
   List<User>? _matchinUsers;
   late User _currentUser;
+  List<ChatArguments>_chatList=[];
+  var listMessages;
   @override
   void initState() {
     // TODO: implement initState
@@ -48,6 +56,7 @@ class _StateChatScreen extends State<ChatScreen> {
               // _aChat("Ronel Cruz C.", "Hola que tal, todo bien?"),
               // _aChat("Juana Almanzar", "Hola que tal, todo bien?"),
               // _aChat("Michelle Jimenez", "Hola que tal, todo bien?"),
+              _buildRoms(),
               _buildEmptyChats(),
             ],
           ),
@@ -75,7 +84,15 @@ class _StateChatScreen extends State<ChatScreen> {
 
   _aMatch(bool active, User usuario) {
     Future<Image> userimage = getUserImage(usuario);
-
+    var instance = fba.FirebaseAuth.instance;
+    String _uid = instance.currentUser!.uid;
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    String secondUserId = "";
+    Stream<QuerySnapshot<Map<String, dynamic>>>  response = chatProvider.getUIDfromEmail(usuario.
+    email!);
+    response.listen((event) {
+      secondUserId= event.docs.first["userId"];
+     });
     return FutureBuilder<Image>(
       future: userimage,
       builder: (context, snapshot) {
@@ -101,8 +118,13 @@ class _StateChatScreen extends State<ChatScreen> {
             child: Stack(children: [
               GestureDetector(
                 onTap: () {
-                  Navigator.pushNamed(context, UserProfileScreen.routeName,
-                      arguments: usuario.id);
+                  
+                  String roomId = chatProvider.createRoom(_uid, secondUserId);
+                  ChatArguments args = ChatArguments(usuario, roomId);
+                  Navigator.pushNamed(context, Conversation.routeName,
+                      arguments: args);
+                  // Navigator.pushNamed(context, UserProfileScreen.routeName,
+                  //     arguments: usuario.id);
                 },
                 child: Container(
                   width: 150,
@@ -389,7 +411,7 @@ class _StateChatScreen extends State<ChatScreen> {
 
   _buildEmptyChats() {
     return Padding(
-      padding:  EdgeInsets.only(top: MediaQuery.of(context).size.height*.2),
+      padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * .2),
       child: Column(
         children: [
           Row(
@@ -400,27 +422,111 @@ class _StateChatScreen extends State<ChatScreen> {
                 size: 45,
                 color: Colors.white.withOpacity(.2),
               ),
-              
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              
               Text(
                 "Oh-Oh!",
-                style: TextStyle(color: Colors.white.withOpacity(.2),fontSize: 25),
+                style: TextStyle(
+                    color: Colors.white.withOpacity(.2), fontSize: 25),
               )
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text("Estas lento con los chats",style: TextStyle(color: Colors.white.withOpacity(.2),fontSize: 18),)
+              Text(
+                "Estas lento con los chats",
+                style: TextStyle(
+                    color: Colors.white.withOpacity(.2), fontSize: 18),
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, ChatTest.routeName);
+                  },
+                  child: Text("GoToSpike"))
             ],
           )
         ],
       ),
+    );
+  }
+
+  _buildRoms() {
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    var auth = fba.FirebaseAuth.instance;
+    String _uid = auth.currentUser!.uid;
+    return Column(
+      children: [
+        SizedBox(height: 20,),
+        Container(
+          height: 100,
+          width: MediaQuery.of(context).size.width-50,
+          child: Flexible(
+              child: StreamBuilder<QuerySnapshot>(
+                  stream: chatProvider.getChatRooms(_uid, 10),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasData) {
+                      listMessages = snapshot.data!.docs;
+                      if (listMessages.isNotEmpty) {
+                        var auth = fba.FirebaseAuth.instance;
+                        String _uid = auth.currentUser!.uid;
+                        return ListView(
+                          children: snapshot.data!.docs
+                              .map((DocumentSnapshot document) {
+                            Map<String, dynamic> data =
+                                document.data()! as Map<String, dynamic>;
+                            if (data['user1_uid'] == _uid || data['user2_uid'] == _uid) {
+                              //sent
+                              return GestureDetector(
+                                onTap: (){
+                                  
+                                  // ChatArguments args =
+                                  //     ChatArguments(usuario, roomId);
+                                  // Navigator.pushNamed(
+                                  //     context, Conversation.routeName,
+                                  //     arguments: args);
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color:Color(0xff242424),
+                                    borderRadius: BorderRadius.circular(10)
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 20,top: 20,bottom: 20),
+                                    child: Text(document.id,style: TextStyle(color: Colors.white),),
+                                  ),
+                                ),
+                              );
+                            } else {
+                              //receibed
+                              return Text("NO",
+                                  style: TextStyle(color: Colors.pinkAccent));
+                            }
+                          }).toList(),
+                        );
+                      } else {
+                        return const Center(
+                          child: Text(
+                            'No messages...',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        );
+                      }
+                    } else {
+                      return CircularProgressIndicator(
+                        color: Colors.yellow,
+                      );
+                    }
+                  })),
+        ),
+        // _messageReceibed("Hola.", "11:45 PM"),
+        // _messageReceibed("Como estas?", "11:46 PM"),
+        // _messageSent("Hola.", "11:45 PM"),
+      ],
     );
   }
 }

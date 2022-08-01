@@ -1,6 +1,9 @@
 // ignore_for_file: unrelated_type_equality_checks, avoid_print
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+import 'package:firebase_core/firebase_core.dart';
 import 'package:inlove/contracts/settings_contract.dart';
 import 'package:inlove/models/user.dart';
 import 'package:inlove/services/auth_service.dart';
@@ -8,7 +11,7 @@ import 'package:inlove/services/auth_service.dart';
 import '../constant.dart';
 
 class SettingService implements SettingsContract{
-  final AuthService _authService = AuthService();
+  final AuthService _authService = AuthService(fb_auth.FirebaseAuth.instance,FirebaseFirestore.instance);
   @override
   Future<bool> activateGhostMode(int userId) async {
     User currentUser = await _authService.readLocalUserInfo();

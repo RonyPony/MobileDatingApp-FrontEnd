@@ -1,6 +1,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:inlove/screens/chat.page.dart';
+import 'package:inlove/screens/chat_spike.dart';
 import 'package:inlove/screens/conversation.page.dart';
 import 'package:inlove/screens/home.page.dart';
 import 'package:inlove/screens/landing.page.dart';
@@ -20,4 +21,5 @@ final Map<String, WidgetBuilder> routes = {
   ChatScreen.routeName:(context)=>ChatScreen(),
   Conversation.routeName:(context)=>Conversation(),
   UserProfileScreen.routeName:(context)=>UserProfileScreen(),
+  ChatTest.routeName:((context) => ChatTest())
 };

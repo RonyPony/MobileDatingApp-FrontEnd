@@ -1,10 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cool_alert/cool_alert.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fbAuth;
 import 'package:flag/flag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:inlove/models/chat_arguments.dart';
+import 'package:inlove/providers/countries_provider.dart';
+import 'package:inlove/screens/chat_spike.dart';
 import 'package:inlove/screens/setting.page.dart';
+import 'package:provider/provider.dart';
 
 import '../controls/menu.dart';
+import '../models/country.dart';
+import '../models/user.dart';
+import '../providers/chat_provider.dart';
 
 class Conversation extends StatefulWidget {
   static String routeName = '/conversation';
@@ -17,15 +26,40 @@ class _buildState extends State<Conversation> {
   TextEditingController messageToSend = TextEditingController();
   double _inputHeight = 50;
 
+  User _secondUser = User();
+  Country _secondUserCountry = Country();
+  String _roomId = "";
+
+  var listMessages;
+  
+  var  secondUserFirebaseId;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    // messageToSend.addListener(_checkInputHeight);
+    // Future.delayed(Duration.zero, () {
+    //   setState(() {
+    // _secondUser = ModalRoute.of(context)!.settings.arguments as User;
+    //   });
+    // }).then((value) async {
+    //   _secondUserCountry= await getUserCountry(_secondUser);
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
+    ChatArguments args = ModalRoute.of(context)!.settings.arguments as ChatArguments;
+    _secondUser = args.usuario;
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    Stream<QuerySnapshot<Map<String, dynamic>>> response =
+        chatProvider.getUIDfromEmail(_secondUser.email!);
+    response.listen((event) {
+      secondUserFirebaseId = event.docs.first["userId"];
+    });
+    _roomId = args.roomId;
+    Future.delayed(Duration.zero, () async {
+      _secondUserCountry = await getUserCountry(_secondUser);
+    });
     double _width = MediaQuery.of(context).size.width;
     double _heigth = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -33,7 +67,7 @@ class _buildState extends State<Conversation> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: const Color(0xff020202),
-        title:  Row(
+        title: Row(
           children: [
             Text(''),
           ],
@@ -50,12 +84,14 @@ class _buildState extends State<Conversation> {
                   _buildPhoto(),
                 ],
               ),
-              SizedBox(width: _width*.1,),
+              SizedBox(
+                width: _width * .1,
+              ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _buildName(),
-                  _buildSocialInfo(),
+                  _buildName(_secondUser),
+                  _buildSocialInfo(_secondUser),
                 ],
               ),
               SizedBox(
@@ -64,7 +100,7 @@ class _buildState extends State<Conversation> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _buildFlag(),
+                  _buildFlag(_secondUser),
                 ],
               )
             ],
@@ -73,17 +109,69 @@ class _buildState extends State<Conversation> {
             padding: const EdgeInsets.only(top: 10),
             child: SingleChildScrollView(
               child: Container(
-                width: _width*.95,
-                height: _heigth*.72,
+                width: _width * .95,
+                height: _heigth * .72,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(26),
                   color: Color(0xff1b1b1b),
                 ),
                 child: Column(
                   children: [
-                    _messageReceibed("Hola.", "11:45 PM"),
-                    _messageReceibed("Como estas?", "11:46 PM"),
-                    _messageSent("Hola.", "11:45 PM"),
+                    Container(
+                      height: 100,
+                      width: 200,
+                      child: Flexible(
+                          child: StreamBuilder<QuerySnapshot>(
+                              stream: chatProvider.getChatMessage(_roomId, 10),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                                if (snapshot.hasData) {
+                                  listMessages = snapshot.data!.docs;
+                                  if (listMessages.isNotEmpty) {
+                                    var auth = fbAuth.FirebaseAuth.instance;
+                                    String _uid = auth.currentUser!.uid;
+                                    return Container(
+                                      child: ListView(
+                                        children: snapshot.data!.docs
+                                            .map((DocumentSnapshot document) {
+                                          Map<String, dynamic> data = document
+                                              .data()! as Map<String, dynamic>;
+                                          if (data['idFrom'] == _uid) {
+                                            //sent
+                                            return Container(
+                                                decoration: BoxDecoration(
+                                                    color: Colors.grey),
+                                                child: Text(data['content']));
+                                            
+                                          } else {
+                                            //receibed
+                                            return Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.pinkAccent
+                                              ),
+                                                child: Text(data['msg']));
+                                          }
+                                        }).toList(),
+                                      ),
+                                    );
+                                  } else {
+                                    return const Center(
+                                      child: Text(
+                                        'No messages...',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                    );
+                                  }
+                                } else {
+                                  return CircularProgressIndicator(
+                                    color: Colors.yellow,
+                                  );
+                                }
+                              })),
+                    ),
+                    // _messageReceibed("Hola.", "11:45 PM"),
+                    // _messageReceibed("Como estas?", "11:46 PM"),
+                    // _messageSent("Hola.", "11:45 PM"),
                   ],
                 ),
               ),
@@ -106,9 +194,9 @@ class _buildState extends State<Conversation> {
     );
   }
 
-  _buildName() {
-    return const Text(
-      "Ronel Cruz",
+  _buildName(User usuario) {
+    return Text(
+      usuario.name! + " " + usuario.lastName!.characters.take(1).string + ".",
       style: TextStyle(
         color: Colors.white,
         fontSize: 33,
@@ -118,9 +206,9 @@ class _buildState extends State<Conversation> {
     );
   }
 
-  _buildSocialInfo() {
-    return const Text(
-      "@wipo | 809-9905832",
+  _buildSocialInfo(User usr) {
+    return Text(
+      "${usr.instagramUser!} | ${usr.whatsappNumber!}",
       style: TextStyle(
         color: Colors.white,
         fontSize: 16,
@@ -128,9 +216,9 @@ class _buildState extends State<Conversation> {
     );
   }
 
-  _buildFlag() {
+  Widget _buildFlag(User usr) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         CoolAlert.show(
             context: context,
             type: CoolAlertType.info,
@@ -143,8 +231,7 @@ class _buildState extends State<Conversation> {
                   context, SettingScreen.routeName, (route) => false);
             },
             title: "Pais",
-            text:
-                'este usuario ha seleccionado su pais como PAIS');
+            text: 'este usuario ha seleccionado su pais como PAIS');
       },
       child: Flag.fromString(
         "DO",
@@ -156,11 +243,11 @@ class _buildState extends State<Conversation> {
     );
   }
 
-  _messageReceibed(String s, String t) {
+  Widget _messageReceibed(String s, String t) {
     double _baseWidth = MediaQuery.of(context).size.width;
     double _baseHeight = MediaQuery.of(context).size.height;
     return Padding(
-      padding: EdgeInsets.only(top: 20, right: _baseWidth*.5),
+      padding: EdgeInsets.only(top: 20, right: _baseWidth * .5),
       child: Container(
           width: _baseWidth * .4,
           height: 65,
@@ -200,11 +287,11 @@ class _buildState extends State<Conversation> {
     );
   }
 
-  _messageSent(String s, String t) {
+  Widget _messageSent(String s, String t) {
     double _baseWidth = MediaQuery.of(context).size.width;
     double _baseHeight = MediaQuery.of(context).size.height;
     return Padding(
-      padding: EdgeInsets.only(top: 20, left: _baseWidth*.5),
+      padding: EdgeInsets.only(top: 20, left: _baseWidth * .5),
       child: Container(
           width: _baseWidth * .4,
           height: 65,
@@ -256,12 +343,11 @@ class _buildState extends State<Conversation> {
               Padding(
                 padding: const EdgeInsets.only(left: 10),
                 child: Container(
-                  width: _width-100,
+                  width: _width - 100,
                   height: 50,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextField(
-                      
                       controller: messageToSend,
                       // keyboardType: TextInputType.,
                       cursorColor: Colors.pink,
@@ -271,7 +357,7 @@ class _buildState extends State<Conversation> {
                             TextStyle(color: Colors.pink.withOpacity(.5)),
                         hintText: 'Escribe un mensaje...',
                       ),
-                      style: const TextStyle(color: Colors.white,fontSize: 18),
+                      style: const TextStyle(color: Colors.white, fontSize: 18),
                       onChanged: (t) {
                         setState(() {
                           if (t != "") {
@@ -296,11 +382,23 @@ class _buildState extends State<Conversation> {
                 width: 13,
               ),
               hasText
-                  ? SvgPicture.asset(
-                      'assets/send.svg',
-                      color: Colors.pink,
-                      height: 40,
-                    )
+                  ? GestureDetector(
+                    onTap: (){
+                      final chatProvider = Provider.of<ChatProvider>(context,listen: false);
+                      String messageContent = messageToSend.text;
+                      int type = MessageType().text;
+                      final auth = fbAuth.FirebaseAuth.instance;
+                      chatProvider.sendChatMessage(messageContent, type, _roomId, auth.currentUser!.uid, secondUserFirebaseId);
+                      setState(() {
+                       messageToSend.clear();
+                      });
+                    },
+                    child: SvgPicture.asset(
+                        'assets/send.svg',
+                        color: Colors.pink,
+                        height: 40,
+                      ),
+                  )
                   : SvgPicture.asset(
                       'assets/send.svg',
                       color: Colors.grey,
@@ -329,5 +427,13 @@ class _buildState extends State<Conversation> {
         _inputHeight = newHeight;
       });
     }
+  }
+
+  Future<Country> getUserCountry(User secondUser) async {
+    final countryProvider =
+        Provider.of<CountriesProvider>(context, listen: false);
+    Country country =
+        await countryProvider.findCountryById(secondUser.countryId.toString());
+    return country;
   }
 }

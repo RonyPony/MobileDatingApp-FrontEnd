@@ -1,9 +1,11 @@
 import 'dart:math';
 
 import 'package:cool_alert/cool_alert.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:inlove/controls/link_buttom.dart';
 import 'package:inlove/helpers/emojies.dart';
 import 'package:inlove/models/user_login.dart';
@@ -26,8 +28,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  final emailController =
-      TextEditingController(text: "");
+  final emailController = TextEditingController(text: "");
   final passController = TextEditingController(text: "");
 
   @override
@@ -35,10 +36,10 @@ class _LoginPageState extends State<LoginPage>
     _controller =
         AnimationController(vsync: this, duration: const Duration(seconds: 2));
     _controller.repeat();
-  if (kDebugMode) {
-    emailController.text="ronel.cruz.a8@gmail.com";
-    passController.text = "ronel0808";
-  }
+    if (kDebugMode) {
+      emailController.text = "ronel.cruz.a8@gmail.com";
+      passController.text = "ronel0808";
+    }
     super.initState();
   }
 
@@ -55,6 +56,22 @@ class _LoginPageState extends State<LoginPage>
       usersAsset,
       // color: Colors.blue,
     );
+
+    final authProvider = Provider.of<AuthProvider>(context);
+
+    switch (authProvider.status) {
+      case Status.authenticateError:
+        Fluttertoast.showToast(msg: 'Sign in failed');
+        break;
+      case Status.authenticateCanceled:
+        Fluttertoast.showToast(msg: 'Sign in cancelled');
+        break;
+      case Status.authenticated:
+        Fluttertoast.showToast(msg: 'Sign in successful');
+        break;
+      default:
+        break;
+    }
 
     return LoaderOverlay(
       useDefaultLoading: false,
@@ -134,7 +151,7 @@ class _LoginPageState extends State<LoginPage>
                 children: [
                   user,
                   Padding(
-                    padding: const EdgeInsets.only(left: 10,right: 10),
+                    padding: const EdgeInsets.only(left: 10, right: 10),
                     child: CustomTextBox(
                       text: "Correo Electronico",
                       onChange: () {},
@@ -142,7 +159,8 @@ class _LoginPageState extends State<LoginPage>
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(left: 10,right: 10,bottom: 10),
+                    padding:
+                        const EdgeInsets.only(left: 10, right: 10, bottom: 10),
                     child: CustomTextBox(
                       isPassword: true,
                       onChange: () {},
@@ -162,11 +180,31 @@ class _LoginPageState extends State<LoginPage>
               height: 10,
             ),
             GestureDetector(
-              onTap: (){
+              onTap: () {
                 Navigator.pushNamed(context, RegisterPage.routeName);
               },
               child: const CustomLinkButton(
                 tittle: "O Registrate",
+              ),
+            ),
+            GestureDetector(
+              onTap: () async {
+                final authProvider =
+                    Provider.of<AuthProvider>(context, listen: false);
+                bool? isSuccess = await authProvider.handleGoogleSignIn();
+                if (isSuccess!) {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HomePage()));
+                } else {
+                  Fluttertoast.showToast(
+                      msg: 'Ups, algo paso con Google confirmando tu identidad',
+                      backgroundColor: Colors.red);
+                }
+              },
+              child: const CustomLinkButton(
+                tittle: "Inicia sesion con google",
               ),
             ),
             Row(
@@ -247,7 +285,7 @@ class _LoginPageState extends State<LoginPage>
                             } else {
                               String? errMsg = await authProvider.getErrorMsg();
                               Emojies emo = Emojies();
-                              if (errMsg=="") {
+                              if (errMsg == "") {
                                 CoolAlert.show(
                                   context: context,
                                   animType: CoolAlertAnimType.slideInDown,
@@ -257,7 +295,7 @@ class _LoginPageState extends State<LoginPage>
                                   text:
                                       "Credenciales incorrectas, por favor intentalo de nuevo ${emo.getAnEmmoji(false)}",
                                 );
-                              }else{
+                              } else {
                                 CoolAlert.show(
                                   context: context,
                                   animType: CoolAlertAnimType.slideInDown,
@@ -265,8 +303,7 @@ class _LoginPageState extends State<LoginPage>
                                   loopAnimation: false,
                                   type: CoolAlertType.info,
                                   title: "Informacion",
-                                  text:
-                                      errMsg,
+                                  text: errMsg,
                                 );
                               }
                             }
@@ -286,14 +323,26 @@ class _LoginPageState extends State<LoginPage>
                         } catch (e) {
                           Emojies emo = Emojies();
                           context.loaderOverlay.hide();
-                          CoolAlert.show(
-                              context: context,
-                              animType: CoolAlertAnimType.slideInDown,
-                              backgroundColor: Colors.white,
-                              loopAnimation: false,
-                              type: CoolAlertType.error,
-                              title: "ERROR",
-                              text: e.toString()+emo.getAnEmmoji(false));
+                          if (e is FirebaseAuthException) {
+                            CoolAlert.show(
+                                context: context,
+                                animType: CoolAlertAnimType.slideInDown,
+                                backgroundColor: Colors.white,
+                                loopAnimation: false,
+                                type: CoolAlertType.error,
+                                title: "ERROR de autenticacion",
+                                text: e.message.toString() +
+                                    emo.getAnEmmoji(false));
+                          } else {
+                            CoolAlert.show(
+                                context: context,
+                                animType: CoolAlertAnimType.slideInDown,
+                                backgroundColor: Colors.white,
+                                loopAnimation: false,
+                                type: CoolAlertType.error,
+                                title: "ERROR",
+                                text: e.toString() + emo.getAnEmmoji(false));
+                          }
                         } finally {
                           context.loaderOverlay.hide();
                         }

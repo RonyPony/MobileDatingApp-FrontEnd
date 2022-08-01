@@ -1,5 +1,14 @@
+import 'dart:ffi';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:inlove/providers/auth_provider.dart';
+import 'package:inlove/providers/chat_provider.dart';
 import 'package:inlove/providers/countries_provider.dart';
 import 'package:inlove/providers/match_provider.dart';
 import 'package:inlove/providers/photo_provider.dart';
@@ -12,12 +21,20 @@ import 'package:inlove/services/match_service.dart';
 import 'package:inlove/services/photo_service.dart';
 import 'package:inlove/services/setting_service.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  final SharedPreferences shared = await SharedPreferences.getInstance();
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (_)=>AuthProvider(AuthService())),
+      ChangeNotifierProvider(create: (_)=>AuthProvider(authService: AuthService(FirebaseAuth.instance,FirebaseFirestore.instance), firebaseAuth: FirebaseAuth.instance, firebaseFirestore: FirebaseFirestore.instance, googleSignIn: GoogleSignIn(), prefs:shared)),
       ChangeNotifierProvider(create: (_)=>SettingsProvider(SettingService())),
+      ChangeNotifierProvider(create: (_)=>ChatProvider(FirebaseStorage.instance, FirebaseFirestore.instance)),
       ChangeNotifierProvider(create: (_)=>MatchProvider(MatchService())),
       ChangeNotifierProvider(create: (_)=>PhotoProvider(PhotoService())),
       ChangeNotifierProvider(create: (_)=>CountriesProvider(CountriesService()))

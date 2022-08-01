@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:cool_alert/cool_alert.dart';
 import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -14,7 +13,6 @@ import 'package:provider/provider.dart';
 import '../helpers/emojies.dart';
 import '../models/country.dart';
 import '../models/photo.dart';
-import '../models/photoToUpload.dart';
 import '../models/sexual_orientations.dart';
 import '../models/user.dart';
 import '../providers/countries_provider.dart';
@@ -71,7 +69,7 @@ class _StateUserProfile extends State<UserProfileScreen> with SingleTickerProvid
   
   @override
   Widget build(BuildContext context) {
-    Future<Widget> profilePic = getUserImage(_currentUser!);
+    Future<Widget> profilePic = getUserImage(_currentUser);
     return LoaderOverlay(
       useDefaultLoading: false,
       overlayWidget: Center(
