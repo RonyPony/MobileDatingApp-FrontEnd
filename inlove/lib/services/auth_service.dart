@@ -85,6 +85,32 @@ final fbAuth.FirebaseAuth firebaseAuth;
         print("Registering new firebase user");
         bool registered = registerFirebaseUser(userLogin);
         if (registered) {
+          print("Registering new firebase user - Completed Successfully");
+          fbAuth.User? firebaseUser =
+              (await firebaseAuth.signInWithEmailAndPassword(
+                      email: userLogin.userEmail!,
+                      password: userLogin.password!))
+                  .user;
+          if (firebaseUser != null){
+            final QuerySnapshot result = await firebaseFirestore
+                .collection(FirestoreConstants.pathUserCollection)
+                .where(FirestoreConstants.id, isEqualTo: firebaseUser.uid)
+                .get();
+            final List<DocumentSnapshot> document = result.docs;
+            if (document.isEmpty) {
+              firebaseFirestore
+                  .collection(FirestoreConstants.pathUserCollection)
+                  .doc(firebaseUser.uid)
+                  .set({
+                FirestoreConstants.displayName: firebaseUser.displayName,
+                FirestoreConstants.photoUrl: firebaseUser.photoURL,
+                FirestoreConstants.email: firebaseUser.email,
+                FirestoreConstants.id: firebaseUser.uid,
+                "createdAt: ": DateTime.now().millisecondsSinceEpoch.toString(),
+                FirestoreConstants.chattingWith: null
+              });
+            }
+          }
           User usua = await findUserByEmail(userLogin.userEmail!);
           if (usua != User()) {
             saveLocalUserInfo(usua);

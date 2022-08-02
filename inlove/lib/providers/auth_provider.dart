@@ -38,6 +38,11 @@ class AuthProvider extends ChangeNotifier {
     return response;
   }
 
+  Future<User>findUserByEmail(String userEmail) async {
+    final user = await authService.findUserByEmail(userEmail);
+    return user;
+  }
+
   Future<User> readLocalUserInfo() async {
     final User response = await authService.readLocalUserInfo();
     return response;

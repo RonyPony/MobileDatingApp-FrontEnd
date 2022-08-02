@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
@@ -24,6 +25,7 @@ import '../providers/photo_provider.dart';
 
 class ChatScreen extends StatefulWidget {
   static String routeName = '/chatScreen';
+
   @override
   State<ChatScreen> createState() => _StateChatScreen();
 }
@@ -31,8 +33,9 @@ class ChatScreen extends StatefulWidget {
 class _StateChatScreen extends State<ChatScreen> {
   List<User>? _matchinUsers;
   late User _currentUser;
-  List<ChatArguments>_chatList=[];
+  List<ChatArguments> _chatList = [];
   var listMessages;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -57,7 +60,7 @@ class _StateChatScreen extends State<ChatScreen> {
               // _aChat("Juana Almanzar", "Hola que tal, todo bien?"),
               // _aChat("Michelle Jimenez", "Hola que tal, todo bien?"),
               _buildRoms(),
-              _buildEmptyChats(),
+              // _buildEmptyChats(),
             ],
           ),
         ));
@@ -82,17 +85,26 @@ class _StateChatScreen extends State<ChatScreen> {
     }
   }
 
-  _aMatch(bool active, User usuario) {
+  Future<Widget> _aMatch(bool active, User usuario) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    User _currentUser = await authProvider.readLocalUserInfo();
     Future<Image> userimage = getUserImage(usuario);
     var instance = fba.FirebaseAuth.instance;
     String _uid = instance.currentUser!.uid;
+
+    String currentUserId = _currentUser.id.toString();
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-    String secondUserId = "";
-    Stream<QuerySnapshot<Map<String, dynamic>>>  response = chatProvider.getUIDfromEmail(usuario.
-    email!);
+    String secondUID = "";
+    String secondID = usuario.id.toString();
+    Stream<QuerySnapshot<Map<String, dynamic>>> response =
+        chatProvider.getUIDfromEmail(usuario.email!);
     response.listen((event) {
-      secondUserId= event.docs.first["userId"];
-     });
+      if (event.docs.length >= 1) {
+        secondUID = event.docs.first["userId"];
+      } else {
+        print("Wating for event");
+      }
+    });
     return FutureBuilder<Image>(
       future: userimage,
       builder: (context, snapshot) {
@@ -117,9 +129,17 @@ class _StateChatScreen extends State<ChatScreen> {
             padding: const EdgeInsets.only(right: 10, left: 10),
             child: Stack(children: [
               GestureDetector(
-                onTap: () {
-                  
-                  String roomId = chatProvider.createRoom(_uid, secondUserId);
+                onTap: () async {
+                  print("Waiting 1 sec");
+                  await Future.delayed(Duration(seconds: 1), () {});
+                  print("Creating room");
+
+                  String roomId = chatProvider.createRoom(
+                      _uid,
+                      currentUserId,
+                      secondUID,
+                      secondID,
+                      usuario.name! + " " + usuario.lastName!);
                   ChatArguments args = ChatArguments(usuario, roomId);
                   Navigator.pushNamed(context, Conversation.routeName,
                       arguments: args);
@@ -328,12 +348,24 @@ class _StateChatScreen extends State<ChatScreen> {
                                 if (snapshot.hasData &&
                                     snapshot.connectionState ==
                                         ConnectionState.done) {
-                                  return _aMatch(true, snapshot.data!);
-                                  // return ListTile(
-                                  //   title: Text(snapshot.data!.name!),
-                                  //   subtitle:
-                                  //       Text(snapshot.data!.lastName!),
-                                  // );
+                                  return FutureBuilder<Widget>(
+                                    future: _aMatch(true, snapshot.data!),
+                                    builder: (context, snapshot2) {
+                                      if (snapshot2.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return CircularProgressIndicator();
+                                      }
+                                      if (snapshot2.hasError) {
+                                        return Text("Error occurred");
+                                      }
+                                      if (snapshot2.hasData &&
+                                          snapshot2.connectionState ==
+                                              ConnectionState.done) {
+                                        return snapshot2.data!;
+                                      }
+                                      return Text("No Data found");
+                                    },
+                                  );
                                 }
                                 return Text("Error 55");
                               },
@@ -442,11 +474,11 @@ class _StateChatScreen extends State<ChatScreen> {
                 style: TextStyle(
                     color: Colors.white.withOpacity(.2), fontSize: 18),
               ),
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, ChatTest.routeName);
-                  },
-                  child: Text("GoToSpike"))
+              // ElevatedButton(
+              //     onPressed: () {
+              //       Navigator.pushNamed(context, ChatTest.routeName);
+              //     },
+              //     child: Text("GoToSpike"))
             ],
           )
         ],
@@ -460,10 +492,12 @@ class _StateChatScreen extends State<ChatScreen> {
     String _uid = auth.currentUser!.uid;
     return Column(
       children: [
-        SizedBox(height: 20,),
+        SizedBox(
+          height: 20,
+        ),
         Container(
-          height: 100,
-          width: MediaQuery.of(context).size.width-50,
+          height: MediaQuery.of(context).size.height - 100,
+          width: MediaQuery.of(context).size.width - 50,
           child: Flexible(
               child: StreamBuilder<QuerySnapshot>(
                   stream: chatProvider.getChatRooms(_uid, 10),
@@ -479,28 +513,13 @@ class _StateChatScreen extends State<ChatScreen> {
                               .map((DocumentSnapshot document) {
                             Map<String, dynamic> data =
                                 document.data()! as Map<String, dynamic>;
-                            if (data['user1_uid'] == _uid || data['user2_uid'] == _uid) {
+                            if (data['user1_uid'] == _uid ||
+                                data['user2_uid'] == _uid) {
                               //sent
-                              return GestureDetector(
-                                onTap: (){
-                                  
-                                  // ChatArguments args =
-                                  //     ChatArguments(usuario, roomId);
-                                  // Navigator.pushNamed(
-                                  //     context, Conversation.routeName,
-                                  //     arguments: args);
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color:Color(0xff242424),
-                                    borderRadius: BorderRadius.circular(10)
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 20,top: 20,bottom: 20),
-                                    child: Text(document.id,style: TextStyle(color: Colors.white),),
-                                  ),
-                                ),
-                              );
+                              String secondUID = data['user1_uid'] == _uid
+                                  ? data['user2_id']
+                                  : data['user1_id'];
+                              return _chatStrip(document, secondUID);
                             } else {
                               //receibed
                               return Text("NO",
@@ -509,12 +528,7 @@ class _StateChatScreen extends State<ChatScreen> {
                           }).toList(),
                         );
                       } else {
-                        return const Center(
-                          child: Text(
-                            'No messages...',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        );
+                        return Center(child: _buildEmptyChats());
                       }
                     } else {
                       return CircularProgressIndicator(
@@ -527,6 +541,95 @@ class _StateChatScreen extends State<ChatScreen> {
         // _messageReceibed("Como estas?", "11:46 PM"),
         // _messageSent("Hola.", "11:45 PM"),
       ],
+    );
+  }
+
+  Widget _chatStrip(DocumentSnapshot<Object?> room, String userId) {
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    Stream<QuerySnapshot<Map<String, dynamic>>> response =
+        chatProvider.getEmailFromFirebase(userId);
+    var _secondUserEmail;
+    response.listen((event) {
+      if (event.docs.length >= 1) {
+        _secondUserEmail = event.docs.first["userId"];
+      }
+    });
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    // Future<User> usr = authProvider.findUserByEmail(_secondUserEmail);
+    // String jsoned = jsonDecode(room.data().toString());
+    Future<QuerySnapshot<Map<String, dynamic>>> _snap =
+        FirebaseFirestore.instance
+            .collection(FirestoreConstants.chatCollectionName)
+            .doc(room.id)
+            .collection(FirestoreConstants.messagesCollectionName)
+            // .limit(1)
+            .get();
+    //       .then((value){
+    // print("Fetched ==>>>" + value.docs.first.get("content"));
+    //       });
+    return GestureDetector(
+      onTap: () async {
+        User _finalUser = await authProvider.findUserById(int.parse(userId));
+        ChatArguments args = ChatArguments(_finalUser, room.id);
+        Navigator.pushNamed(context, Conversation.routeName, arguments: args);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+            color: Color(0xff242424), borderRadius: BorderRadius.circular(10)),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
+          child: Row(
+            children: [
+              Column(
+                children: [
+                  CircleAvatar(
+                    child: Text("M"),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 15),
+                        child: Text(
+                          room.get("displayName"),
+                          style: TextStyle(color: Colors.white, fontSize: 25),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                        future: _snap,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return CircularProgressIndicator();
+                          }
+                          if (snapshot.hasError) {
+                            return Text("Error found");
+                          }
+                          if (snapshot.hasData &&
+                              snapshot.connectionState == ConnectionState.done) {
+                            String cont =snapshot.data!.docs.last.get("content");
+                            return Text(
+                              cont,
+                              style: TextStyle(color: Colors.white.withOpacity(.5)),
+                            );
+                          }
+                          return Text("No Data");
+                        },
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

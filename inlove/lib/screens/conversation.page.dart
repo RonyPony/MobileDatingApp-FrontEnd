@@ -8,6 +8,7 @@ import 'package:inlove/models/chat_arguments.dart';
 import 'package:inlove/providers/countries_provider.dart';
 import 'package:inlove/screens/chat_spike.dart';
 import 'package:inlove/screens/setting.page.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../controls/menu.dart';
@@ -31,8 +32,8 @@ class _buildState extends State<Conversation> {
   String _roomId = "";
 
   var listMessages;
-  
-  var  secondUserFirebaseId;
+
+  var secondUserFirebaseId;
 
   @override
   void initState() {
@@ -48,7 +49,8 @@ class _buildState extends State<Conversation> {
 
   @override
   Widget build(BuildContext context) {
-    ChatArguments args = ModalRoute.of(context)!.settings.arguments as ChatArguments;
+    ChatArguments args =
+        ModalRoute.of(context)!.settings.arguments as ChatArguments;
     _secondUser = args.usuario;
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
     Stream<QuerySnapshot<Map<String, dynamic>>> response =
@@ -118,8 +120,9 @@ class _buildState extends State<Conversation> {
                 child: Column(
                   children: [
                     Container(
-                      height: 100,
-                      width: 200,
+                      // color: Colors.blue,
+                      height: MediaQuery.of(context).size.height * .7,
+                      width: MediaQuery.of(context).size.width - 60,
                       child: Flexible(
                           child: StreamBuilder<QuerySnapshot>(
                               stream: chatProvider.getChatMessage(_roomId, 10),
@@ -138,18 +141,113 @@ class _buildState extends State<Conversation> {
                                               .data()! as Map<String, dynamic>;
                                           if (data['idFrom'] == _uid) {
                                             //sent
-                                            return Container(
-                                                decoration: BoxDecoration(
-                                                    color: Colors.grey),
-                                                child: Text(data['content']));
-                                            
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 10),
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                      color: Colors.grey),
+                                                  child: Column(
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                left: 20,
+                                                                top: 10),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(data[
+                                                                'content'],style: TextStyle(color: Colors.black,fontSize:16,)),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                right: 10,
+                                                                bottom: 10),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .end,
+                                                          children: [
+                                                            Text(readTimestamp(
+                                                                data[
+                                                                    'timestamp']),style: TextStyle(color: Colors.grey[700]),)
+                                                          ],
+                                                        ),
+                                                      )
+                                                    ],
+                                                  )),
+                                            );
                                           } else {
                                             //receibed
-                                            return Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.pinkAccent
-                                              ),
-                                                child: Text(data['msg']));
+                                            return Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 10),
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                      color: Colors.pinkAccent),
+                                                  child: Column(
+                                                    children: [
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                left: 20,
+                                                                top: 10),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                                data['content'],
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontSize: 16,
+                                                                )),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                right: 10,
+                                                                bottom: 10),
+                                                        child: Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .end,
+                                                          children: [
+                                                            Text(
+                                                              readTimestamp(data[
+                                                                  'timestamp']),
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                          .grey[
+                                                                      700]),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      )
+                                                    ],
+                                                  )),
+                                            );
                                           }
                                         }).toList(),
                                       ),
@@ -181,6 +279,30 @@ class _buildState extends State<Conversation> {
       ),
       bottomNavigationBar: _buildMessageBox(),
     );
+  }
+
+  String readTimestamp(String timestamp) {
+    var now = new DateTime.now();
+    var format = new DateFormat('hh:mm a');
+    var date =
+        new DateTime.fromMicrosecondsSinceEpoch(int.parse(timestamp) * 1000);
+    var diff = date.difference(now);
+    var time = '';
+
+    if (diff.inSeconds <= 0 ||
+        diff.inSeconds > 0 && diff.inMinutes == 0 ||
+        diff.inMinutes > 0 && diff.inHours == 0 ||
+        diff.inHours > 0 && diff.inDays == 0) {
+      time = format.format(date);
+    } else {
+      if (diff.inDays == 1) {
+        time = diff.inDays.toString() + 'DAY AGO';
+      } else {
+        time = diff.inDays.toString() + 'DAYS AGO';
+      }
+    }
+
+    return time;
   }
 
   _buildPhoto() {
@@ -383,22 +505,37 @@ class _buildState extends State<Conversation> {
               ),
               hasText
                   ? GestureDetector(
-                    onTap: (){
-                      final chatProvider = Provider.of<ChatProvider>(context,listen: false);
-                      String messageContent = messageToSend.text;
-                      int type = MessageType().text;
-                      final auth = fbAuth.FirebaseAuth.instance;
-                      chatProvider.sendChatMessage(messageContent, type, _roomId, auth.currentUser!.uid, secondUserFirebaseId);
-                      setState(() {
-                       messageToSend.clear();
-                      });
-                    },
-                    child: SvgPicture.asset(
+                      onTap: () async {
+                        String cntn = messageToSend.text;
+                        setState(() {
+                          messageToSend.clear();
+                        });
+                        print("Waiting...");
+                        await Future.delayed(Duration(seconds: 1), () {});
+                        print("Time is up!");
+                        final chatProvider =
+                            Provider.of<ChatProvider>(context, listen: false);
+                        String messageContent = cntn;
+                        int type = MessageType().text;
+                        final auth = fbAuth.FirebaseAuth.instance;
+                        String CurrUID = auth.currentUser!.uid;
+                        if (secondUserFirebaseId != null) {
+                          chatProvider.sendChatMessage(messageContent, type,
+                              _roomId, CurrUID, secondUserFirebaseId);
+                        } else {
+                          CoolAlert.show(
+                              context: context,
+                              type: CoolAlertType.warning,
+                              text:
+                                  "No pudimos enviar tu mensaje, intentalo mas tarde");
+                        }
+                      },
+                      child: SvgPicture.asset(
                         'assets/send.svg',
                         color: Colors.pink,
                         height: 40,
                       ),
-                  )
+                    )
                   : SvgPicture.asset(
                       'assets/send.svg',
                       color: Colors.grey,
