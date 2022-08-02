@@ -285,27 +285,47 @@ class _LoginPageState extends State<LoginPage>
                             } else {
                               String? errMsg = await authProvider.getErrorMsg();
                               Emojies emo = Emojies();
-                              if (errMsg == "") {
-                                CoolAlert.show(
-                                  context: context,
-                                  animType: CoolAlertAnimType.slideInDown,
-                                  backgroundColor: Colors.white,
-                                  loopAnimation: false,
-                                  type: CoolAlertType.error,
-                                  text:
-                                      "Credenciales incorrectas, por favor intentalo de nuevo ${emo.getAnEmmoji(false)}",
-                                );
-                              } else {
-                                CoolAlert.show(
-                                  context: context,
-                                  animType: CoolAlertAnimType.slideInDown,
-                                  backgroundColor: Colors.white,
-                                  loopAnimation: false,
-                                  type: CoolAlertType.info,
-                                  title: "Informacion",
-                                  text: errMsg,
-                                );
+                              if (errMsg == "user-not-found") {
+                                await authProvider.registerFirebaseUser(info);
+                                final bool logged =
+                                    await authProvider.performLogin(info);
+                                if (logged) {
+                                  Navigator.pushNamedAndRemoveUntil(context,
+                                      HomePage.routeName, (route) => false);
+                                      CoolAlert.show(
+                                    context: context,
+                                    animType: CoolAlertAnimType.slideInDown,
+                                    backgroundColor: Colors.white,
+                                    loopAnimation: false,
+                                    type: CoolAlertType.loading,
+                                    title: "😍😍",
+                                    text: "Hey, es grandioso que formes parte del grupo ❤️",
+                                  );
+                                }
+                              }else{
+                                if (errMsg == "") {
+                                  CoolAlert.show(
+                                    context: context,
+                                    animType: CoolAlertAnimType.slideInDown,
+                                    backgroundColor: Colors.white,
+                                    loopAnimation: false,
+                                    type: CoolAlertType.error,
+                                    text:
+                                        "Credenciales incorrectas, por favor intentalo de nuevo ${emo.getAnEmmoji(false)}",
+                                  );
+                                } else {
+                                  CoolAlert.show(
+                                    context: context,
+                                    animType: CoolAlertAnimType.slideInDown,
+                                    backgroundColor: Colors.white,
+                                    loopAnimation: false,
+                                    type: CoolAlertType.info,
+                                    title: "Informacion",
+                                    text: errMsg,
+                                  );
+                                }
                               }
+                              
                             }
                           } else {
                             Emojies emo = Emojies();

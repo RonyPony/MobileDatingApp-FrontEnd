@@ -18,7 +18,7 @@ import '../screens/chat_spike.dart';
 
 class AuthService implements AuthContract {
   String savedCurrentUserFlag = "la verdadera para tuya";
-final fbAuth.FirebaseAuth firebaseAuth;
+  final fbAuth.FirebaseAuth firebaseAuth;
   final FirebaseFirestore firebaseFirestore;
 
   AuthService(this.firebaseAuth, this.firebaseFirestore);
@@ -31,67 +31,12 @@ final fbAuth.FirebaseAuth firebaseAuth;
         "rememberMe": userLogin.rememberMe
       });
       if (resp.statusCode == 200) {
-        
-        fbAuth.User? firebaseUser =
-            (await firebaseAuth.signInWithEmailAndPassword(email: userLogin.userEmail!,password:userLogin.password! )).user;
-        if (firebaseUser != null) {
-       final QuerySnapshot result = await firebaseFirestore
-           .collection(FirestoreConstants.pathUserCollection)
-           .where(FirestoreConstants.id, isEqualTo: firebaseUser.uid)
-           .get();
-       final List<DocumentSnapshot> document = result.docs;
-       if (document.isEmpty) {
-         firebaseFirestore
-             .collection(FirestoreConstants.pathUserCollection)
-             .doc(firebaseUser.uid)
-             .set({
-           FirestoreConstants.displayName: firebaseUser.displayName,
-           FirestoreConstants.photoUrl: firebaseUser.photoURL,
-           FirestoreConstants.email:firebaseUser.email,
-           FirestoreConstants.id: firebaseUser.uid,
-           "createdAt: ": DateTime.now().millisecondsSinceEpoch.toString(),
-           FirestoreConstants.chattingWith: null
-         });}
-         User usua = await findUserByEmail(firebaseUser.email!);
-        if (usua != User()) {
-          saveLocalUserInfo( usua);
-          return true;
-        }
-        }
-      }
-
-      // ignore: unrelated_type_equality_checks
-      if (resp.statusCode == "404") {
-        if (kDebugMode) {
-          print("User Not Found");
-        }
-      }
-      return false;
-    } on DioError catch (e) {
-      //http error(statusCode not 20x) will be catched here.
-      if (kDebugMode) {
-        print(e.response!.statusCode.toString());
-      }
-      if (kDebugMode) {
-        print('Failed Load Data with status code ${e.response!.statusCode}');
-      }
-      if (e.response!.statusCode==423) {
-        setErrorMessage(e.response!.data);
-      }
-      return false;
-    }on fbAuth.FirebaseAuthException catch(fbE){
-      print(fbE.message);
-      if (fbE.code == "user-not-found"||fbE.code=="wrong-password") {
-        print("Registering new firebase user");
-        bool registered = registerFirebaseUser(userLogin);
-        if (registered) {
-          print("Registering new firebase user - Completed Successfully");
           fbAuth.User? firebaseUser =
               (await firebaseAuth.signInWithEmailAndPassword(
                       email: userLogin.userEmail!,
                       password: userLogin.password!))
                   .user;
-          if (firebaseUser != null){
+          if (firebaseUser != null) {
             final QuerySnapshot result = await firebaseFirestore
                 .collection(FirestoreConstants.pathUserCollection)
                 .where(FirestoreConstants.id, isEqualTo: firebaseUser.uid)
@@ -110,24 +55,43 @@ final fbAuth.FirebaseAuth firebaseAuth;
                 FirestoreConstants.chattingWith: null
               });
             }
+            User usua = await findUserByEmail(firebaseUser.email!);
+            if (usua != User()) {
+              saveLocalUserInfo(usua);
+              return true;
+            }
           }
-          User usua = await findUserByEmail(userLogin.userEmail!);
-          if (usua != User()) {
-            saveLocalUserInfo(usua);
-            return true;
-          }else{
-            return false;
-          }
+      }
+
+      // ignore: unrelated_type_equality_checks
+      if (resp.statusCode == "404") {
+        if (kDebugMode) {
+          print("User Not Found");
         }
       }
+      return false;
+    } on DioError catch (e) {
+      //http error(statusCode not 20x) will be catched here.
+      if (kDebugMode) {
+        print(e.response!.statusCode.toString());
+      }
+      if (kDebugMode) {
+        print('Failed Load Data with status code ${e.response!.statusCode}');
+      }
+      if (e.response!.statusCode == 423) {
+        setErrorMessage(e.response!.data);
+      }
+      return false;
+    } on fbAuth.FirebaseAuthException catch (fbE) {
+      setErrorMessage(fbE.code);
+      print(fbE.message);
       
+
+      return false;
+    } catch (e) {
+      print("ERROR" + e.toString());
       return false;
     }
-    catch(e){
-      print("ERROR"+e.toString());
-      return false;
-    }
-  
   }
 
   @override
@@ -166,11 +130,10 @@ final fbAuth.FirebaseAuth firebaseAuth;
     }
   }
 
-Future<bool> setErrorMessage(String? error) async {
+  Future<bool> setErrorMessage(String? error) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      var res =
-          await prefs.setString("ErrorMsg", error!);
+      var res = await prefs.setString("ErrorMsg", error!);
       return res;
     } catch (e) {
       print(e);
@@ -181,9 +144,8 @@ Future<bool> setErrorMessage(String? error) async {
   Future<String?> getErrorMessage() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      var res =
-          await prefs.getString("ErrorMsg");
-          setErrorMessage("");
+      var res = await prefs.getString("ErrorMsg");
+      setErrorMessage("");
       return res;
     } catch (e) {
       print(e);
@@ -368,12 +330,12 @@ Future<bool> setErrorMessage(String? error) async {
 
   @override
   Future<User> findUserById(int userId) async {
-    User foundUser =User();
+    User foundUser = User();
     try {
       var resp = await Dio().get(serverurl + 'api/user/$userId');
       if (resp.statusCode == 200) {
         User list = User.fromJson(resp.data);
-        foundUser = list;//list.map<User>(User.fromJson(list)).toList();
+        foundUser = list; //list.map<User>(User.fromJson(list)).toList();
       }
 
       if (resp.statusCode == "404") {
@@ -390,7 +352,7 @@ Future<bool> setErrorMessage(String? error) async {
       return foundUser;
     }
   }
-  
+
   @override
   Future<bool> performLogout() async {
     try {
@@ -404,13 +366,53 @@ Future<bool> setErrorMessage(String? error) async {
       return false;
     }
   }
-  
+
   bool registerFirebaseUser(Login userLogin) {
     try {
+      // if (fbE.code == "user-not-found" || fbE.code == "wrong-password") {
+      //   print("Registering new firebase user");
+      //   bool registered = registerFirebaseUser(userLogin);
+      //   if (registered) {
+      //     print("Registering new firebase user - Completed Successfully");
+      //     fbAuth.User? firebaseUser =
+      //         (await firebaseAuth.signInWithEmailAndPassword(
+      //                 email: userLogin.userEmail!,
+      //                 password: userLogin.password!))
+      //             .user;
+      //     if (firebaseUser != null) {
+      //       final QuerySnapshot result = await firebaseFirestore
+      //           .collection(FirestoreConstants.pathUserCollection)
+      //           .where(FirestoreConstants.id, isEqualTo: firebaseUser.uid)
+      //           .get();
+      //       final List<DocumentSnapshot> document = result.docs;
+      //       if (document.isEmpty) {
+      //         firebaseFirestore
+      //             .collection(FirestoreConstants.pathUserCollection)
+      //             .doc(firebaseUser.uid)
+      //             .set({
+      //           FirestoreConstants.displayName: firebaseUser.displayName,
+      //           FirestoreConstants.photoUrl: firebaseUser.photoURL,
+      //           FirestoreConstants.email: firebaseUser.email,
+      //           FirestoreConstants.id: firebaseUser.uid,
+      //           "createdAt: ": DateTime.now().millisecondsSinceEpoch.toString(),
+      //           FirestoreConstants.chattingWith: null
+      //         });
+      //       }
+      //     }
+      //     User usua = await findUserByEmail(userLogin.userEmail!);
+      //     if (usua != User()) {
+      //       saveLocalUserInfo(usua);
+      //       return true;
+      //     } else {
+      //       return false;
+      //     }
+      //   }
+      // }
+
       final fbAuth.FirebaseAuth _auth = fbAuth.FirebaseAuth.instance;
       _auth.createUserWithEmailAndPassword(
           email: userLogin.userEmail!, password: userLogin.password!);
-          return true;
+      return true;
     } catch (e) {
       return false;
     }

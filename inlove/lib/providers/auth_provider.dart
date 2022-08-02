@@ -33,6 +33,11 @@ class AuthProvider extends ChangeNotifier {
     return response;
   }
 
+  Future<bool>registerFirebaseUser(Login user) async {
+    final bool response = await authService.registerFirebaseUser(user);
+    return response;
+  }
+
   Future<bool> performLogin(Login userLogin) async {
     final bool response = await authService.performLogin(userLogin);
     return response;

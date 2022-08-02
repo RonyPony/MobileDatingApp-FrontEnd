@@ -573,60 +573,71 @@ class _StateChatScreen extends State<ChatScreen> {
         ChatArguments args = ChatArguments(_finalUser, room.id);
         Navigator.pushNamed(context, Conversation.routeName, arguments: args);
       },
-      child: Container(
-        decoration: BoxDecoration(
-            color: Color(0xff242424), borderRadius: BorderRadius.circular(10)),
-        child: Padding(
-          padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
-          child: Row(
-            children: [
-              Column(
-                children: [
-                  CircleAvatar(
-                    child: Text("M"),
-                  ),
-                ],
-              ),
-              Column(
-                children: [
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 15),
-                        child: Text(
-                          room.get("displayName"),
-                          style: TextStyle(color: Colors.white, fontSize: 25),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          decoration: BoxDecoration(
+              color: Color(0xff242424), borderRadius: BorderRadius.circular(10)),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
+            child: Row(
+              children: [
+                Column(
+                  children: [
+                    CircleAvatar(
+                      child: Text("IL"),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 15),
+                          child: Text(
+                            room.get("displayName"),
+                            style: TextStyle(color: Colors.white, fontSize: 25),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                        future: _snap,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return CircularProgressIndicator();
-                          }
-                          if (snapshot.hasError) {
-                            return Text("Error found");
-                          }
-                          if (snapshot.hasData &&
-                              snapshot.connectionState == ConnectionState.done) {
-                            String cont =snapshot.data!.docs.last.get("content");
-                            return Text(
-                              cont,
-                              style: TextStyle(color: Colors.white.withOpacity(.5)),
-                            );
-                          }
-                          return Text("No Data");
-                        },
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ],
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                          future: _snap,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return CircularProgressIndicator();
+                            }
+                            if (snapshot.hasError) {
+                              return Text("Error found");
+                            }
+                            if (snapshot.hasData &&
+                                snapshot.connectionState == ConnectionState.done) {
+                              
+                              if (snapshot.data!.docs.length>=1) {
+                                String cont =
+                                    snapshot.data!.docs.last.get("content");
+                                return Text(
+                                  cont,
+                                  style: TextStyle(
+                                      color: Colors.white.withOpacity(.5)),
+                                );
+                              }else{
+                                return Text("No hay mensajes",style: TextStyle(
+                                      color: Colors.white.withOpacity(.5)));
+                              }
+                            }
+                            return Text("No Data");
+                          },
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
