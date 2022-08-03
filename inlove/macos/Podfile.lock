@@ -607,6 +607,9 @@ PODS:
     - Firebase/Firestore (~> 9.3.0)
     - firebase_core
     - FlutterMacOS
+  - Firebase/AppCheck (9.3.0):
+    - Firebase/CoreOnly
+    - FirebaseAppCheck (~> 9.3.0)
   - Firebase/Auth (9.3.0):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 9.3.0)
@@ -618,6 +621,11 @@ PODS:
   - Firebase/Storage (9.3.0):
     - Firebase/CoreOnly
     - FirebaseStorage (~> 9.3.0)
+  - firebase_app_check (0.0.6-18):
+    - Firebase/AppCheck (~> 9.3.0)
+    - Firebase/CoreOnly (~> 9.3.0)
+    - firebase_core
+    - FlutterMacOS
   - firebase_auth (3.6.0):
     - Firebase/Auth (~> 9.3.0)
     - Firebase/CoreOnly (~> 9.3.0)
@@ -631,6 +639,10 @@ PODS:
     - Firebase/Storage (~> 9.3.0)
     - firebase_core
     - FlutterMacOS
+  - FirebaseAppCheck (9.3.0):
+    - FirebaseCore (~> 9.0)
+    - GoogleUtilities/Environment (~> 7.7)
+    - PromisesObjC (~> 2.1)
   - FirebaseAppCheckInterop (9.3.0)
   - FirebaseAuth (9.3.0):
     - FirebaseCore (~> 9.0)
@@ -766,6 +778,7 @@ PODS:
 
 DEPENDENCIES:
   - cloud_firestore (from `Flutter/ephemeral/.symlinks/plugins/cloud_firestore/macos`)
+  - firebase_app_check (from `Flutter/ephemeral/.symlinks/plugins/firebase_app_check/macos`)
   - firebase_auth (from `Flutter/ephemeral/.symlinks/plugins/firebase_auth/macos`)
   - firebase_core (from `Flutter/ephemeral/.symlinks/plugins/firebase_core/macos`)
   - firebase_storage (from `Flutter/ephemeral/.symlinks/plugins/firebase_storage/macos`)
@@ -778,6 +791,7 @@ SPEC REPOS:
     - abseil
     - BoringSSL-GRPC
     - Firebase
+    - FirebaseAppCheck
     - FirebaseAppCheckInterop
     - FirebaseAuth
     - FirebaseAuthInterop
@@ -801,6 +815,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   cloud_firestore:
     :path: Flutter/ephemeral/.symlinks/plugins/cloud_firestore/macos
+  firebase_app_check:
+    :path: Flutter/ephemeral/.symlinks/plugins/firebase_app_check/macos
   firebase_auth:
     :path: Flutter/ephemeral/.symlinks/plugins/firebase_auth/macos
   firebase_core:
@@ -819,9 +835,11 @@ SPEC CHECKSUMS:
   BoringSSL-GRPC: 3175b25143e648463a56daeaaa499c6cb86dad33
   cloud_firestore: 23c3c9e905396adc3a1d5ad68f2302aff0350846
   Firebase: ef75abb1cdbc746d5a38f4e26c422c807b189b8c
+  firebase_app_check: ddb67391abad5ba58e47df010c05e9ceee4d15b7
   firebase_auth: 21c94abf82bc09d62d55f92000a4f39c94b087c3
   firebase_core: 30cff5dc3d110360ba97895b6bdb6fe70b4b4060
   firebase_storage: cd91b8c962f715175e744d0673dad9bbc056e37f
+  FirebaseAppCheck: dea36639a4270b6deedc6f012302b84a3a22fe89
   FirebaseAppCheckInterop: f6b9670fb1360cf12006ca426e9c3b9a35317d17
   FirebaseAuth: 9ebc3577fe0acf9092df21ac314024b70aebf21e
   FirebaseAuthInterop: 79826b4edc64e1d10135947866ad4437657e8696
@@ -845,6 +863,6 @@ SPEC CHECKSUMS:
   shared_preferences_macos: a64dc611287ed6cbe28fd1297898db1336975727
   url_launcher_macos: 597e05b8e514239626bcf4a850fcf9ef5c856ec3
 
-PODFILE CHECKSUM: a884f6dd3f7494f3892ee6c81feea3a3abbf9153
+PODFILE CHECKSUM: 0d3963a09fc94f580682bd88480486da345dc3f0
 
 COCOAPODS: 1.11.3
