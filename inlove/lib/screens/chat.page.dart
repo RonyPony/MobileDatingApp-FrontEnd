@@ -35,6 +35,20 @@ class _StateChatScreen extends State<ChatScreen> {
   late User _currentUser;
   List<ChatArguments> _chatList = [];
   var listMessages;
+    late ChatProvider chatProvider;
+    fba.FirebaseAuth auth = fba.FirebaseAuth.instance;
+    String _uid="";
+    Stream<QuerySnapshot<Object?>>? chats;
+   
+     
+  @override
+  void didChangeDependencies() {
+    chatProvider = Provider.of<ChatProvider>(context, listen: false);
+     _uid= auth.currentUser!.uid;
+     chats= chatProvider.getChatRooms(_uid, 10);
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+  }
 
   @override
   void initState() {
@@ -487,9 +501,7 @@ class _StateChatScreen extends State<ChatScreen> {
   }
 
   _buildRoms() {
-    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-    var auth = fba.FirebaseAuth.instance;
-    String _uid = auth.currentUser!.uid;
+    
     return Column(
       children: [
         SizedBox(
@@ -500,7 +512,7 @@ class _StateChatScreen extends State<ChatScreen> {
           width: MediaQuery.of(context).size.width - 50,
           child: Flexible(
               child: StreamBuilder<QuerySnapshot>(
-                  stream: chatProvider.getChatRooms(_uid, 10),
+                  stream: chats,
                   builder: (BuildContext context,
                       AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.hasData) {
