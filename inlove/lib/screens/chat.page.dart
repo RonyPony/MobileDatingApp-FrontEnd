@@ -35,17 +35,10 @@ class _StateChatScreen extends State<ChatScreen> {
   late User _currentUser;
   List<ChatArguments> _chatList = [];
   var listMessages;
-    late ChatProvider chatProvider;
-    fba.FirebaseAuth auth = fba.FirebaseAuth.instance;
-    String _uid="";
-    Stream<QuerySnapshot<Object?>>? chats;
-   
-     
+  late fba.FirebaseAuth auth = fba.FirebaseAuth.instance;
+
   @override
   void didChangeDependencies() {
-    chatProvider = Provider.of<ChatProvider>(context, listen: false);
-     _uid= auth.currentUser!.uid;
-     chats= chatProvider.getChatRooms(_uid, 10);
     // TODO: implement didChangeDependencies
     super.didChangeDependencies();
   }
@@ -501,7 +494,11 @@ class _StateChatScreen extends State<ChatScreen> {
   }
 
   _buildRoms() {
-    
+    ChatProvider chatProvider =
+        Provider.of<ChatProvider>(context, listen: false);
+    String _uid = auth.currentUser!.uid;
+    Stream<QuerySnapshot<Object?>>? chats = chatProvider.getChatRooms(_uid, 10);
+
     return Column(
       children: [
         SizedBox(
@@ -510,44 +507,43 @@ class _StateChatScreen extends State<ChatScreen> {
         Container(
           height: MediaQuery.of(context).size.height - 100,
           width: MediaQuery.of(context).size.width - 50,
-          child: Flexible(
-              child: StreamBuilder<QuerySnapshot>(
-                  stream: chats,
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasData) {
-                      listMessages = snapshot.data!.docs;
-                      if (listMessages.isNotEmpty) {
-                        var auth = fba.FirebaseAuth.instance;
-                        String _uid = auth.currentUser!.uid;
-                        return ListView(
-                          children: snapshot.data!.docs
-                              .map((DocumentSnapshot document) {
-                            Map<String, dynamic> data =
-                                document.data()! as Map<String, dynamic>;
-                            if (data['user1_uid'] == _uid ||
-                                data['user2_uid'] == _uid) {
-                              //sent
-                              String secondUID = data['user1_uid'] == _uid
-                                  ? data['user2_id']
-                                  : data['user1_id'];
-                              return _chatStrip(document, secondUID);
-                            } else {
-                              //receibed
-                              return Text("NO",
-                                  style: TextStyle(color: Colors.pinkAccent));
-                            }
-                          }).toList(),
-                        );
-                      } else {
-                        return Center(child: _buildEmptyChats());
-                      }
-                    } else {
-                      return CircularProgressIndicator(
-                        color: Colors.yellow,
-                      );
-                    }
-                  })),
+          child: StreamBuilder<QuerySnapshot>(
+              stream: chats,
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasData) {
+                  listMessages = snapshot.data!.docs;
+                  if (listMessages.isNotEmpty) {
+                    var auth = fba.FirebaseAuth.instance;
+                    String _uid = auth.currentUser!.uid;
+                    return ListView(
+                      children:
+                          snapshot.data!.docs.map((DocumentSnapshot document) {
+                        Map<String, dynamic> data =
+                            document.data()! as Map<String, dynamic>;
+                        if (data['user1_uid'] == _uid ||
+                            data['user2_uid'] == _uid) {
+                          //sent
+                          String secondUID = data['user1_uid'] == _uid
+                              ? data['user2_id']
+                              : data['user1_id'];
+                          return _chatStrip(document, secondUID);
+                        } else {
+                          //receibed
+                          return Text("NO",
+                              style: TextStyle(color: Colors.pinkAccent));
+                        }
+                      }).toList(),
+                    );
+                  } else {
+                    return Center(child: _buildEmptyChats());
+                  }
+                } else {
+                  return CircularProgressIndicator(
+                    color: Colors.yellow,
+                  );
+                }
+              }),
         ),
         // _messageReceibed("Hola.", "11:45 PM"),
         // _messageReceibed("Como estas?", "11:46 PM"),
@@ -589,7 +585,8 @@ class _StateChatScreen extends State<ChatScreen> {
         padding: const EdgeInsets.all(8.0),
         child: Container(
           decoration: BoxDecoration(
-              color: Color(0xff242424), borderRadius: BorderRadius.circular(10)),
+              color: Color(0xff242424),
+              borderRadius: BorderRadius.circular(10)),
           child: Padding(
             padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
             child: Row(
@@ -619,16 +616,17 @@ class _StateChatScreen extends State<ChatScreen> {
                         FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
                           future: _snap,
                           builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
                               return CircularProgressIndicator();
                             }
                             if (snapshot.hasError) {
                               return Text("Error found");
                             }
                             if (snapshot.hasData &&
-                                snapshot.connectionState == ConnectionState.done) {
-                              
-                              if (snapshot.data!.docs.length>=1) {
+                                snapshot.connectionState ==
+                                    ConnectionState.done) {
+                              if (snapshot.data!.docs.length >= 1) {
                                 String cont =
                                     snapshot.data!.docs.last.get("content");
                                 return Text(
@@ -636,9 +634,10 @@ class _StateChatScreen extends State<ChatScreen> {
                                   style: TextStyle(
                                       color: Colors.white.withOpacity(.5)),
                                 );
-                              }else{
-                                return Text("No hay mensajes",style: TextStyle(
-                                      color: Colors.white.withOpacity(.5)));
+                              } else {
+                                return Text("No hay mensajes",
+                                    style: TextStyle(
+                                        color: Colors.white.withOpacity(.5)));
                               }
                             }
                             return Text("No Data");

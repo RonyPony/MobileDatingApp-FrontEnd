@@ -2,10 +2,49 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Flutter",
+            "name": "Flutter Debug",
             "request": "launch",
             "type": "dart",
-            // "program": "/Users/ronel/Documents/proyectos/MobileDatingApp-FrontEnd/inlove/lib/main.dart"
+            "flutterMode": "debug",
+            "program": "inlove/lib/main.dart"
+        },
+        {
+            "name": "Flutter Debug Verbose",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "debug",
+            "program": "inlove/lib/main.dart",
+            "args": ["-v"]
+        },
+        {
+            "name": "Flutter Release",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "program": "inlove/lib/main.dart"
+        },
+        {
+            "name": "Flutter Release Verbose",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "program": "inlove/lib/main.dart",
+            "args": ["-v"]
+        },
+        {
+            "name": "Flutter Profile",
+            "request": "launch",
+            "type": "dart",
+            "program": "inlove/lib/main.dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "Flutter Profile Verbose",
+            "request": "launch",
+            "type": "dart",
+            "program": "inlove/lib/main.dart",
+            "flutterMode": "profile",
+            "args": ["-v"]
         }
     ],
     "compounds": []
