@@ -41,14 +41,15 @@ void main() async {
       );
     }
   };
-  FirebaseApp.initializeApp(/*context=*/ this);
-  FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
-  firebaseAppCheck.installAppCheckProviderFactory(
-      PlayIntegrityAppCheckProviderFactory.getInstance());
+  // FirebaseApp.initializeApp(/*context=*/ this);
+ 
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+   FirebaseAppCheck firebaseAppCheck = FirebaseAppCheck.getInstance();
+  firebaseAppCheck.installAppCheckProviderFactory(
+      PlayIntegrityAppCheckProviderFactory.getInstance());
   final SharedPreferences shared = await SharedPreferences.getInstance();
   runApp(MultiProvider(
     providers: [
