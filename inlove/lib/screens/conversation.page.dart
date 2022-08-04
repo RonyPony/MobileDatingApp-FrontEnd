@@ -275,9 +275,9 @@ class _buildState extends State<Conversation> {
                                 return Text(
                                   snapshot.data!
                                           .get(FirestoreConstants.isUser2Typing)
-                                      ? "User is typing..."
-                                      : "not typing",
-                                  style: TextStyle(color: Colors.white),
+                                      ? "El usuario esta escribiendo..."
+                                      : "",
+                                  style: TextStyle(color: Colors.white.withOpacity(.5)),
                                 );
                               }
 
@@ -287,9 +287,9 @@ class _buildState extends State<Conversation> {
                                 return Text(
                                   snapshot.data!
                                           .get(FirestoreConstants.isUser1Typing)
-                                      ? "User is typing..."
-                                      : "not typing",
-                                  style: TextStyle(color: Colors.white),
+                                      ? "El usuario esta escribiendo..."
+                                      : "",
+                                  style: TextStyle(color: Colors.white.withOpacity(.5)),
                                 );
                               }
                             } else {
