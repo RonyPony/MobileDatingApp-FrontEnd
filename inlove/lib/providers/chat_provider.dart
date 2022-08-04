@@ -1,4 +1,3 @@
-
 import 'dart:io';
 import 'dart:math';
 
@@ -30,17 +29,17 @@ class ChatProvider extends ChangeNotifier {
   }
 
   Stream<QuerySnapshot> getChatMessage(String groupChatId, int limit) {
-    Stream<QuerySnapshot<Map<String, dynamic>>> snapshots= firebaseFirestore
+    Stream<QuerySnapshot<Map<String, dynamic>>> snapshots = firebaseFirestore
         .collection(FirestoreConstants.chatCollectionName)
         .doc(groupChatId)
         .collection(FirestoreConstants.messagesCollectionName)
         // .doc(FirestoreConstants.messagesDocName)
         // .collection(groupChatId)
-        
+
         // .orderBy(FirestoreConstants.timestamp, descending: true)
         .limit(limit)
         .snapshots();
-        return snapshots;
+    return snapshots;
   }
 
   Stream<QuerySnapshot> getChatRooms(String uid, int limit) {
@@ -56,35 +55,38 @@ class ChatProvider extends ChangeNotifier {
   }
 
   String generateRandomString(int len) {
-  var r = Random();
-  return String.fromCharCodes(List.generate(len, (index) => r.nextInt(33) + 89));
-}
+    var r = Random();
+    return String.fromCharCodes(
+        List.generate(len, (index) => r.nextInt(33) + 89));
+  }
 
-Stream<QuerySnapshot<Map<String, dynamic>>> getUIDfromEmail(String userEmail){
-  userEmail = userEmail.toLowerCase();
-  Stream<QuerySnapshot<Map<String, dynamic>>> snapshots = firebaseFirestore
+  Stream<QuerySnapshot<Map<String, dynamic>>> getUIDfromEmail(
+      String userEmail) {
+    userEmail = userEmail.toLowerCase();
+    Stream<QuerySnapshot<Map<String, dynamic>>> snapshots = firebaseFirestore
         .collection(FirestoreConstants.pathUserCollection)
-        .where("email", isEqualTo:userEmail )
+        .where("email", isEqualTo: userEmail)
         .snapshots();
-  return snapshots;
-}
+    return snapshots;
+  }
 
-  String createRoom(String user1_uid,String user1_id,String user2_uid,String user2_id,String displayName){
-    
-    bool haveChat = false;//existRoom(user1,user2);
-    String chatRoomId = "ChatRoom("+generateRandomString(10)+")";
+  String createRoom(String user1_uid, String user1_id, String user2_uid,
+      String user2_id, String displayName) {
+    bool haveChat = false; //existRoom(user1,user2);
+    String chatRoomId = "ChatRoom(" + generateRandomString(10) + ")";
     if (!haveChat) {
       DocumentReference chatRoomDocumentReference = firebaseFirestore
           .collection(FirestoreConstants.chatCollectionName)
           .doc(chatRoomId);
       ChatMessagesRoom chatRoomMessages = ChatMessagesRoom(
-        createdOn: DateTime.now().millisecondsSinceEpoch.toString(),
-        user1_uid: user1_uid,
-        user1_id:user1_id,  
-        user2_uid: user2_uid,
-        user2_id: user2_id,
-        displayName: displayName
-        );
+          createdOn: DateTime.now().millisecondsSinceEpoch.toString(),
+          user1_uid: user1_uid,
+          user1_id: user1_id,
+          user2_uid: user2_uid,
+          user2_id: user2_id,
+          displayName: displayName,
+          lastMessengerId: user1_uid,
+          isSeen: false);
       Map<String, dynamic> jsoned = chatRoomMessages.toJson();
       FirebaseFirestore.instance.runTransaction((transaction) async {
         transaction.set(chatRoomDocumentReference, jsoned);
@@ -93,8 +95,8 @@ Stream<QuerySnapshot<Map<String, dynamic>>> getUIDfromEmail(String userEmail){
     return chatRoomId;
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> getEmailFromFirebase(String uid){
-Stream<QuerySnapshot<Map<String, dynamic>>> snapshots = firebaseFirestore
+  Stream<QuerySnapshot<Map<String, dynamic>>> getEmailFromFirebase(String uid) {
+    Stream<QuerySnapshot<Map<String, dynamic>>> snapshots = firebaseFirestore
         .collection(FirestoreConstants.pathUserCollection)
         .where("userId", isEqualTo: uid)
         .snapshots();
@@ -113,12 +115,58 @@ Stream<QuerySnapshot<Map<String, dynamic>>> snapshots = firebaseFirestore
         idTo: peerId,
         timestamp: DateTime.now().millisecondsSinceEpoch.toString(),
         content: content,
+        isSeen: false,
         type: type);
-  Map<String,dynamic> jsoned = chatMessages.toJson();
+    Map<String, dynamic> jsoned = chatMessages.toJson();
     FirebaseFirestore.instance.runTransaction((transaction) async {
       transaction.set(documentReference, jsoned);
     });
+
+    DocumentReference chatReference = firebaseFirestore
+        .collection(FirestoreConstants.chatCollectionName)
+        .doc(chatRoomId);
+    chatReference.update({
+      FirestoreConstants.lastMessengerId: currentUserId,
+      FirestoreConstants.isSeen: false
+    }).then((value) => print("DocumentSnapshot successfully updated!"),
+        onError: (e) => print("Error updating document $e"));
+  }
+
+  void marRoomAndMessageAsSeen(String chatRoomId, String currentUser) {
+    final msgRef = firebaseFirestore
+        .collection(FirestoreConstants.chatCollectionName)
+        .doc(chatRoomId)
+        .collection(FirestoreConstants.messagesCollectionName)
+        .get()
+        .then((QuerySnapshot value){
+          firebaseFirestore
+          .collection(FirestoreConstants.chatCollectionName)
+          .doc(chatRoomId)
+          .collection(FirestoreConstants.messagesCollectionName)
+          .doc(value.docs.last.id)
+          .update({FirestoreConstants.isThisMessageSeen:true});
+          
+        });
+
+    final docRef = firebaseFirestore
+        .collection(FirestoreConstants.chatCollectionName)
+        .doc(chatRoomId);
+    docRef.get().then(
+      (DocumentSnapshot doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        String _userIdToModify = "";
+        if (data[FirestoreConstants.lastMessengerId] == currentUser) {
+          print("Last message was not send by this user, skiping seen flag");
+        } else {
+          DocumentReference chatReference = firebaseFirestore
+              .collection(FirestoreConstants.chatCollectionName)
+              .doc(chatRoomId);
+          chatReference.update({FirestoreConstants.isSeen: true}).then(
+              (value) => print("Setting room $chatRoomId as seen completed"),
+              onError: (e) => print("Error updating chatRoom as seen $e"));
+        }
+      },
+      onError: (e) => print("Error getting document: $e"),
+    );
   }
 }
-
-

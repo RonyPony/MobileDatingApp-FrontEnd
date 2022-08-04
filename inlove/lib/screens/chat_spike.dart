@@ -729,6 +729,12 @@ class FirestoreConstants {
   static const user1_id = "user1_id";
 
   static const user2_id= "user2_id";
+
+  static const lastMessengerId = "lastSenderId";
+
+  static const isSeen = "isLastMessageSeen";
+
+  static const isThisMessageSeen = "seen";
 }
 
 // class FirestoreConstants {

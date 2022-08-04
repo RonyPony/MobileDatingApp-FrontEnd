@@ -17,7 +17,7 @@ import 'package:inlove/screens/conversation.page.dart';
 import 'package:inlove/screens/home.page.dart';
 import 'package:inlove/screens/userProfile.page.dart';
 import 'package:provider/provider.dart';
-
+import 'dart:math' as math;
 import '../models/photo.dart';
 import '../models/user.dart';
 import '../providers/chat_provider.dart';
@@ -384,7 +384,7 @@ class _StateChatScreen extends State<ChatScreen> {
                       return _buildNoMatches();
                     }
                   }
-                  return Text("XXX");
+                  return Text("Error ");
                 },
               )
             ],
@@ -539,8 +539,10 @@ class _StateChatScreen extends State<ChatScreen> {
                     return Center(child: _buildEmptyChats());
                   }
                 } else {
-                  return CircularProgressIndicator(
-                    color: Colors.yellow,
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: Colors.yellow,
+                    ),
                   );
                 }
               }),
@@ -575,6 +577,7 @@ class _StateChatScreen extends State<ChatScreen> {
     //       .then((value){
     // print("Fetched ==>>>" + value.docs.first.get("content"));
     //       });
+    
     return GestureDetector(
       onTap: () async {
         User _finalUser = await authProvider.findUserById(int.parse(userId));
@@ -590,17 +593,24 @@ class _StateChatScreen extends State<ChatScreen> {
           child: Padding(
             padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Column(
                   children: [
                     CircleAvatar(
-                      child: Text("IL"),
+                      backgroundColor: Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
+                              .withOpacity(1.0),
+                      child: Text(room.get("displayName").toString().toUpperCase()[0]+
+                          room.get("displayName").toString().toUpperCase()[1],style: TextStyle(color: Colors.white),),
                     ),
                   ],
                 ),
                 Column(
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(left: 15),
@@ -612,6 +622,8 @@ class _StateChatScreen extends State<ChatScreen> {
                       ],
                     ),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
                           future: _snap,
@@ -621,7 +633,7 @@ class _StateChatScreen extends State<ChatScreen> {
                               return CircularProgressIndicator();
                             }
                             if (snapshot.hasError) {
-                              return Text("Error found");
+                              return Text("Error found",style: TextStyle(color: Colors.red),);
                             }
                             if (snapshot.hasData &&
                                 snapshot.connectionState ==
@@ -640,7 +652,8 @@ class _StateChatScreen extends State<ChatScreen> {
                                         color: Colors.white.withOpacity(.5)));
                               }
                             }
-                            return Text("No Data");
+                            return Text("No Data",
+                                style: TextStyle(color: Colors.red));
                           },
                         ),
                       ],

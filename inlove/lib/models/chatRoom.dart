@@ -11,6 +11,8 @@ class ChatMessagesRoom {
   String user2_id;
   String createdOn;
   String displayName;
+  String lastMessengerId;
+  bool isSeen;
   ChatMessagesRoom({
       // required this.messages,
       required this.user1_uid,
@@ -18,6 +20,8 @@ class ChatMessagesRoom {
       required this.user2_uid,
       required this.user2_id,
       required this.createdOn,
+      required this.lastMessengerId,
+      required this.isSeen,
       required this.displayName
   });
 
@@ -29,6 +33,8 @@ class ChatMessagesRoom {
       FirestoreConstants.user1_id:user1_id,
       FirestoreConstants.user2_id:user2_id,
       FirestoreConstants.createdOn: createdOn,
+      FirestoreConstants.lastMessengerId:lastMessengerId,
+      FirestoreConstants.isSeen:isSeen,
       FirestoreConstants.displayName:displayName
     };
   }
