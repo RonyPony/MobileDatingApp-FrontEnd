@@ -66,6 +66,7 @@ class _buildState extends State<Conversation> {
     });
     var auth = fbAuth.FirebaseAuth.instance;
     chatProvider.markRoomAndMessageAsSeen(_roomId, auth.currentUser!.uid);
+    String _uid = auth.currentUser!.uid;
     double _width = MediaQuery.of(context).size.width;
     double _heigth = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -172,7 +173,9 @@ class _buildState extends State<Conversation> {
                                                         MainAxisAlignment.end,
                                                     children: [
                                                       Text(
-                                                        data['seen']?"Visto":"Recibido",
+                                                        data['seen']
+                                                            ? "Visto"
+                                                            : "Recibido",
                                                         style: TextStyle(
                                                             color: Colors
                                                                 .grey[700]),
@@ -185,7 +188,6 @@ class _buildState extends State<Conversation> {
                                                             color: Colors
                                                                 .grey[700]),
                                                       ),
-                                                      
                                                     ],
                                                   ),
                                                 )
@@ -257,6 +259,33 @@ class _buildState extends State<Conversation> {
                           }
                         }),
                   ),
+                  StreamBuilder<QuerySnapshot>(
+                      stream: chatProvider.getUserTyping(_roomId, _uid),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasData) {
+                          listMessages = snapshot.data!.docs;
+                          if (listMessages.isNotEmpty) {
+                            var auth = fbAuth.FirebaseAuth.instance;
+                            String _uid = auth.currentUser!.uid;
+                            return Text(
+                              snapshot.data!.docs.first
+                                  .get(FirestoreConstants.isThisMessageSeen)?"User is typing...":"not typing",style: TextStyle(color: Colors.white),);
+                          }
+                        } else {
+                          return Text(
+                            "error 30",
+                            style: TextStyle(color: Colors.white),
+                          );
+                        }
+                        return Text(
+                          "error 33",
+                          style: TextStyle(color: Colors.white),
+                        );
+                      }),
+                  SizedBox(
+                    height: 10,
+                  )
                   // _messageReceibed("Hola.", "11:45 PM"),
                   // _messageReceibed("Como estas?", "11:46 PM"),
                   // _messageSent("Hola.", "11:45 PM"),
@@ -466,7 +495,6 @@ class _buildState extends State<Conversation> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextField(
-                      
                       controller: messageToSend,
                       keyboardType: TextInputType.multiline,
                       textInputAction: TextInputAction.send,
@@ -482,11 +510,12 @@ class _buildState extends State<Conversation> {
                       ),
                       style: const TextStyle(color: Colors.white, fontSize: 18),
                       onChanged: (t) {
-                        ChatProvider chatProvider = Provider.of<ChatProvider>(context,listen: false);
+                        ChatProvider chatProvider =
+                            Provider.of<ChatProvider>(context, listen: false);
                         var auth = fbAuth.FirebaseAuth.instance;
                         chatProvider.markUserIsTyping(
-                            _roomId, auth.currentUser!.uid,true);
-                          
+                            _roomId, auth.currentUser!.uid, true);
+
                         setState(() {
                           if (t != "") {
                             hasText = true;
@@ -576,12 +605,16 @@ class _buildState extends State<Conversation> {
     if (secondUserFirebaseId != null) {
       chatProvider.sendChatMessage(
           messageContent, type, _roomId, CurrUID, secondUserFirebaseId);
+      chatProvider.markUserIsTyping(_roomId, auth.currentUser!.uid, false);
     } else {
+      chatProvider.markUserIsTyping(_roomId, auth.currentUser!.uid, false);
       CoolAlert.show(
           context: context,
           type: CoolAlertType.warning,
           text: "No pudimos enviar tu mensaje, intentalo mas tarde");
     }
+
+    chatProvider.markUserIsTyping(_roomId, auth.currentUser!.uid, false);
   }
 
   Widget _buildEmptyMessages() {

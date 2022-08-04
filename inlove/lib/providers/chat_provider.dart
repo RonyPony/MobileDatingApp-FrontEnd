@@ -42,6 +42,34 @@ class ChatProvider extends ChangeNotifier {
     return snapshots;
   }
 
+  Stream<QuerySnapshot> getUserTyping(String groupChatId, String current_uid) {
+    
+    final msgRef = firebaseFirestore
+        .collection(FirestoreConstants.chatCollectionName)
+        .doc(groupChatId)
+        .collection(FirestoreConstants.messagesCollectionName)
+        .get()
+        .then((QuerySnapshot value) {
+      Stream<DocumentSnapshot<Map<String, dynamic>>> snapshots = firebaseFirestore
+          .collection(FirestoreConstants.chatCollectionName)
+          .doc(groupChatId)
+          .collection(FirestoreConstants.messagesCollectionName)
+          .doc(value.docs.last.id)
+          .snapshots();
+
+      return snapshots;
+    });
+    
+    
+    Stream<QuerySnapshot<Map<String, dynamic>>> snapshots = firebaseFirestore
+        .collection(FirestoreConstants.chatCollectionName)
+        .doc(groupChatId)
+        .collection(FirestoreConstants.messagesCollectionName)
+        
+        .snapshots();
+    return snapshots;
+  }
+
   Stream<QuerySnapshot> getChatRooms(String uid, int limit) {
     Stream<QuerySnapshot<Map<String, dynamic>>> snapshots = firebaseFirestore
         .collection(FirestoreConstants.chatCollectionName)
