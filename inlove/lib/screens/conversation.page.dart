@@ -65,7 +65,7 @@ class _buildState extends State<Conversation> {
       _secondUserCountry = await getUserCountry(_secondUser);
     });
     var auth = fbAuth.FirebaseAuth.instance;
-    chatProvider.marRoomAndMessageAsSeen(_roomId, auth.currentUser!.uid);
+    chatProvider.markRoomAndMessageAsSeen(_roomId, auth.currentUser!.uid);
     double _width = MediaQuery.of(context).size.width;
     double _heigth = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -466,6 +466,7 @@ class _buildState extends State<Conversation> {
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextField(
+                      
                       controller: messageToSend,
                       keyboardType: TextInputType.multiline,
                       textInputAction: TextInputAction.send,
@@ -481,11 +482,18 @@ class _buildState extends State<Conversation> {
                       ),
                       style: const TextStyle(color: Colors.white, fontSize: 18),
                       onChanged: (t) {
+                        ChatProvider chatProvider = Provider.of<ChatProvider>(context,listen: false);
+                        var auth = fbAuth.FirebaseAuth.instance;
+                        chatProvider.markUserIsTyping(
+                            _roomId, auth.currentUser!.uid,true);
+                          
                         setState(() {
                           if (t != "") {
                             hasText = true;
                           } else {
                             hasText = false;
+                            chatProvider.markUserIsTyping(
+                                _roomId, auth.currentUser!.uid, false);
                           }
                         });
                       },

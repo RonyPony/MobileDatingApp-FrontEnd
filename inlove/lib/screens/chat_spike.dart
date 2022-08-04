@@ -735,6 +735,9 @@ class FirestoreConstants {
   static const isSeen = "isLastMessageSeen";
 
   static const isThisMessageSeen = "seen";
+
+  static const isUser1Typing = "is_user1_typing";
+  static const isUser2Typing = "is_user2_typing";
 }
 
 // class FirestoreConstants {

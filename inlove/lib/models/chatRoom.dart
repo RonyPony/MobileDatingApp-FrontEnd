@@ -13,6 +13,8 @@ class ChatMessagesRoom {
   String displayName;
   String lastMessengerId;
   bool isSeen;
+  bool isUser1Typing;
+  bool isUser2Typing;
   ChatMessagesRoom({
       // required this.messages,
       required this.user1_uid,
@@ -22,6 +24,8 @@ class ChatMessagesRoom {
       required this.createdOn,
       required this.lastMessengerId,
       required this.isSeen,
+      required this.isUser1Typing,
+      required this.isUser2Typing,
       required this.displayName
   });
 
@@ -35,6 +39,8 @@ class ChatMessagesRoom {
       FirestoreConstants.createdOn: createdOn,
       FirestoreConstants.lastMessengerId:lastMessengerId,
       FirestoreConstants.isSeen:isSeen,
+      FirestoreConstants.isUser1Typing:isUser1Typing,
+      FirestoreConstants.isUser2Typing: isUser2Typing,
       FirestoreConstants.displayName:displayName
     };
   }

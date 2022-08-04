@@ -85,6 +85,8 @@ class ChatProvider extends ChangeNotifier {
           user2_uid: user2_uid,
           user2_id: user2_id,
           displayName: displayName,
+          isUser1Typing: false,
+          isUser2Typing: false,
           lastMessengerId: user1_uid,
           isSeen: false);
       Map<String, dynamic> jsoned = chatRoomMessages.toJson();
@@ -132,7 +134,7 @@ class ChatProvider extends ChangeNotifier {
         onError: (e) => print("Error updating document $e"));
   }
 
-  void marRoomAndMessageAsSeen(String chatRoomId, String currentUser) {
+  void markRoomAndMessageAsSeen(String chatRoomId, String currentUser) {
     final msgRef = firebaseFirestore
         .collection(FirestoreConstants.chatCollectionName)
         .doc(chatRoomId)
@@ -165,6 +167,41 @@ class ChatProvider extends ChangeNotifier {
               (value) => print("Setting room $chatRoomId as seen completed"),
               onError: (e) => print("Error updating chatRoom as seen $e"));
         }
+      },
+      onError: (e) => print("Error getting document: $e"),
+    );
+  }
+
+  void markUserIsTyping(String roomId, String uid,bool isTyping) {
+    final docRef = firebaseFirestore
+        .collection(FirestoreConstants.chatCollectionName)
+        .doc(roomId);
+    docRef.get().then(
+      (DocumentSnapshot doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        String _userIdToModify = "";
+        if (data[FirestoreConstants.user1_uid] == uid) {
+          print("USER 1 IS TYPING");
+          DocumentReference chatReference = firebaseFirestore
+              .collection(FirestoreConstants.chatCollectionName)
+              .doc(roomId);
+          chatReference.update({FirestoreConstants.isUser1Typing: isTyping}).then(
+              (value) => print("Setting room $roomId as user typing completed"),
+              onError: (e) =>
+                  print("Error updating chatRoom as user typing $e"));
+        }
+
+        if (data[FirestoreConstants.user2_uid] == uid) {
+          print("USER 2 IS TYPING");
+          DocumentReference chatReference = firebaseFirestore
+              .collection(FirestoreConstants.chatCollectionName)
+              .doc(roomId);
+          chatReference.update({FirestoreConstants.isUser2Typing: true}).then(
+              (value) => print("Setting room $roomId as user typing completed"),
+              onError: (e) =>
+                  print("Error updating chatRoom as user typing $e"));
+        }
+
       },
       onError: (e) => print("Error getting document: $e"),
     );
