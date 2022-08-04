@@ -42,35 +42,13 @@ class ChatProvider extends ChangeNotifier {
     return snapshots;
   }
 
-  Stream<QuerySnapshot> getUserTyping(String groupChatId, String current_uid) {
-    final msgRef = firebaseFirestore
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getUserTyping(
+      String groupChatId, String current_uid) {
+    Stream<DocumentSnapshot<Map<String, dynamic>>> snapshots = firebaseFirestore
         .collection(FirestoreConstants.chatCollectionName)
         .doc(groupChatId)
-        .collection(FirestoreConstants.messagesCollectionName)
-        .get()
-        .then((QuerySnapshot value) {
-          print(value.docs.length.toString() + " mensajes en este room");
-      Stream<DocumentSnapshot<Map<String, dynamic>>> snapshots;
-      if (value.docs.length >= 1) {
-         snapshots=
-            firebaseFirestore
-                .collection(FirestoreConstants.chatCollectionName)
-                .doc(groupChatId)
-                .collection(FirestoreConstants.messagesCollectionName)
-                .doc(value.docs.last.id)
-                .snapshots();
-      }else{
-        snapshots = Stream.error("No messages");
-      }
-
-      return snapshots;
-    });
-
-    Stream<QuerySnapshot<Map<String, dynamic>>> snapshots = firebaseFirestore
-        .collection(FirestoreConstants.chatCollectionName)
-        .doc(groupChatId)
-        .collection(FirestoreConstants.messagesCollectionName)
         .snapshots();
+
     return snapshots;
   }
 

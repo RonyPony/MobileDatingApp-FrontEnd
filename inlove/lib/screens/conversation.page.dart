@@ -70,7 +70,7 @@ class _buildState extends State<Conversation> {
     double _width = MediaQuery.of(context).size.width;
     double _heigth = MediaQuery.of(context).size.height;
     var _typingStream = chatProvider.getUserTyping(_roomId, _uid);
-    print(_typingStream != Stream.empty());
+
     return Scaffold(
       backgroundColor: const Color(0xff020202),
       appBar: AppBar(
@@ -262,18 +262,31 @@ class _buildState extends State<Conversation> {
                         }),
                   ),
                   _typingStream != Stream.empty()
-                      ? StreamBuilder<QuerySnapshot>(
+                      ? StreamBuilder<DocumentSnapshot>(
                           stream: _typingStream,
                           builder: (BuildContext context,
-                              AsyncSnapshot<QuerySnapshot> snapshot) {
+                              AsyncSnapshot<DocumentSnapshot> snapshot) {
                             if (snapshot.hasData) {
-                              listMessages = snapshot.data!.docs;
-                              if (listMessages.isNotEmpty) {
-                                var auth = fbAuth.FirebaseAuth.instance;
-                                String _uid = auth.currentUser!.uid;
+                              var auth = fbAuth.FirebaseAuth.instance;
+                              String _uid = auth.currentUser!.uid;
+                              if (snapshot.data!
+                                      .get(FirestoreConstants.isUser1Typing) ==
+                                  _uid) {
                                 return Text(
-                                  snapshot.data!.docs.first.get(
-                                          FirestoreConstants.isThisMessageSeen)
+                                  snapshot.data!
+                                          .get(FirestoreConstants.isUser2Typing)
+                                      ? "User is typing..."
+                                      : "not typing",
+                                  style: TextStyle(color: Colors.white),
+                                );
+                              }
+
+                              if (snapshot.data!
+                                      .get(FirestoreConstants.isUser2Typing) ==
+                                  _uid) {
+                                return Text(
+                                  snapshot.data!
+                                          .get(FirestoreConstants.isUser1Typing)
                                       ? "User is typing..."
                                       : "not typing",
                                   style: TextStyle(color: Colors.white),
