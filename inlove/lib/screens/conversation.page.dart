@@ -69,6 +69,8 @@ class _buildState extends State<Conversation> {
     String _uid = auth.currentUser!.uid;
     double _width = MediaQuery.of(context).size.width;
     double _heigth = MediaQuery.of(context).size.height;
+    var _typingStream = chatProvider.getUserTyping(_roomId, _uid);
+    print(_typingStream != Stream.empty());
     return Scaffold(
       backgroundColor: const Color(0xff020202),
       appBar: AppBar(
@@ -259,30 +261,36 @@ class _buildState extends State<Conversation> {
                           }
                         }),
                   ),
-                  StreamBuilder<QuerySnapshot>(
-                      stream: chatProvider.getUserTyping(_roomId, _uid),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<QuerySnapshot> snapshot) {
-                        if (snapshot.hasData) {
-                          listMessages = snapshot.data!.docs;
-                          if (listMessages.isNotEmpty) {
-                            var auth = fbAuth.FirebaseAuth.instance;
-                            String _uid = auth.currentUser!.uid;
+                  _typingStream != Stream.empty()
+                      ? StreamBuilder<QuerySnapshot>(
+                          stream: _typingStream,
+                          builder: (BuildContext context,
+                              AsyncSnapshot<QuerySnapshot> snapshot) {
+                            if (snapshot.hasData) {
+                              listMessages = snapshot.data!.docs;
+                              if (listMessages.isNotEmpty) {
+                                var auth = fbAuth.FirebaseAuth.instance;
+                                String _uid = auth.currentUser!.uid;
+                                return Text(
+                                  snapshot.data!.docs.first.get(
+                                          FirestoreConstants.isThisMessageSeen)
+                                      ? "User is typing..."
+                                      : "not typing",
+                                  style: TextStyle(color: Colors.white),
+                                );
+                              }
+                            } else {
+                              return Text(
+                                "error 30",
+                                style: TextStyle(color: Colors.white),
+                              );
+                            }
                             return Text(
-                              snapshot.data!.docs.first
-                                  .get(FirestoreConstants.isThisMessageSeen)?"User is typing...":"not typing",style: TextStyle(color: Colors.white),);
-                          }
-                        } else {
-                          return Text(
-                            "error 30",
-                            style: TextStyle(color: Colors.white),
-                          );
-                        }
-                        return Text(
-                          "error 33",
-                          style: TextStyle(color: Colors.white),
-                        );
-                      }),
+                              "error 33",
+                              style: TextStyle(color: Colors.white),
+                            );
+                          })
+                      : Text("No messages"),
                   SizedBox(
                     height: 10,
                   )

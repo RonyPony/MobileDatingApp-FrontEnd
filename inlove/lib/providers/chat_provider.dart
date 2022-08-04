@@ -49,17 +49,21 @@ class ChatProvider extends ChangeNotifier {
         .collection(FirestoreConstants.messagesCollectionName)
         .get()
         .then((QuerySnapshot value) {
+          print(value.docs.length.toString() + " mensajes en este room");
+      Stream<DocumentSnapshot<Map<String, dynamic>>> snapshots;
       if (value.docs.length >= 1) {
-        Stream<DocumentSnapshot<Map<String, dynamic>>> snapshots =
+         snapshots=
             firebaseFirestore
                 .collection(FirestoreConstants.chatCollectionName)
                 .doc(groupChatId)
                 .collection(FirestoreConstants.messagesCollectionName)
                 .doc(value.docs.last.id)
                 .snapshots();
-
-        return snapshots;
+      }else{
+        snapshots = Stream.error("No messages");
       }
+
+      return snapshots;
     });
 
     Stream<QuerySnapshot<Map<String, dynamic>>> snapshots = firebaseFirestore
