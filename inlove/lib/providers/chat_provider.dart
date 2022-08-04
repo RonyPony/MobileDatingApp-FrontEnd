@@ -43,29 +43,27 @@ class ChatProvider extends ChangeNotifier {
   }
 
   Stream<QuerySnapshot> getUserTyping(String groupChatId, String current_uid) {
-    
     final msgRef = firebaseFirestore
         .collection(FirestoreConstants.chatCollectionName)
         .doc(groupChatId)
         .collection(FirestoreConstants.messagesCollectionName)
         .get()
         .then((QuerySnapshot value) {
-      Stream<DocumentSnapshot<Map<String, dynamic>>> snapshots = firebaseFirestore
-          .collection(FirestoreConstants.chatCollectionName)
-          .doc(groupChatId)
-          .collection(FirestoreConstants.messagesCollectionName)
-          .doc(value.docs.last.id)
-          .snapshots();
+      Stream<DocumentSnapshot<Map<String, dynamic>>> snapshots =
+          firebaseFirestore
+              .collection(FirestoreConstants.chatCollectionName)
+              .doc(groupChatId)
+              .collection(FirestoreConstants.messagesCollectionName)
+              .doc(value.docs.last.id)
+              .snapshots();
 
       return snapshots;
     });
-    
-    
+
     Stream<QuerySnapshot<Map<String, dynamic>>> snapshots = firebaseFirestore
         .collection(FirestoreConstants.chatCollectionName)
         .doc(groupChatId)
         .collection(FirestoreConstants.messagesCollectionName)
-        
         .snapshots();
     return snapshots;
   }
@@ -174,7 +172,9 @@ class ChatProvider extends ChangeNotifier {
           .doc(chatRoomId)
           .collection(FirestoreConstants.messagesCollectionName)
           .doc(value.docs.last.id)
-          .update({FirestoreConstants.isThisMessageSeen: true});
+          .update({FirestoreConstants.isThisMessageSeen: true}).then(
+              (value) => print("Setting room and message $chatRoomId as seen completed"),
+              onError: (e) => print("Error updating chatRoom as seen $e"));
     });
 
     final docRef = firebaseFirestore
