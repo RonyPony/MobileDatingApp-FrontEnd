@@ -270,7 +270,7 @@ class _buildState extends State<Conversation> {
                               var auth = fbAuth.FirebaseAuth.instance;
                               String _uid = auth.currentUser!.uid;
                               if (snapshot.data!
-                                      .get(FirestoreConstants.isUser1Typing) ==
+                                      .get(FirestoreConstants.user1_uid) ==
                                   _uid) {
                                 return Text(
                                   snapshot.data!
@@ -282,7 +282,7 @@ class _buildState extends State<Conversation> {
                               }
 
                               if (snapshot.data!
-                                      .get(FirestoreConstants.isUser2Typing) ==
+                                      .get(FirestoreConstants.user2_uid) ==
                                   _uid) {
                                 return Text(
                                   snapshot.data!
