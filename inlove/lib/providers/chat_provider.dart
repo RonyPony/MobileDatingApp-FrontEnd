@@ -49,15 +49,17 @@ class ChatProvider extends ChangeNotifier {
         .collection(FirestoreConstants.messagesCollectionName)
         .get()
         .then((QuerySnapshot value) {
-      Stream<DocumentSnapshot<Map<String, dynamic>>> snapshots =
-          firebaseFirestore
-              .collection(FirestoreConstants.chatCollectionName)
-              .doc(groupChatId)
-              .collection(FirestoreConstants.messagesCollectionName)
-              .doc(value.docs.last.id)
-              .snapshots();
+      if (value.docs.length >= 1) {
+        Stream<DocumentSnapshot<Map<String, dynamic>>> snapshots =
+            firebaseFirestore
+                .collection(FirestoreConstants.chatCollectionName)
+                .doc(groupChatId)
+                .collection(FirestoreConstants.messagesCollectionName)
+                .doc(value.docs.last.id)
+                .snapshots();
 
-      return snapshots;
+        return snapshots;
+      }
     });
 
     Stream<QuerySnapshot<Map<String, dynamic>>> snapshots = firebaseFirestore
@@ -167,14 +169,14 @@ class ChatProvider extends ChangeNotifier {
         .collection(FirestoreConstants.messagesCollectionName)
         .get()
         .then((QuerySnapshot value) {
-      firebaseFirestore
-          .collection(FirestoreConstants.chatCollectionName)
-          .doc(chatRoomId)
-          .collection(FirestoreConstants.messagesCollectionName)
-          .doc(value.docs.last.id)
-          .update({FirestoreConstants.isThisMessageSeen: true}).then(
-              (value) => print("Setting room and message $chatRoomId as seen completed"),
-              onError: (e) => print("Error updating chatRoom as seen $e"));
+      if (value.docs.length >= 1) {
+        firebaseFirestore
+            .collection(FirestoreConstants.chatCollectionName)
+            .doc(chatRoomId)
+            .collection(FirestoreConstants.messagesCollectionName)
+            .doc(value.docs.last.id)
+            .update({FirestoreConstants.isThisMessageSeen: true});
+      }
     });
 
     final docRef = firebaseFirestore
