@@ -17,23 +17,22 @@ class AuthProvider extends ChangeNotifier {
   final fb_auth.FirebaseAuth firebaseAuth;
   final FirebaseFirestore firebaseFirestore;
   final SharedPreferences prefs;
-   Status _status = Status.uninitialized;
+  Status _status = Status.uninitialized;
 
   Status get status => _status;
-  AuthProvider({
-    required this.authService,
-    required this.googleSignIn,
+  AuthProvider(
+      {required this.authService,
+      required this.googleSignIn,
       required this.firebaseAuth,
       required this.firebaseFirestore,
-      required this.prefs
-  });
+      required this.prefs});
 
   Future<bool> userEmailExists(String userEmail) async {
     final bool response = await authService.userExists(userEmail);
     return response;
   }
 
-  Future<bool>registerFirebaseUser(Login user) async {
+  Future<bool> registerFirebaseUser(Login user) async {
     final bool response = await authService.registerFirebaseUser(user);
     return response;
   }
@@ -43,7 +42,7 @@ class AuthProvider extends ChangeNotifier {
     return response;
   }
 
-  Future<User>findUserByEmail(String userEmail) async {
+  Future<User> findUserByEmail(String userEmail) async {
     final user = await authService.findUserByEmail(userEmail);
     return user;
   }
@@ -100,25 +99,23 @@ class AuthProvider extends ChangeNotifier {
     return response;
   }
 
-
-
   String? getFirebaseUserId() {
-   return prefs.getString(FirestoreConstants.id);
- }
+    return prefs.getString(FirestoreConstants.id);
+  }
 
- Future<bool> isLoggedIn() async {
-   bool isLoggedIn = await googleSignIn.isSignedIn();
-   if (isLoggedIn &&
-       prefs.getString(FirestoreConstants.id)?.isNotEmpty == true) {
-     return true;
-   } else {
-     return false;
-   }
- }
+  Future<bool> isLoggedIn() async {
+    bool isLoggedIn = await googleSignIn.isSignedIn();
+    if (isLoggedIn &&
+        prefs.getString(FirestoreConstants.id)?.isNotEmpty == true) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
- Future<bool?> handleGoogleSignIn() async {
-   try {
-     _status = Status.authenticating;
+  Future<bool?> handleGoogleSignIn() async {
+    try {
+      _status = Status.authenticating;
       notifyListeners();
 
       GoogleSignInAccount? googleUser = await googleSignIn.signIn();
@@ -167,17 +164,17 @@ class AuthProvider extends ChangeNotifier {
       } else {
         return false;
       }
-   } catch (e) {
-     print("Error authenticating with google "+e.toString());
-   }
- }
-
+    } catch (e) {
+      print("Error authenticating with google " + e.toString());
+      return false;
+    }
+  }
 }
 
 enum Status {
   uninitialized,
-authenticating,
-authenticateError,
-authenticateCanceled,
-authenticated
+  authenticating,
+  authenticateError,
+  authenticateCanceled,
+  authenticated
 }

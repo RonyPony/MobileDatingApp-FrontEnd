@@ -472,12 +472,12 @@ class _LoginPageState extends State<LoginPage>
 
   _buildGoogleLoginButton() {
     if (defaultTargetPlatform == TargetPlatform.android) {
-return GestureDetector(
+      return GestureDetector(
           onTap: () async {
             final authProvider =
                 Provider.of<AuthProvider>(context, listen: false);
             bool? isSuccess = await authProvider.handleGoogleSignIn();
-            if (isSuccess!) {
+            if (isSuccess == null) {
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => const HomePage()));
             } else {
@@ -515,6 +515,5 @@ return GestureDetector(
     } else {
 //web or desktop specific code
     }
-    
   }
 }
