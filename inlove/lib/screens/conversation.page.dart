@@ -521,6 +521,9 @@ class _buildState extends State<Conversation> {
                       textInputAction: TextInputAction.send,
                       onSubmitted: (value) {
                         _sendCurrentMessage();
+                        setState(() {
+                          hasText = false;
+                        });
                       },
                       cursorColor: Colors.pink,
                       decoration: InputDecoration(
@@ -565,6 +568,9 @@ class _buildState extends State<Conversation> {
                   ? GestureDetector(
                       onTap: () async {
                         _sendCurrentMessage();
+                        setState(() {
+                          hasText = false;
+                        });
                       },
                       child: SvgPicture.asset(
                         'assets/send.svg',

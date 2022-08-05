@@ -187,26 +187,11 @@ class _LoginPageState extends State<LoginPage>
                 tittle: "O Registrate",
               ),
             ),
-            GestureDetector(
-              onTap: () async {
-                final authProvider =
-                    Provider.of<AuthProvider>(context, listen: false);
-                bool? isSuccess = await authProvider.handleGoogleSignIn();
-                if (isSuccess!) {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const HomePage()));
-                } else {
-                  Fluttertoast.showToast(
-                      msg: 'Ups, algo paso con Google confirmando tu identidad',
-                      backgroundColor: Colors.red);
-                }
-              },
-              child: const CustomLinkButton(
-                tittle: "Inicia sesion con google",
-              ),
+            Padding(
+              padding: EdgeInsets.only(top: 20),
+              child: _buildGoogleLoginButton(),
             ),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -292,17 +277,18 @@ class _LoginPageState extends State<LoginPage>
                                 if (logged) {
                                   Navigator.pushNamedAndRemoveUntil(context,
                                       HomePage.routeName, (route) => false);
-                                      CoolAlert.show(
+                                  CoolAlert.show(
                                     context: context,
                                     animType: CoolAlertAnimType.slideInDown,
                                     backgroundColor: Colors.white,
                                     loopAnimation: false,
                                     type: CoolAlertType.loading,
                                     title: "😍😍",
-                                    text: "Hey, es grandioso que formes parte del grupo ❤️",
+                                    text:
+                                        "Hey, es grandioso que formes parte del grupo ❤️",
                                   );
                                 }
-                              }else{
+                              } else {
                                 if (errMsg == "") {
                                   CoolAlert.show(
                                     context: context,
@@ -325,7 +311,6 @@ class _LoginPageState extends State<LoginPage>
                                   );
                                 }
                               }
-                              
                             }
                           } else {
                             Emojies emo = Emojies();
@@ -483,5 +468,53 @@ class _LoginPageState extends State<LoginPage>
         ],
       ),
     );
+  }
+
+  _buildGoogleLoginButton() {
+    if (defaultTargetPlatform == TargetPlatform.android) {
+return GestureDetector(
+          onTap: () async {
+            final authProvider =
+                Provider.of<AuthProvider>(context, listen: false);
+            bool? isSuccess = await authProvider.handleGoogleSignIn();
+            if (isSuccess!) {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => const HomePage()));
+            } else {
+              Fluttertoast.showToast(
+                  msg: 'Ups, algo paso con Google confirmando tu identidad',
+                  backgroundColor: Colors.red);
+            }
+          },
+          child: Container(
+            width: 250,
+            decoration: BoxDecoration(
+                color: Colors.blue, borderRadius: BorderRadius.circular(20)),
+            child: Row(
+              children: [
+                Container(
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20)),
+                    child: Image.asset(
+                      "assets/google.png",
+                      width: 40,
+                    )),
+                SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  "Inicia sesion con Google",
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                )
+              ],
+            ),
+          ));
+    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+//iOS specific code
+    } else {
+//web or desktop specific code
+    }
+    
   }
 }
