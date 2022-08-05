@@ -487,25 +487,26 @@ class _LoginPageState extends State<LoginPage>
             }
           },
           child: Container(
-            width: 250,
+            width: 280,
             decoration: BoxDecoration(
-                color: Colors.blue, borderRadius: BorderRadius.circular(20)),
+                color: Colors.blue, borderRadius: BorderRadius.circular(30)),
             child: Row(
               children: [
                 Container(
+                  padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(20)),
+                         borderRadius: BorderRadius.circular(50)),
                     child: SvgPicture.asset(
                       "assets/google.svg",
-                      width: 40,
+                      width: 30,
                     )),
                 SizedBox(
                   width: 10,
                 ),
                 Text(
                   "Inicia sesion con Google",
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                  style: TextStyle(color: Colors.white, fontSize: 18),
                 )
               ],
             ),
