@@ -516,5 +516,5 @@ class _LoginPageState extends State<LoginPage>
     } else {
 //web or desktop specific code
     }
-  }
+  } 
 }

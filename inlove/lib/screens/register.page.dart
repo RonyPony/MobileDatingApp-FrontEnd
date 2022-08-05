@@ -304,7 +304,7 @@ class _RegisterPageState extends State<RegisterPage>
                   padding: const EdgeInsets.only(
                     left: 17,
                     right: 69,
-                    top: 11,
+                    top: 10,
                     bottom: 10,
                   ),
                   child: Row(
@@ -316,7 +316,7 @@ class _RegisterPageState extends State<RegisterPage>
                         "Registrate",
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 25,
+                          fontSize: 23,
                         ),
                       ),
                     ],

@@ -1006,11 +1006,11 @@ class _SettingScreenState extends State<SettingScreen>
                         Padding(
                           padding: EdgeInsets.only(
                               top: 10,
-                              left: MediaQuery.of(context).size.width * .16),
+                              left: MediaQuery.of(context).size.width * .11),
                           child: Row(
                             children: [
                               SizedBox(
-                                width: MediaQuery.of(context).size.width * 0.15,
+                                width: MediaQuery.of(context).size.width * 0.16,
                                 child: CupertinoSwitch(
                                   value: showSexualitySwitch,
                                   onChanged: (value) {
