@@ -496,8 +496,8 @@ class _LoginPageState extends State<LoginPage>
                     decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20)),
-                    child: Image.asset(
-                      "assets/google.png",
+                    child: SvgPicture.asset(
+                      "assets/google.svg",
                       width: 40,
                     )),
                 SizedBox(
