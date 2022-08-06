@@ -192,27 +192,29 @@ class _LoginPageState extends State<LoginPage>
               child: _buildGoogleLoginButton(),
             ),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 60, right: 30),
-                  child: GestureDetector(
-                    onTap: (() {
-                      Navigator.pushNamedAndRemoveUntil(
-                          context, HomePage.routeName, (route) => false);
-                    }),
-                    child: const Text(
-                      "Saltar",
-                      style: TextStyle(
-                        color: Color(0x9effffff),
-                        fontSize: 20,
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            )
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.end,
+            //   children: [
+            //     Padding(
+            //       padding: const EdgeInsets.only(top: 60, right: 30),
+            //       child: GestureDetector(
+            //         onTap: (() {
+            //           Navigator.pushNamedAndRemoveUntil(
+            //               context, HomePage.routeName, (route) => false);
+            //         }),
+            //         child:
+                  
+            //          Text(
+            //           "Saltar",
+            //           style: TextStyle(
+            //             color: Color(0x9effffff),
+            //             fontSize: 20,
+            //           ),
+            //         ),
+            //       ),
+            //     )
+            //   ],
+            // )
           ],
         )),
       ),
@@ -228,27 +230,9 @@ class _LoginPageState extends State<LoginPage>
           Positioned.fill(
             child: Align(
               alignment: Alignment.topLeft,
-              child: Container(
-                width: 181,
-                height: 53,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(32),
-                  color: const Color(0xff1db9fc),
-                ),
-                padding: const EdgeInsets.only(
-                  left: 37,
-                  right: 69,
-                  top: 11,
-                  bottom: 9,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () async {
-                        try {
+              child: GestureDetector(
+                onTap: () async {
+                  try {
                           context.loaderOverlay.show();
                           final authProvider =
                               Provider.of<AuthProvider>(context, listen: false);
@@ -351,16 +335,34 @@ class _LoginPageState extends State<LoginPage>
                         } finally {
                           context.loaderOverlay.hide();
                         }
-                      },
-                      child: const Text(
+                },
+                child: Container(
+                  width: 181,
+                  height: 53,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(32),
+                    color: const Color(0xff1db9fc),
+                  ),
+                  padding: const EdgeInsets.only(
+                    left: 37,
+                    right: 69,
+                    top: 11,
+                    bottom: 9,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text(
                         "Entrar",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 25,
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

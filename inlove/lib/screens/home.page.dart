@@ -502,6 +502,7 @@ class _HomePageState extends State<HomePage> {
       final matchProvider = Provider.of<MatchProvider>(context, listen: false);
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       User currentUser = await authProvider.readLocalUserInfo();
+      print("Getting Possible Match of "+currentUser.name!+" ID: "+currentUser.id!.toString());
       User possibleMatch =
           await matchProvider.getPossibleMatch(currentUser.id!);
 
