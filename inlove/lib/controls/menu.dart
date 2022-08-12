@@ -53,8 +53,10 @@ class _MainMenuState extends State<MainMenu> {
               children: [
                 GestureDetector(
                   onTap: (){
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, ProfileScreen.routeName, (route) => false);
+                    if (!isProfile) {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, ProfileScreen.routeName, (route) => false);
+                    }
                   },
                   child: Container(
                     width: 50,
@@ -85,8 +87,10 @@ class _MainMenuState extends State<MainMenu> {
                 SizedBox(width: MediaQuery.of(context).size.width*spaceBtweenItems),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, HomePage.routeName, (route) => false);
+                    if (!isHome) {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, HomePage.routeName, (route) => false);
+                    }
                   },
                   child: Container(
                     width: 50,
@@ -105,8 +109,10 @@ class _MainMenuState extends State<MainMenu> {
                  SizedBox(width: MediaQuery.of(context).size.width * spaceBtweenItems),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, ChatScreen.routeName, (route) => false);
+                    if (!isChat) {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, ChatScreen.routeName, (route) => false);
+                    }
                   },
                   child: Container(
                     width: 35,
@@ -124,8 +130,10 @@ class _MainMenuState extends State<MainMenu> {
                  SizedBox(width: MediaQuery.of(context).size.width * spaceBtweenItems),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, SettingScreen.routeName, (route) => false);
+                    if (!isSettings) {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, SettingScreen.routeName, (route) => false);
+                    }
                   },
                   child: Container(
                     width: 50,

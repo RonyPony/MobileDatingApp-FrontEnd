@@ -1,69 +1,78 @@
 <!DOCTYPE html>
 <html lang="en" class="no-js">
+
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>InLove App</title>
-    <link href="https://fonts.googleapis.com/css?family=Heebo:400,700|Oxygen:700" rel="stylesheet">
-    <link rel="stylesheet" href="dist/css/style.css">
-    <script src="https://unpkg.com/scrollreveal@4.0.5/dist/scrollreveal.min.js"></script>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>InLove App</title>
+	<link href="https://fonts.googleapis.com/css?family=Heebo:400,700|Oxygen:700" rel="stylesheet">
+	<link rel="stylesheet" href="dist/css/style.css">
+	<script src="https://unpkg.com/scrollreveal@4.0.5/dist/scrollreveal.min.js"></script>
 	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<style>
-.app-icons {
-  display: flex;
-  align-items: center;
-}
-.vertical {
-  width: 10px;
-  flex-direction: column;
-}
+		.app-icons {
+			display: flex;
+			align-items: center;
+		}
 
-.android {
-  width: 150px;}
-.apple {
-  width: 164px;
-}
-.clickable{
-	cursor: pointer;
-}
+		.vertical {
+			width: 10px;
+			flex-direction: column;
+		}
+
+		.android {
+			width: 150px;
+		}
+
+		.apple {
+			width: 164px;
+		}
+
+		.clickable {
+			cursor: pointer;
+		}
 	</style>
 </head>
+
 <body class="is-boxed has-animations">
 	<script type="text/javascript">
-		function getApp(){
-			
+		function getApp() {
+			window.open('https://play.google.com/apps/internaltest/4701630340644991956');
+			//https://play.google.com/apps/internaltest/4701630340644991956
 		}
 	</script>
-    <div class="body-wrap boxed-container">
-        <header class="site-header text-light">
-            <div class="container">
-                <div class="site-header-inner">
-                    <div class="brand header-brand">
-                        <h1 class="m-0">
-                            <a href="#">
+	<div class="body-wrap boxed-container">
+		<header class="site-header text-light">
+			<div class="container">
+				<div class="site-header-inner">
+					<div class="brand header-brand">
+						<h1 class="m-0">
+							<a href="#">
 								<img class="header-logo-image" src="dist/images/logo.svg" alt="Logo">
-                            </a>
-                        </h1>
-                    </div>
-                </div>
-            </div>
-        </header>
+							</a>
+						</h1>
+					</div>
+				</div>
+			</div>
+		</header>
 
-        <main>
-            <section class="hero text-center text-light">
+		<main>
+			<section class="hero text-center text-light">
 				<div class="hero-bg"></div>
 				<div class="hero-particles-container">
 					<canvas id="hero-particles"></canvas>
 				</div>
-                <div class="container-sm">
-                    <div class="hero-inner">
+				<div class="container-sm">
+					<div class="hero-inner">
 						<div class="hero-copy">
-	                        <h1 class="hero-title mt-0">💕 Encuentra tu complemento ideal 💕</h1>
-	                        <p class="hero-paragraph">La forma mas facil y segura de ampliar tus circulos sociales, o encuentra el amor de tu vida, deja que fluya 🥰</p>
-	                        
+							<h1 class="hero-title mt-0">💕 Encuentra tu complemento ideal 💕</h1>
+							<p class="hero-paragraph">La forma mas facil y segura de ampliar tus circulos sociales, o
+								encuentra el amor de tu vida, deja que fluya 🥰</p>
+
 							<div class="hero-cta">
-								<a class="button button-primary button-wide-mobile" onclick="getApp()" href="getApp()">🤩 Obtener la app 🤗</a>
+								<a class="button button-primary button-wide-mobile" onclick="getApp()"
+									href="getApp()">🤩 Obtener la app 🤗</a>
 								<br>
 								<a href="/beta/android/inlove.apk" class="clickable">APP Beta release 2</a>
 								<!-- <div class="app-icons">
@@ -88,55 +97,64 @@
 							</div>
 							<img class="device-mockup" src="dist/images/iphone_13_splash.png" alt="iPhone Hero">
 						</div>
-                    </div>
-                </div>
-            </section>
+					</div>
+				</div>
+			</section>
 
 			<section class="features-extended section">
-                <div class="features-extended-inner section-inner">
+				<div class="features-extended-inner section-inner">
 					<div class="features-extended-wrap">
 						<div class="container">
 							<div class="feature-extended">
 								<div class="feature-extended-image">
 									<div class="mockup-bg">
-										<img src="dist/images/iphone-feature-bg-01.svg" alt="iPhone Feature 01 illustration">
+										<img src="dist/images/iphone-feature-bg-01.svg"
+											alt="iPhone Feature 01 illustration">
 									</div>
-									<img class="device-mockup is-revealing" src="dist/images/iPhone_13.png" alt="iPhone Feature 01">
+									<img class="device-mockup is-revealing" src="dist/images/iPhone_13.png"
+										alt="iPhone Feature 01">
 								</div>
 								<div class="feature-extended-body is-revealing">
 									<h3 class="mt-0 mb-16">Miles de personas esperan por ti 😏</h3>
-									<p class="m-0">InLove es una solucion que busca ayudar a los usuarios de internet a conocer mas personas al rededor del mundo 🌎</p>
+									<p class="m-0">InLove es una solucion que busca ayudar a los usuarios de internet a
+										conocer mas personas al rededor del mundo 🌎</p>
 								</div>
 							</div>
 							<div class="feature-extended">
 								<div class="feature-extended-image">
 									<div class="mockup-bg">
-										<img src="dist/images/iphone-feature-bg-02.svg" alt="iPhone Feature 02 illustration">
+										<img src="dist/images/iphone-feature-bg-02.svg"
+											alt="iPhone Feature 02 illustration">
 									</div>
-									<img class="device-mockup is-revealing" src="dist/images/profile.png" alt="iPhone Feature 02">
+									<img class="device-mockup is-revealing" src="dist/images/profile.png"
+										alt="iPhone Feature 02">
 								</div>
 								<div class="feature-extended-body is-revealing">
 									<h3 class="mt-0 mb-16">Personaliza tu perfil. ✏️</h3>
-									<p class="m-0">Expresa con tus propias palabra, imagenes e informacion extra como tus gustos, tus preferencias y aspiraciones. 🎁</p>
+									<p class="m-0">Expresa con tus propias palabra, imagenes e informacion extra como
+										tus gustos, tus preferencias y aspiraciones. 🎁</p>
 								</div>
 							</div>
 							<div class="feature-extended">
 								<div class="feature-extended-image">
 									<div class="mockup-bg">
-										<img src="dist/images/iphone-feature-bg-03.svg" alt="iPhone Feature 03 illustration">
+										<img src="dist/images/iphone-feature-bg-03.svg"
+											alt="iPhone Feature 03 illustration">
 									</div>
-									<img class="device-mockup is-revealing" src="dist/images/ai.png" alt="iPhone Feature 03">
+									<img class="device-mockup is-revealing" src="dist/images/ai.png"
+										alt="iPhone Feature 03">
 								</div>
 								<div class="feature-extended-body is-revealing">
 									<h3 class="mt-0 mb-16">PRO-IA 🤖</h3>
-									<p class="m-0">Deja que la inteligencia artificial evalue tus gustos preferencias y patrones para conseguir tus conexiones perfectas. 💪🏼</p>
+									<p class="m-0">Deja que la inteligencia artificial evalue tus gustos preferencias y
+										patrones para conseguir tus conexiones perfectas. 💪🏼</p>
 								</div>
 							</div>
 						</div>
 					</div>
-                </div>
-            </section>
-        </main>
+				</div>
+			</section>
+		</main>
 
 		<footer class="site-footer">
 			<div class="footer-particles-container">
@@ -148,9 +166,16 @@
 						<div class="cta-inner section-inner">
 							<div class="cta-header text-center">
 								<h2 class="section-title mt-0">Mantente atento! 👀</h2>
-								<p class="section-paragraph">La mejor APP del mundo aun esta en fases finales, nuestro equipo de desarrolladores dicen que casi esta lista, y ellos nunca fallan, asi que mantente atento 😘</p>
+								<p class="section-paragraph">La mejor APP del mundo aun esta en fases finales, nuestro
+									equipo de desarrolladores dicen que casi esta lista, y ellos nunca fallan, asi que
+									mantente atento 😘</p>
 								<div class="cta-cta">
-									<a class="button button-primary button-wide-mobile" href="#">Quiero ayudar en el desarrollo 🤩</a>
+									<a class="button button-primary button-wide-mobile"
+										href="https://play.google.com/apps/internaltest/4701630340644991956">Quiero
+										ayudar en el
+										desarrollo 🤩</a>
+									<a class="button button-primary button-wide-mobile" href="privacy.html">Politica de
+										Privacidad 🔍</a>
 								</div>
 							</div>
 						</div>
@@ -178,8 +203,16 @@
 							<li>
 								<a href="#">Soporte</a>
 							</li>
+							<li>
+								<a href="privacy.html">Politica
+									de privacidad</a>
+							</li>
 						</ul>
-						<a href="https://wa.me/8097162373?text=Hola%20estuve%20mirando%20sobre%20el%20proyecto%20InLove%20						">Dejame un Whatsapp</a>
+						<a
+							href="https://wa.me/8097162373?text=Hola%20estuve%20mirando%20sobre%20el%20proyecto%20InLove%20">Dejame
+							un Whatsapp</a>
+
+
 						<!-- <ul class="footer-social-links list-reset">
 							<li>
 								<a href="#">
@@ -210,9 +243,10 @@
 					</div>
 				</div>
 			</div>
-        </footer>
-    </div>
+		</footer>
+	</div>
 
-    <script src="dist/js/main.min.js"></script>
+	<script src="dist/js/main.min.js"></script>
 </body>
+
 </html>

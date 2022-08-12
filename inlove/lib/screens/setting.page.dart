@@ -65,7 +65,7 @@ class _SettingScreenState extends State<SettingScreen>
     _controller =
         AnimationController(vsync: this, duration: const Duration(seconds: 2));
     _controller.repeat();
-
+    print("Paises" + finalCountries.toString());
     _userInfo = readConfig();
     getAvailableCountries();
     getAvailableSexualPreferences();
@@ -211,7 +211,7 @@ class _SettingScreenState extends State<SettingScreen>
                 loopAnimation: false,
                 type: CoolAlertType.success,
                 text: "Configuracion aplicada correctamente",
-                title: "Exito");
+                title: "Exito!");
             setState(() {});
           }
           context.loaderOverlay.hide();
@@ -275,7 +275,8 @@ class _SettingScreenState extends State<SettingScreen>
             whatsappResponse = true;
           }
           currentUser.showMySexuality = showSexualitySwitch;
-          bool showMySexualityResponse = await  settings.showMySexuality(showSexualitySwitch);
+          bool showMySexualityResponse =
+              await settings.showMySexuality(showSexualitySwitch);
           bool ghostModeResponse = ghostModeSwitch
               ? await settings.activateGhostMode(currentUser.id!)
               : await settings.deactivateGhostMode(currentUser.id!);
@@ -297,9 +298,12 @@ class _SettingScreenState extends State<SettingScreen>
             context.loaderOverlay.hide();
             CoolAlert.show(
                 context: context,
+                animType: CoolAlertAnimType.slideInDown,
+                backgroundColor: Colors.white,
+                loopAnimation: false,
                 type: CoolAlertType.success,
-                text: "Configuracion aplicada correctamente",
-                title: "Exito");
+                text: "Tu informacion ha sido guardada correctamente",
+                title: "Yeah!");
             setState(() {});
           } else {
             // finalCountries.clear();
@@ -651,20 +655,22 @@ class _SettingScreenState extends State<SettingScreen>
                   List<Country>? paises = snapshot.data;
 
                   paises?.forEach((element) {
-                    finalCountries.add(element.name!);
+                    if (!finalCountries.contains(element.name)) {
+                      finalCountries.add(element.name!);
+                    }
                   });
                   if (finalCountries.isEmpty) {
                     finalCountries = local_paises;
                   }
                   String? countryName;
-                  if (selectedOriginCountryIdFromServer!=0) {
+                  if (selectedOriginCountryIdFromServer != 0) {
                     countryName = paises
                         ?.where((element) =>
                             element.id == selectedOriginCountryIdFromServer)
                         .first
                         .name;
-                  }else{
-                    countryName="Desconocido";
+                  } else {
+                    countryName = "Desconocido";
                   }
                   // int x = finalCountries.indexWhere((country) => country==countryName);
                   return Padding(
@@ -792,7 +798,6 @@ class _SettingScreenState extends State<SettingScreen>
                     ),
                   ),
                 ),
-                
               ],
             ),
             Text(minimunAgeToMatch.toString()),
@@ -921,7 +926,6 @@ class _SettingScreenState extends State<SettingScreen>
                 return const Text("Error getting sex's");
               },
             ),
-
           ],
         ));
   }
@@ -942,7 +946,7 @@ class _SettingScreenState extends State<SettingScreen>
             future: _userInfo,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator(color:Colors.pink);
+                return CircularProgressIndicator(color: Colors.pink);
               }
               if (snapshot.hasError) {
                 return const Text("Error 34");
