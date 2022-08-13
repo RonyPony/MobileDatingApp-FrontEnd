@@ -109,6 +109,8 @@ flutter:
    - assets/logo-no-name.png
    - assets/logo-name.svg
    - assets/logo-no-name.svg
+   - assets/whatsapp.gif
+   - assets/instagram1.gif
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

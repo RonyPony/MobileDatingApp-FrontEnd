@@ -15,6 +15,7 @@ import 'package:inlove/providers/match_provider.dart';
 import 'package:inlove/screens/chat_spike.dart';
 import 'package:inlove/screens/conversation.page.dart';
 import 'package:inlove/screens/home.page.dart';
+import 'package:inlove/screens/profile.page.dart';
 import 'package:inlove/screens/userProfile.page.dart';
 import 'package:provider/provider.dart';
 import 'dart:math' as math;
@@ -137,21 +138,23 @@ class _StateChatScreen extends State<ChatScreen> {
             child: Stack(children: [
               GestureDetector(
                 onTap: () async {
-                  print("Waiting 1 sec");
-                  await Future.delayed(Duration(seconds: 1), () {});
-                  print("Creating room");
+                  //TODO implement calling profile instead of conv
+                  Navigator.pushNamed(context, UserProfileScreen.routeName,arguments: usuario.id);
+                  // print("Waiting 1 sec");
+                  // await Future.delayed(Duration(seconds: 1), () {});
+                  // print("Creating room");
 
-                  String roomId = chatProvider.createRoom(
-                      _uid,
-                      currentUserId,
-                      secondUID,
-                      secondID,
-                      usuario.name! + " " + usuario.lastName!);
-                  ChatArguments args = ChatArguments(usuario, roomId);
-                  Navigator.pushNamed(context, Conversation.routeName,
-                      arguments: args);
-                  // Navigator.pushNamed(context, UserProfileScreen.routeName,
-                  //     arguments: usuario.id);
+                  // String roomId = chatProvider.createRoom(
+                  //     _uid,
+                  //     currentUserId,
+                  //     secondUID,
+                  //     secondID,
+                  //     usuario.name! + " " + usuario.lastName!);
+                  // ChatArguments args = ChatArguments(usuario, roomId);
+                  // Navigator.pushNamed(context, Conversation.routeName,
+                  //     arguments: args);
+                  // // Navigator.pushNamed(context, UserProfileScreen.routeName,
+                  // //     arguments: usuario.id);
                 },
                 child: Container(
                   width: 150,
