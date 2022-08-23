@@ -738,6 +738,8 @@ class FirestoreConstants {
 
   static const isUser1Typing = "is_user1_typing";
   static const isUser2Typing = "is_user2_typing";
+
+  static const isRoomDeleted="is_room_deleted";
 }
 
 // class FirestoreConstants {

@@ -37,6 +37,8 @@ class _StateChatScreen extends State<ChatScreen> {
   List<ChatArguments> _chatList = [];
   var listMessages;
   late fba.FirebaseAuth auth = fba.FirebaseAuth.instance;
+  List<UserMatch> matches = [];
+  bool showDeleteBtn = false;
 
   @override
   void didChangeDependencies() {
@@ -95,6 +97,8 @@ class _StateChatScreen extends State<ChatScreen> {
 
   Future<Widget> _aMatch(bool active, User usuario) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    MatchProvider matchProvider =
+        Provider.of<MatchProvider>(context, listen: false);
     User _currentUser = await authProvider.readLocalUserInfo();
     Future<Image> userimage = getUserImage(usuario);
     var instance = fba.FirebaseAuth.instance;
@@ -138,23 +142,10 @@ class _StateChatScreen extends State<ChatScreen> {
             child: Stack(children: [
               GestureDetector(
                 onTap: () async {
-                  //TODO implement calling profile instead of conv
-                  Navigator.pushNamed(context, UserProfileScreen.routeName,arguments: usuario.id);
-                  // print("Waiting 1 sec");
-                  // await Future.delayed(Duration(seconds: 1), () {});
-                  // print("Creating room");
-
-                  // String roomId = chatProvider.createRoom(
-                  //     _uid,
-                  //     currentUserId,
-                  //     secondUID,
-                  //     secondID,
-                  //     usuario.name! + " " + usuario.lastName!);
-                  // ChatArguments args = ChatArguments(usuario, roomId);
-                  // Navigator.pushNamed(context, Conversation.routeName,
-                  //     arguments: args);
-                  // // Navigator.pushNamed(context, UserProfileScreen.routeName,
-                  // //     arguments: usuario.id);
+                  List<UserMatch> match = await matchProvider.getUserMatches(usuario.id!);
+                  // matchProvider.markMatchAsSeen();
+                  Navigator.pushNamed(context, UserProfileScreen.routeName,
+                      arguments: usuario.id);
                 },
                 child: Container(
                   width: 150,
@@ -580,8 +571,13 @@ class _StateChatScreen extends State<ChatScreen> {
     //       .then((value){
     // print("Fetched ==>>>" + value.docs.first.get("content"));
     //       });
-    
+
     return GestureDetector(
+      onLongPress: () {
+        setState(() {
+          showDeleteBtn = true;
+        });
+      },
       onTap: () async {
         User _finalUser = await authProvider.findUserById(int.parse(userId));
         ChatArguments args = ChatArguments(_finalUser, room.id);
@@ -602,10 +598,14 @@ class _StateChatScreen extends State<ChatScreen> {
                 Column(
                   children: [
                     CircleAvatar(
-                      backgroundColor: Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
+                      backgroundColor:
+                          Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
                               .withOpacity(1.0),
-                      child: Text(room.get("displayName").toString().toUpperCase()[0]+
-                          room.get("displayName").toString().toUpperCase()[1],style: TextStyle(color: Colors.white),),
+                      child: Text(
+                        room.get("displayName").toString().toUpperCase()[0] +
+                            room.get("displayName").toString().toUpperCase()[1],
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ],
                 ),
@@ -636,7 +636,10 @@ class _StateChatScreen extends State<ChatScreen> {
                               return CircularProgressIndicator();
                             }
                             if (snapshot.hasError) {
-                              return Text("Error found",style: TextStyle(color: Colors.red),);
+                              return Text(
+                                "Error found",
+                                style: TextStyle(color: Colors.red),
+                              );
                             }
                             if (snapshot.hasData &&
                                 snapshot.connectionState ==
@@ -660,14 +663,36 @@ class _StateChatScreen extends State<ChatScreen> {
                           },
                         ),
                       ],
-                    )
+                    ),
                   ],
                 ),
+                // SizedBox(width: MediaQuery.of(context).size.width*.09,),
+                Column(
+                  children: [
+                    Visibility(
+                        visible: showDeleteBtn,
+                        child: GestureDetector(
+                          onTap: () {
+                            deleteChat(room);
+                          },
+                          child: Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                            size: 30,
+                          ),
+                        ))
+                  ],
+                )
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  void deleteChat(DocumentSnapshot<Object?> room) {
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    chatProvider.markRoomAsDeleted(room.id);
   }
 }

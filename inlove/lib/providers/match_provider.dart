@@ -22,4 +22,9 @@ class MatchProvider with ChangeNotifier {
     var response  = await _service.getUserMatches(userId);
     return response;
   }
+
+    Future<bool> markMatchAsSeen(int matchId) async {
+    var response = await _service.markAsSeen(matchId);
+    return response;
+  }
 }

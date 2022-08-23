@@ -479,12 +479,13 @@ class _LoginPageState extends State<LoginPage>
             final authProvider =
                 Provider.of<AuthProvider>(context, listen: false);
             bool? isSuccess = await authProvider.handleGoogleSignIn();
-            if (isSuccess == null) {
+            if (isSuccess!) {
               Navigator.pushReplacement(context,
                   MaterialPageRoute(builder: (context) => const HomePage()));
             } else {
               Fluttertoast.showToast(
                   msg: 'Ups, algo paso con Google confirmando tu identidad',
+
                   backgroundColor: Colors.red);
             }
           },

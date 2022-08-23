@@ -118,13 +118,13 @@ class AuthProvider extends ChangeNotifier {
       _status = Status.authenticating;
       notifyListeners();
 
-      GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      //  final GoogleSignIn _googleSignIn = GoogleSignIn(
-      //     // scopes: [
-      //     //   'https://www.googleapis.com/auth/drive',
-      //     // ],
-      //   );
-// GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      // GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+       final GoogleSignIn _googleSignIn = GoogleSignIn(
+          // scopes: [
+          //   'https://www.googleapis.com/auth/drive',
+          // ],
+        );
+GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser != null) {
         GoogleSignInAuthentication? googleAuth =
             await googleUser.authentication;

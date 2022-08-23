@@ -15,6 +15,8 @@ class ChatMessagesRoom {
   bool isSeen;
   bool isUser1Typing;
   bool isUser2Typing;
+  bool isDeleted;
+  
   ChatMessagesRoom({
       // required this.messages,
       required this.user1_uid,
@@ -26,7 +28,8 @@ class ChatMessagesRoom {
       required this.isSeen,
       required this.isUser1Typing,
       required this.isUser2Typing,
-      required this.displayName
+      required this.displayName, 
+      required this.isDeleted
   });
 
   Map<String, dynamic> toJson() {
@@ -41,7 +44,8 @@ class ChatMessagesRoom {
       FirestoreConstants.isSeen:isSeen,
       FirestoreConstants.isUser1Typing:isUser1Typing,
       FirestoreConstants.isUser2Typing: isUser2Typing,
-      FirestoreConstants.displayName:displayName
+      FirestoreConstants.displayName:displayName,
+      FirestoreConstants.isRoomDeleted:isDeleted
     };
   }
 }

@@ -59,6 +59,7 @@ class ChatProvider extends ChangeNotifier {
         // .collection(groupChatId)
 
         // .orderBy(FirestoreConstants.timestamp, descending: true)
+        .where(FirestoreConstants.isRoomDeleted,isEqualTo: false)
         .limit(limit)
         .snapshots();
     return snapshots;
@@ -98,7 +99,8 @@ class ChatProvider extends ChangeNotifier {
           isUser1Typing: false,
           isUser2Typing: false,
           lastMessengerId: user1_uid,
-          isSeen: false);
+          isSeen: false,
+          isDeleted:false);
       Map<String, dynamic> jsoned = chatRoomMessages.toJson();
       FirebaseFirestore.instance.runTransaction((transaction) async {
         transaction.set(chatRoomDocumentReference, jsoned);
@@ -216,6 +218,33 @@ class ChatProvider extends ChangeNotifier {
                   onError: (e) =>
                       print("Error updating chatRoom as user typing $e"));
         }
+      },
+      onError: (e) => print("Error getting document: $e"),
+    );
+  }
+
+
+  void markRoomAsDeleted(String roomId) {
+    final docRef = firebaseFirestore
+        .collection(FirestoreConstants.chatCollectionName)
+        .doc(roomId);
+    docRef.get().then(
+      (DocumentSnapshot doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        
+
+        
+          print("MARKING CHATROOM AS DELETED [$roomId]");
+          DocumentReference chatReference = firebaseFirestore
+              .collection(FirestoreConstants.chatCollectionName)
+              .doc(roomId);
+          chatReference
+              .update({FirestoreConstants.isRoomDeleted: true}).then(
+                  (value) =>
+                      print("Setting room $roomId as deleted completed"),
+                  onError: (e) =>
+                      print("Error updating chatRoom as deleted $e"));
+        
       },
       onError: (e) => print("Error getting document: $e"),
     );

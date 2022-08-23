@@ -115,4 +115,30 @@ class MatchService implements MatchContract {
     }
   }
   
+  @override
+  Future<bool> markAsSeen(int matchId) async {
+    bool updated = false;
+    try {
+      var resp = await Dio().post(
+          serverurl+'api/matches/seen/$matchId');
+      if(resp.statusCode == 200){
+        updated=true;
+        return updated;
+      }
+      if(resp.statusCode=="404"){
+        print("Match Not Found");
+      }
+      return updated;
+    } 
+    on DioError catch (e) {
+      var responseInfo=e.response!.data;
+      print(e.response!.statusCode.toString());
+      print('Failed Load Data with status code ${e.response!.statusCode}');
+      return updated;
+    }catch(e){
+      print(e);
+      return updated;
+    }
+  }
+  
 }
