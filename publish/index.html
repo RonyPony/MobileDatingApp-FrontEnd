@@ -10,6 +10,7 @@
 	<link rel="stylesheet" href="dist/css/style.css">
 	<script src="https://unpkg.com/scrollreveal@4.0.5/dist/scrollreveal.min.js"></script>
 	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 	<style>
 		.app-icons {
 			display: flex;
@@ -38,8 +39,17 @@
 <body class="is-boxed has-animations">
 	<script type="text/javascript">
 		function getApp() {
-			window.open('https://play.google.com/apps/internaltest/4701630340644991956');
+
+			window.open('https://play.google.com/store/apps/details?id=com.ronytuquizz.inlove');
 			//https://play.google.com/apps/internaltest/4701630340644991956
+		}
+		function getIosApp() {
+			swal({
+				title: "👨🏽‍💻 We are almost ready in iOS 🏋🏽‍♀️",
+				text: "We are still working on the iOS app, soon you will be able to install it in your iphone and your mac.",
+				icon: "warning",
+				button: "OK",
+			});
 		}
 	</script>
 	<div class="body-wrap boxed-container">
@@ -71,8 +81,14 @@
 								encuentra el amor de tu vida, deja que fluya 🥰</p>
 
 							<div class="hero-cta">
-								<a class="button button-primary button-wide-mobile" onclick="getApp()"
-									href="getApp()">🤩 Obtener la app 🤗</a>
+								<center>
+									<img class="clickable" onclick="getApp()" src="dist/images/google-play-badge.png"
+										width="200">
+									<img class="clickable" onclick="getIosApp()" src="dist/images/App-Store-Badge.png"
+										width="200">
+								</center>
+								<!-- <a class="button button-primary button-wide-mobile" onclick="getApp()"
+									href="getApp()">🤩 Obtener la app 🤗</a> -->
 								<br>
 								<a href="/beta/android/inlove.apk" class="clickable">APP Beta release 2</a>
 								<!-- <div class="app-icons">

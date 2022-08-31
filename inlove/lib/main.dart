@@ -60,8 +60,7 @@ void main() async {
     providers: [
       ChangeNotifierProvider(
           create: (_) => AuthProvider(
-              authService: AuthService(
-                  FirebaseAuth.instance, FirebaseFirestore.instance),
+              authService: AuthService(FirebaseAuth.instance, FirebaseFirestore.instance),
               firebaseAuth: FirebaseAuth.instance,
               firebaseFirestore: FirebaseFirestore.instance,
               googleSignIn: GoogleSignIn(),
