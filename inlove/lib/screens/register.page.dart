@@ -166,6 +166,7 @@ class _RegisterPageState extends State<RegisterPage>
     return GestureDetector(
       onTap: () async {
         try {
+          FocusScope.of(context).unfocus();
           context.loaderOverlay.show();
           final authProvider =
               Provider.of<AuthProvider>(context, listen: false);

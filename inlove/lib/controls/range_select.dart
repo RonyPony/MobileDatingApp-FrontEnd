@@ -16,7 +16,7 @@ class _CustomRangeSelectState extends State<CustomRangeSelect> {
       values: _currentRangeValues,
       max: 100,
       divisions: 100,
-      activeColor: Colors.grey,
+      activeColor: Colors.blue,
       min: 18,
       labels: RangeLabels(
         _currentRangeValues.start.round().toString(),

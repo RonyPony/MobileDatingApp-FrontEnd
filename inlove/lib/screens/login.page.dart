@@ -110,7 +110,7 @@ class _LoginPageState extends State<LoginPage>
               height: 10,
             ),
             const Text(
-              "Iniciando Sesion...",
+              "Validando...",
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.normal,
@@ -203,7 +203,7 @@ class _LoginPageState extends State<LoginPage>
             //               context, HomePage.routeName, (route) => false);
             //         }),
             //         child:
-                  
+
             //          Text(
             //           "Saltar",
             //           style: TextStyle(
@@ -233,71 +233,47 @@ class _LoginPageState extends State<LoginPage>
               child: GestureDetector(
                 onTap: () async {
                   try {
-                          context.loaderOverlay.show();
-                          final authProvider =
-                              Provider.of<AuthProvider>(context, listen: false);
-                          final userExists = await authProvider
-                              .userEmailExists(emailController.text);
-                          if (userExists) {
-                            if (kDebugMode) {
-                              print("User Exists");
-                            }
-                            Login info = Login(
-                                userEmail: emailController.text,
-                                password: passController.text,
-                                rememberMe: false);
-                            final bool logged =
-                                await authProvider.performLogin(info);
-                            if (logged) {
-                              Navigator.pushNamedAndRemoveUntil(context,
-                                  HomePage.routeName, (route) => false);
-                            } else {
-                              String? errMsg = await authProvider.getErrorMsg();
-                              Emojies emo = Emojies();
-                              if (errMsg == "user-not-found") {
-                                await authProvider.registerFirebaseUser(info);
-                                final bool logged =
-                                    await authProvider.performLogin(info);
-                                if (logged) {
-                                  Navigator.pushNamedAndRemoveUntil(context,
-                                      HomePage.routeName, (route) => false);
-                                  CoolAlert.show(
-                                    context: context,
-                                    animType: CoolAlertAnimType.slideInDown,
-                                    backgroundColor: Colors.white,
-                                    loopAnimation: false,
-                                    type: CoolAlertType.loading,
-                                    title: "😍😍",
-                                    text:
-                                        "Hey, es grandioso que formes parte del grupo ❤️",
-                                  );
-                                }
-                              } else {
-                                if (errMsg == "") {
-                                  CoolAlert.show(
-                                    context: context,
-                                    animType: CoolAlertAnimType.slideInDown,
-                                    backgroundColor: Colors.white,
-                                    loopAnimation: false,
-                                    type: CoolAlertType.error,
-                                    text:
-                                        "Credenciales incorrectas, por favor intentalo de nuevo ${emo.getAnEmmoji(false)}",
-                                  );
-                                } else {
-                                  CoolAlert.show(
-                                    context: context,
-                                    animType: CoolAlertAnimType.slideInDown,
-                                    backgroundColor: Colors.white,
-                                    loopAnimation: false,
-                                    type: CoolAlertType.info,
-                                    title: "Informacion",
-                                    text: errMsg,
-                                  );
-                                }
-                              }
-                            }
-                          } else {
-                            Emojies emo = Emojies();
+                    FocusScope.of(context).unfocus();
+                    context.loaderOverlay.show();
+                    final authProvider =
+                        Provider.of<AuthProvider>(context, listen: false);
+                    final userExists = await authProvider
+                        .userEmailExists(emailController.text);
+                    if (userExists) {
+                      if (kDebugMode) {
+                        print("User Exists");
+                      }
+                      Login info = Login(
+                          userEmail: emailController.text,
+                          password: passController.text,
+                          rememberMe: false);
+                      final bool logged = await authProvider.performLogin(info);
+                      if (logged) {
+                        Navigator.pushNamedAndRemoveUntil(
+                            context, HomePage.routeName, (route) => false);
+                      } else {
+                        String? errMsg = await authProvider.getErrorMsg();
+                        Emojies emo = Emojies();
+                        if (errMsg == "user-not-found") {
+                          await authProvider.registerFirebaseUser(info);
+                          final bool logged =
+                              await authProvider.performLogin(info);
+                          if (logged) {
+                            Navigator.pushNamedAndRemoveUntil(
+                                context, HomePage.routeName, (route) => false);
+                            CoolAlert.show(
+                              context: context,
+                              animType: CoolAlertAnimType.slideInDown,
+                              backgroundColor: Colors.white,
+                              loopAnimation: false,
+                              type: CoolAlertType.loading,
+                              title: "😍😍",
+                              text:
+                                  "Hey, es grandioso que formes parte del grupo ❤️",
+                            );
+                          }
+                        } else {
+                          if (errMsg == "") {
                             CoolAlert.show(
                               context: context,
                               animType: CoolAlertAnimType.slideInDown,
@@ -305,36 +281,59 @@ class _LoginPageState extends State<LoginPage>
                               loopAnimation: false,
                               type: CoolAlertType.error,
                               text:
-                                  "Este correo electronico no esta registrado, favor verificalo ${emo.getAnEmmoji(false)}",
+                                  "Credenciales incorrectas, por favor intentalo de nuevo ${emo.getAnEmmoji(false)}",
                             );
-                          }
-                          context.loaderOverlay.hide();
-                        } catch (e) {
-                          Emojies emo = Emojies();
-                          context.loaderOverlay.hide();
-                          if (e is FirebaseAuthException) {
-                            CoolAlert.show(
-                                context: context,
-                                animType: CoolAlertAnimType.slideInDown,
-                                backgroundColor: Colors.white,
-                                loopAnimation: false,
-                                type: CoolAlertType.error,
-                                title: "ERROR de autenticacion",
-                                text: e.message.toString() +
-                                    emo.getAnEmmoji(false));
                           } else {
                             CoolAlert.show(
-                                context: context,
-                                animType: CoolAlertAnimType.slideInDown,
-                                backgroundColor: Colors.white,
-                                loopAnimation: false,
-                                type: CoolAlertType.error,
-                                title: "ERROR",
-                                text: e.toString() + emo.getAnEmmoji(false));
+                              context: context,
+                              animType: CoolAlertAnimType.slideInDown,
+                              backgroundColor: Colors.white,
+                              loopAnimation: false,
+                              type: CoolAlertType.info,
+                              title: "Informacion",
+                              text: errMsg,
+                            );
                           }
-                        } finally {
-                          context.loaderOverlay.hide();
                         }
+                      }
+                    } else {
+                      Emojies emo = Emojies();
+                      CoolAlert.show(
+                        context: context,
+                        animType: CoolAlertAnimType.slideInDown,
+                        backgroundColor: Colors.white,
+                        loopAnimation: false,
+                        type: CoolAlertType.error,
+                        text:
+                            "Este correo electronico no esta registrado, favor verificalo ${emo.getAnEmmoji(false)}",
+                      );
+                    }
+                    context.loaderOverlay.hide();
+                  } catch (e) {
+                    Emojies emo = Emojies();
+                    context.loaderOverlay.hide();
+                    if (e is FirebaseAuthException) {
+                      CoolAlert.show(
+                          context: context,
+                          animType: CoolAlertAnimType.slideInDown,
+                          backgroundColor: Colors.white,
+                          loopAnimation: false,
+                          type: CoolAlertType.error,
+                          title: "ERROR de autenticacion",
+                          text: e.message.toString() + emo.getAnEmmoji(false));
+                    } else {
+                      CoolAlert.show(
+                          context: context,
+                          animType: CoolAlertAnimType.slideInDown,
+                          backgroundColor: Colors.white,
+                          loopAnimation: false,
+                          type: CoolAlertType.error,
+                          title: "ERROR",
+                          text: e.toString() + emo.getAnEmmoji(false));
+                    }
+                  } finally {
+                    context.loaderOverlay.hide();
+                  }
                 },
                 child: Container(
                   width: 181,
@@ -485,21 +484,21 @@ class _LoginPageState extends State<LoginPage>
             } else {
               Fluttertoast.showToast(
                   msg: 'Ups, algo paso con Google confirmando tu identidad',
-
                   backgroundColor: Colors.red);
             }
           },
           child: Container(
             width: 280,
             decoration: BoxDecoration(
-                color: Color(0xff1db9fc), borderRadius: BorderRadius.circular(30)),
+                color: Color(0xff1db9fc),
+                borderRadius: BorderRadius.circular(30)),
             child: Row(
               children: [
                 Container(
-                  padding: EdgeInsets.all(10),
+                    padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(
                         color: Colors.white,
-                         borderRadius: BorderRadius.circular(50)),
+                        borderRadius: BorderRadius.circular(50)),
                     child: SvgPicture.asset(
                       "assets/google.svg",
                       width: 30,
@@ -519,5 +518,5 @@ class _LoginPageState extends State<LoginPage>
     } else {
 //web or desktop specific code
     }
-  } 
+  }
 }

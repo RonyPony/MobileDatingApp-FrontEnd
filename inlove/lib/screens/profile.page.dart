@@ -18,6 +18,7 @@ import 'package:inlove/screens/setting.page.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import '../controls/menu.dart';
+import '../helpers/dataInput.dart';
 import '../models/photo.dart';
 import '../providers/countries_provider.dart';
 import '../helpers/emojies.dart';
@@ -62,54 +63,54 @@ class _ProfileScreenState extends State<ProfileScreen>
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width * 1;
     Future<Widget> profilePic = getUserImage(localUserInfo);
-      return LoaderOverlay(
-        useDefaultLoading: false,
-        overlayWidget: Center(
-            child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
-            color: Colors.black,
-            boxShadow: const [
-              BoxShadow(color: Colors.pink, spreadRadius: 3),
-            ],
-          ),
+    return LoaderOverlay(
+      useDefaultLoading: false,
+      overlayWidget: Center(
+          child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50),
+          color: Colors.black,
+          boxShadow: const [
+            BoxShadow(color: Colors.pink, spreadRadius: 3),
+          ],
+        ),
 
-          height: MediaQuery.of(context).size.height * .25,
-          // color: Colors.black,
-          padding: const EdgeInsets.all(29),
-          child: Column(
-            // crossAxisAlignment: CrossAxisAlignment.center
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AnimatedBuilder(
-                animation: _controller.view,
-                builder: (context, child) {
-                  return Transform.rotate(
-                    angle: _controller.value * 2 * pi,
-                    child: child,
-                  );
-                },
-                child: SvgPicture.asset(
-                  'assets/logo-no-name.svg',
-                  height: MediaQuery.of(context).size.height * .12,
-                ),
+        height: MediaQuery.of(context).size.height * .25,
+        // color: Colors.black,
+        padding: const EdgeInsets.all(29),
+        child: Column(
+          // crossAxisAlignment: CrossAxisAlignment.center
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedBuilder(
+              animation: _controller.view,
+              builder: (context, child) {
+                return Transform.rotate(
+                  angle: _controller.value * 2 * pi,
+                  child: child,
+                );
+              },
+              child: SvgPicture.asset(
+                'assets/logo-no-name.svg',
+                height: MediaQuery.of(context).size.height * .12,
               ),
-              // CircularProgressIndicator(color:Colors.pink,),
-              const SizedBox(
-                height: 10,
-              ),
-              const Text(
-                "Subiendo tu foto...",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.white,
-                    decoration: TextDecoration.none),
-              )
-            ],
-          ),
-        )),
-        child: Scaffold(
+            ),
+            // CircularProgressIndicator(color:Colors.pink,),
+            const SizedBox(
+              height: 10,
+            ),
+            const Text(
+              "Subiendo tu foto...",
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.white,
+                  decoration: TextDecoration.none),
+            )
+          ],
+        ),
+      )),
+      child: Scaffold(
         bottomNavigationBar: const MainMenu(),
         backgroundColor: const Color(0xff020202),
         appBar: AppBar(
@@ -139,7 +140,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==
                                     ConnectionState.waiting) {
-                                  return CircularProgressIndicator(color:Colors.pink);
+                                  return CircularProgressIndicator(
+                                      color: Colors.pink);
                                 }
                                 if (snapshot.hasError) {
                                   return Text("Error Occured");
@@ -205,8 +207,8 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                   Flag.fromString(
                                                     "${snapshotCountry.data?.code}",
                                                     fit: BoxFit.fill,
-                                                    height: 50,
-                                                    width: 50,
+                                                    height: 60,
+                                                    width: 60,
                                                     borderRadius: 100,
                                                   ),
                                                   Padding(
@@ -214,80 +216,94 @@ class _ProfileScreenState extends State<ProfileScreen>
                                                         const EdgeInsets.all(
                                                             8.0),
                                                     child: Container(
-                                                      padding: EdgeInsets.only(left: MediaQuery.of(context).size.width*.2,right: MediaQuery.of(
+                                                        padding: EdgeInsets.only(
+                                                            left: MediaQuery.of(
                                                                         context)
                                                                     .size
                                                                     .width *
-                                                                .2),
-                                                        child: sexOrId!=0?FutureBuilder<
-                                                            SexualOrientation>(
-                                                      future: so,
-                                                      builder: (context,
-                                                          _sexualOrientation) {
-                                                        if (_sexualOrientation
-                                                                .connectionState ==
-                                                            ConnectionState
-                                                                .waiting) {
-                                                          return CircularProgressIndicator(color:Colors.pink);
-                                                        }
-                                                        if (_sexualOrientation
-                                                            .hasError) {
-                                                          return Text("Err");
-                                                        }
-                                                        if (_sexualOrientation
-                                                                    .connectionState ==
-                                                                ConnectionState
-                                                                    .done &&
-                                                            _sexualOrientation
-                                                                .hasData) {
-                                                          final photoProv = Provider
-                                                              .of<PhotoProvider>(
-                                                                  context,
-                                                                  listen:
-                                                                      false);
-                                                          int currentFlagImageId =
-                                                              _sexualOrientation
-                                                                  .data!
-                                                                  .imageId!;
-                                                          Future<Photo> flag =
-                                                              photoProv.getPhoto(
-                                                                  currentFlagImageId);
-                                                          return FutureBuilder<
-                                                              Photo>(
-                                                            future: flag,
-                                                            builder: (context,
-                                                                _flag) {
-                                                              if (_flag
-                                                                      .connectionState ==
-                                                                  ConnectionState
-                                                                      .waiting) {
-                                                                return CircularProgressIndicator(color:Colors.pink);
-                                                              }
-                                                              if (_flag
-                                                                  .hasError) {
-                                                                return Text(
-                                                                    "Err");
-                                                              }
-                                                              if (_flag.connectionState ==
+                                                                .1,
+                                                            right: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .width *
+                                                                .1),
+                                                        child: sexOrId != 0
+                                                            ? FutureBuilder<
+                                                                SexualOrientation>(
+                                                                future: so,
+                                                                builder: (context,
+                                                                    _sexualOrientation) {
+                                                                  if (_sexualOrientation
+                                                                          .connectionState ==
                                                                       ConnectionState
-                                                                          .done &&
-                                                                  _flag
-                                                                      .hasData) {
-                                                                return CircleAvatar(
-                                                                  backgroundImage:MemoryImage(base64Decode(_flag
-                                                                          .data!
-                                                                          .image!)),
-                                                                );
-                                                              }
-                                                              return Text(
-                                                                  "no data");
-                                                            },
-                                                          );
-                                                        }
-                                                        return Text(
-                                                            "no data 45");
-                                                      },
-                                                    ):SizedBox()),
+                                                                          .waiting) {
+                                                                    return CircularProgressIndicator(
+                                                                        color: Colors
+                                                                            .pink);
+                                                                  }
+                                                                  if (_sexualOrientation
+                                                                      .hasError) {
+                                                                    return Text(
+                                                                        "Err");
+                                                                  }
+                                                                  if (_sexualOrientation
+                                                                              .connectionState ==
+                                                                          ConnectionState
+                                                                              .done &&
+                                                                      _sexualOrientation
+                                                                          .hasData) {
+                                                                    final photoProv = Provider.of<
+                                                                            PhotoProvider>(
+                                                                        context,
+                                                                        listen:
+                                                                            false);
+                                                                    int currentFlagImageId =
+                                                                        _sexualOrientation
+                                                                            .data!
+                                                                            .imageId!;
+                                                                    Future<Photo>
+                                                                        flag =
+                                                                        photoProv
+                                                                            .getPhoto(currentFlagImageId);
+                                                                    return FutureBuilder<
+                                                                        Photo>(
+                                                                      future:
+                                                                          flag,
+                                                                      builder:
+                                                                          (context,
+                                                                              _flag) {
+                                                                        if (_flag.connectionState ==
+                                                                            ConnectionState.waiting) {
+                                                                          return CircularProgressIndicator(
+                                                                              color: Colors.pink);
+                                                                        }
+                                                                        if (_flag
+                                                                            .hasError) {
+                                                                          return Text(
+                                                                              "Err");
+                                                                        }
+                                                                        if (_flag.connectionState ==
+                                                                                ConnectionState.done &&
+                                                                            _flag.hasData) {
+                                                                          return Container(
+                                                                            height:
+                                                                                70,
+                                                                            child:
+                                                                                CircleAvatar(
+                                                                              backgroundImage: MemoryImage(base64Decode(_flag.data!.image!)),
+                                                                            ),
+                                                                          );
+                                                                        }
+                                                                        return Text(
+                                                                            "no data");
+                                                                      },
+                                                                    );
+                                                                  }
+                                                                  return Text(
+                                                                      "no data 45");
+                                                                },
+                                                              )
+                                                            : SizedBox()),
                                                   ), //CircleAvatar
                                                 ],
                                               ),
@@ -327,6 +343,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                         //     await _picker.pickImage(
                                         //         source: ImageSource.gallery);
                                         try {
+                                          FocusScope.of(context).unfocus();
                                           context.loaderOverlay.show();
                                           final userProvider =
                                               Provider.of<AuthProvider>(context,
@@ -446,7 +463,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       top: 0, left: 20, right: 20, bottom: 20),
                                   child: !editMode
                                       ? Text(
-                                          "${snapshot.data?.name} ${snapshot.data?.lastName}",
+                                          "${capitalize(snapshot.data?.name!)} ${snapshot.data?.lastName}",
                                           style: const TextStyle(
                                             color: Colors.white,
                                             fontSize: 30,
@@ -465,7 +482,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                                         left: 20, right: 20),
                                     child: !editMode
                                         ? Text(
-                                            "${snapshot.data?.bio}",
+                                            "${capitalize(snapshot.data?.bio)}",
                                             style: const TextStyle(
                                               color: Colors.white,
                                               fontSize: 15,
@@ -597,22 +614,34 @@ class _ProfileScreenState extends State<ProfileScreen>
                               currentUser.name = nameCtr.text;
                               currentUser.lastName = lastNameCtr.text;
                               currentUser.bio = bioCtr.text;
-                              bool updated = await userProvider
-                                  .updateUserInfo(currentUser);
-                              if (updated) {
-                                bool updated2 = await userProvider
-                                    .saveLocalUserInfoUser(currentUser);
+                              if (currentUser.name!.length <= 15 &&
+                                  currentUser.lastName!.length <= 30) {
+                                bool updated = await userProvider
+                                    .updateUserInfo(currentUser);
+                                if (updated) {
+                                  bool updated2 = await userProvider
+                                      .saveLocalUserInfoUser(currentUser);
 
-                                setState(() {
-                                  editMode = false;
-                                });
+                                  setState(() {
+                                    editMode = false;
+                                  });
+                                  CoolAlert.show(
+                                      context: context,
+                                      animType: CoolAlertAnimType.slideInDown,
+                                      backgroundColor: Colors.white,
+                                      loopAnimation: false,
+                                      type: CoolAlertType.success,
+                                      title: "Actualizado 👍🏼");
+                                }
+                              } else {
                                 CoolAlert.show(
                                     context: context,
                                     animType: CoolAlertAnimType.slideInDown,
                                     backgroundColor: Colors.white,
                                     loopAnimation: false,
-                                    type: CoolAlertType.success,
-                                    title: "Actualizado 👍🏼");
+                                    type: CoolAlertType.warning,
+                                    title:
+                                        "Por favor ingrese un nombre y un apellido mas corto👍🏼");
                               }
                             },
                             child: Container(
@@ -672,11 +701,11 @@ class _ProfileScreenState extends State<ProfileScreen>
   Widget logout() {
     return GestureDetector(
       onTap: () async {
-        final authProvider = Provider.of<AuthProvider>(context,listen: false);
-        bool response =await authProvider.logout();
-        if(response){
+        final authProvider = Provider.of<AuthProvider>(context, listen: false);
+        bool response = await authProvider.logout();
+        if (response) {
           Navigator.pushNamedAndRemoveUntil(
-            context, LoginPage.routeName, (route) => false);
+              context, LoginPage.routeName, (route) => false);
         }
       },
       child: Container(
@@ -808,19 +837,44 @@ class _ProfileScreenState extends State<ProfileScreen>
       children: <Widget>[
         Padding(
           padding: EdgeInsets.only(left: 20, top: 16, bottom: 16, right: 20),
-          child: TextField(
-            controller: bioCtr,
-            onChanged: (x) {},
-            cursorColor: Colors.black,
-            style: const TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-              fillColor: const Color(0xfc616161),
-              filled: true,
-              border: OutlineInputBorder(
-                  borderSide: BorderSide.none,
-                  borderRadius: BorderRadius.circular(20)),
-              hintText: bio.length >= 1 && !isBioEmpty ? bio : "Sobre ti",
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: 200,
+            child: SizedBox(
+              height: MediaQuery.of(context).size.width * 0.1377,
+              child: TextFormField(
+                controller: bioCtr,
+                onChanged: (x) {},
+                cursorColor: Colors.black,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  fillColor: const Color(0xfc616161),
+                  filled: true,
+                  border: OutlineInputBorder(
+                      borderSide: BorderSide.none,
+                      borderRadius: BorderRadius.circular(20)),
+                  hintText: bio.length >= 1 && !isBioEmpty ? bio : "Sobre ti",
+                ),
+                enabled: true,
+                expands: true,
+                maxLines: null,
+                minLines: null,
+              ),
             ),
+            // TextField(
+            //   controller: bioCtr,
+            //   onChanged: (x) {},
+            //   cursorColor: Colors.black,
+            //   style: const TextStyle(color: Colors.white),
+            //   decoration: InputDecoration(
+            //     fillColor: const Color(0xfc616161),
+            //     filled: true,
+            //     border: OutlineInputBorder(
+            //         borderSide: BorderSide.none,
+            //         borderRadius: BorderRadius.circular(20)),
+            //     hintText: bio.length >= 1 && !isBioEmpty ? bio : "Sobre ti",
+            //   ),
+            // ),
           ),
         ),
       ],

@@ -1,5 +1,5 @@
 //General Configuration
-
+const String supportEmail = "ronel.cruz.a8@gmail.com";
 const bool whatsappSupport = true;
 const String whatsappSupportLink = 'http://whatsapp.com';
 const bool instagramSupport = true;

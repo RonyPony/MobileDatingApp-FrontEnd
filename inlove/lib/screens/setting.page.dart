@@ -6,6 +6,7 @@ import 'package:cool_alert/cool_alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:inlove/models/country.dart';
 import 'package:inlove/models/user.dart';
@@ -13,7 +14,9 @@ import 'package:inlove/providers/countries_provider.dart';
 import 'package:inlove/providers/settings_provider.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../constant.dart';
 import '../controls/menu.dart';
 import '../controls/picker.dart';
 import '../controls/range_select.dart';
@@ -69,6 +72,7 @@ class _SettingScreenState extends State<SettingScreen>
     _userInfo = readConfig();
     getAvailableCountries();
     getAvailableSexualPreferences();
+    readConfig();
     super.initState();
   }
 
@@ -152,8 +156,9 @@ class _SettingScreenState extends State<SettingScreen>
               // buildSaveBtn(),
               saveChanges(),
               const SizedBox(
-                height: 20,
+                height: 40,
               ),
+              reportProblem(),
               const SizedBox(
                 height: 20,
               ),
@@ -167,6 +172,7 @@ class _SettingScreenState extends State<SettingScreen>
   Widget saveChanges() {
     return GestureDetector(
       onTap: () async {
+        FocusScope.of(context).unfocus();
         context.loaderOverlay.show();
         try {
           final settings =
@@ -255,6 +261,7 @@ class _SettingScreenState extends State<SettingScreen>
     return GestureDetector(
       onTap: () async {
         try {
+          FocusScope.of(context).unfocus();
           context.loaderOverlay.show();
           final settings =
               Provider.of<SettingsProvider>(context, listen: false);
@@ -800,7 +807,12 @@ class _SettingScreenState extends State<SettingScreen>
                 ),
               ],
             ),
-            Text(minimunAgeToMatch.toString()),
+            // Row(
+            //   children: [
+            //     Text(minimunAgeToMatch.toString()),
+            //     Text(maximunAgeToMatch.toString()),
+            //   ],
+            // ),
             Padding(
               padding: const EdgeInsets.only(left: 20, top: 10),
               child: CustomRangeSelect(
@@ -1319,5 +1331,43 @@ class _SettingScreenState extends State<SettingScreen>
     SexualOrientation sex =
         await auth.getSexualOrientationByName(finalSexOrientation);
     return sex;
+  }
+  
+  reportProblem() {
+    return GestureDetector(
+      onTap: ()  {
+        String email = supportEmail;
+        _launchMailClient(email);
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width * .7,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(26),
+            // color: const Color(0xff242424),
+            color: Color(0xff242424)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Padding(
+              padding: EdgeInsets.only(top: 10, bottom: 10),
+              child: Text(
+                "Reportar un problema",
+                style: TextStyle(color: Colors.red, fontSize: 18),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _launchMailClient(String kEmail) async {
+    String mailUrl = 'mailto:$kEmail';
+    try {
+      await launch(mailUrl);
+    } catch (e) {
+      await Clipboard.setData(ClipboardData(text: '$kEmail'));
+     
+    }
   }
 }

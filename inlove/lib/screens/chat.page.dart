@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart' as fba;
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:inlove/controls/menu.dart';
+import 'package:inlove/helpers/dataInput.dart';
 import 'package:inlove/helpers/emojies.dart';
 import 'package:inlove/models/chat_arguments.dart';
 import 'package:inlove/models/userMatch.dart';
@@ -174,7 +175,7 @@ class _StateChatScreen extends State<ChatScreen> {
                               // bottomLeft: Radius.circular(10)
                             )),
                         child: Text(
-                          usuario.name!,
+                          capitalize(usuario.name!),
                           style: TextStyle(color: Colors.white),
                         )),
                   ),

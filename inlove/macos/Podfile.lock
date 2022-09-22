@@ -634,7 +634,7 @@ PODS:
   - firebase_core (1.20.0):
     - Firebase/CoreOnly (~> 9.3.0)
     - FlutterMacOS
-  - firebase_storage (10.3.4):
+  - firebase_storage (10.3.7):
     - Firebase/CoreOnly (~> 9.3.0)
     - Firebase/Storage (~> 9.3.0)
     - firebase_core
@@ -838,7 +838,7 @@ SPEC CHECKSUMS:
   firebase_app_check: ddb67391abad5ba58e47df010c05e9ceee4d15b7
   firebase_auth: 21c94abf82bc09d62d55f92000a4f39c94b087c3
   firebase_core: 30cff5dc3d110360ba97895b6bdb6fe70b4b4060
-  firebase_storage: cd91b8c962f715175e744d0673dad9bbc056e37f
+  firebase_storage: d686c282b07d8650237edf4564eada7053541b04
   FirebaseAppCheck: dea36639a4270b6deedc6f012302b84a3a22fe89
   FirebaseAppCheckInterop: f6b9670fb1360cf12006ca426e9c3b9a35317d17
   FirebaseAuth: 9ebc3577fe0acf9092df21ac314024b70aebf21e
@@ -850,7 +850,7 @@ SPEC CHECKSUMS:
   FirebaseFirestore: 5a72aa925528f67469b16a54a6cfc369467197e4
   FirebaseStorage: 1414d27e15fa04f6350ef6602accef0e951c8bca
   FirebaseStorageInternal: f1a6d64cace780580d2b8ffa0a0c8cf3c376f3f8
-  FlutterMacOS: 57701585bf7de1b3fc2bb61f6378d73bbdea8424
+  FlutterMacOS: ae6af50a8ea7d6103d888583d46bd8328a7e9811
   GoogleDataTransport: 1c8145da7117bd68bbbed00cf304edb6a24de00f
   GoogleUtilities: e0913149f6b0625b553d70dae12b49fc62914fd1
   "gRPC-C++": 9675f953ace2b3de7c506039d77be1f2e77a8db2

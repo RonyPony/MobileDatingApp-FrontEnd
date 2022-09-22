@@ -14,6 +14,7 @@ import 'package:inlove/screens/setting.page.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
+import '../helpers/dataInput.dart';
 import '../helpers/emojies.dart';
 import '../models/country.dart';
 import '../models/sexual_orientations.dart';
@@ -367,7 +368,7 @@ class _HomePageState extends State<HomePage> {
                         padding: EdgeInsets.only(
                             top: 0, left: 20, right: 20, bottom: 20),
                         child: Text(
-                          "${snapshot.data!.name} ${snapshot.data!.lastName}",
+                          "${capitalize(snapshot.data!.name)} ${capitalize(snapshot.data!.lastName)}",
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 25,
@@ -382,7 +383,7 @@ class _HomePageState extends State<HomePage> {
                               top: 0, bottom: 8, left: 10, right: 10),
                           child: Text(
                             snapshot.data!.bio != "N/A"
-                                ? snapshot.data!.bio!
+                                ? capitalize(snapshot.data!.bio)!
                                 : "Aun no ha agregado informacion sobre el " +
                                     emoji.getAnEmmoji(false),
                             style: TextStyle(

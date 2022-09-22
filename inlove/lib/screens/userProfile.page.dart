@@ -13,6 +13,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fba;
 import 'package:url_launcher/url_launcher.dart';
+import '../helpers/dataInput.dart';
 import '../helpers/emojies.dart';
 import '../models/chat_arguments.dart';
 import '../models/country.dart';
@@ -381,7 +382,7 @@ class _StateUserProfile extends State<UserProfileScreen>
                                           right: 20,
                                           bottom: 20),
                                       child: Text(
-                                        "${snapshot.data?.name} ${snapshot.data?.lastName}",
+                                        "${capitalize(snapshot.data?.name)} ${capitalize(snapshot.data?.lastName)}",
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 30,
@@ -392,7 +393,7 @@ class _StateUserProfile extends State<UserProfileScreen>
                                       padding: const EdgeInsets.only(
                                           left: 20, right: 20),
                                       child: Text(
-                                        "${snapshot.data?.bio}",
+                                        "${capitalize(snapshot.data?.bio)}",
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 15,
