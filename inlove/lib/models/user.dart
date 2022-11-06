@@ -21,6 +21,7 @@ class User {
   String? password;
   int? sexualOrientationId;
   int? sexualPreferenceId;
+  String? sex;
   String? registerDate;
   String? lastLogin;
   bool? hasError=false;
@@ -51,6 +52,7 @@ class User {
       this.sexualPreferenceId,
       this.registerDate,
       this.lastLogin,
+      this.sex,
       this.hasError,
       this.error});
 
@@ -74,6 +76,7 @@ class User {
     lastName = json['lastName'];
     bio = json['bio'];
     email = json['email'];
+    sex=json['sex'];
     password = json['password'];
     sexualOrientationId = json['sexualOrientationId'];
     sexualPreferenceId = json['sexualPreferenceId'];
@@ -98,6 +101,7 @@ class User {
     data['showMySexuality']=showMySexuality;
     data['deletedAccount'] = deletedAccount;
     data['loginStatus'] = loginStatus;
+    data['sex'] = sex;
     data['name'] = name;
     data['lastName'] = lastName;
     data['bio'] = bio;

@@ -1,12 +1,14 @@
 import 'dart:math';
 
 import 'package:cool_alert/cool_alert.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:inlove/screens/login.page.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:provider/provider.dart';
 
+import '../controls/picker.dart';
 import '../controls/text_box.dart';
 import '../models/user_register.dart';
 import '../providers/auth_provider.dart';
@@ -30,6 +32,10 @@ class _RegisterPageState extends State<RegisterPage>
   TextEditingController passController = TextEditingController();
 
   TextEditingController passValidationController = TextEditingController();
+  
+  List<String> sexs = ["M","F"];
+  
+  String selectedSex = "M";
 
   @override
   void initState() {
@@ -136,6 +142,32 @@ class _RegisterPageState extends State<RegisterPage>
                               text: "Correo Electronico",
                               controller: emailController,
                             ),
+                            // Row(
+                            //   children: const [
+                            //     Padding(
+                            //       padding: EdgeInsets.only(left: 20, top: 10),
+                            //       child: Text(
+                            //         "Soy",
+                            //         style: TextStyle(
+                            //           color: Colors.white,
+                            //           fontSize: 19,
+                            //         ),
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
+                            CustomPicker(
+                              placeHolder: "Sexo:",
+                              options: ["Masculino", "Femenino"],
+                              onChange: (int x) async {
+                                setState(() {
+                                  selectedSex = sexs[x];
+                                  if (kDebugMode) {
+                                    print("Selected ${sexs[x]}");
+                                  }
+                                });
+                              },
+                            ),
                             CustomTextBox(
                               onChange: () {},
                               isPassword: true,
@@ -208,6 +240,9 @@ class _RegisterPageState extends State<RegisterPage>
             } else {
               bool canRegister = false;
               String? err = "";
+              if (selectedSex == "") {
+                err = err + "\nSelecciona tu sexo";
+              }
               if (nameController.text == "" ||
                   nameController.text.length <= 3) {
                 err = err + "\nEl nombre debe tener mas de 3 caracteres";
@@ -232,6 +267,7 @@ class _RegisterPageState extends State<RegisterPage>
                   email: emailController.text,
                   userName: nameController.text,
                   lastName: lastNameController.text,
+                  sex: selectedSex,
                   password: passController.text,
                 );
                 final bool registered = await authProvider.registerUser(info);

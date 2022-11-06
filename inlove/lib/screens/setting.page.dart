@@ -61,6 +61,10 @@ class _SettingScreenState extends State<SettingScreen>
 
   bool sexLoaded = false;
 
+  List<String> sexs = ["M", "F"];
+
+  String selectedSex = "M";
+  String selectedSexFromServer="";
   // Future<List<Country>> countries;
 
   @override
@@ -200,7 +204,7 @@ class _SettingScreenState extends State<SettingScreen>
             Country paisPref = await getCountryByName(finalCountries[pref]);
             currentUser.preferedCountryId = paisPref.id;
           }
-
+          currentUser.sex = selectedSex;
           currentUser.countryId = paisOrigen.id;
           currentUser.sexualOrientationId = mySexuality.id;
           currentUser.minimunAgeToMatch = minimunAgeToMatch;
@@ -850,6 +854,43 @@ class _SettingScreenState extends State<SettingScreen>
                 },
               ),
             ),
+            FutureBuilder<String>(
+              future: Future.delayed(Duration(seconds: 1), () {
+                return selectedSexFromServer;
+              }),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  String sex = snapshot.data! == "F"?"Mujer":"Hombre";
+                  return Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(left: 20, top: 10),
+                        child: Text(
+                          "Soy: $sex",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 19,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+                return LinearProgressIndicator();
+              },
+            ),
+            CustomPicker(
+              placeHolder: "Selecciona:",
+              options: ["Masculino", "Femenino"],
+              onChange: (int x) async {
+                setState(() {
+                  selectedSex = sexs[x];
+                  if (kDebugMode) {
+                    print("Selected ${sexs[x]}");
+                  }
+                });
+              },
+            ),
             Row(
               children: const [
                 Padding(
@@ -1172,6 +1213,7 @@ class _SettingScreenState extends State<SettingScreen>
     minimunAgeToMatch = currentUser.minimunAgeToMatch!;
     maximunAgeToMatch = currentUser.maximunAgeToMatch!;
     ghostModeSwitch = currentUser.modoFantasma!;
+    selectedSexFromServer = currentUser.sex!;
     instagramSwitch = currentUser.instagramUserEnabled!;
     showSexualitySwitch = currentUser.showMySexuality!;
     whatsappSwitch = currentUser.whatsappNumberEnabled!;
@@ -1332,10 +1374,10 @@ class _SettingScreenState extends State<SettingScreen>
         await auth.getSexualOrientationByName(finalSexOrientation);
     return sex;
   }
-  
+
   reportProblem() {
     return GestureDetector(
-      onTap: ()  {
+      onTap: () {
         String email = supportEmail;
         _launchMailClient(email);
       },
@@ -1367,7 +1409,6 @@ class _SettingScreenState extends State<SettingScreen>
       await launch(mailUrl);
     } catch (e) {
       await Clipboard.setData(ClipboardData(text: '$kEmail'));
-     
     }
   }
 }
