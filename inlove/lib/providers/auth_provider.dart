@@ -169,7 +169,21 @@ GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       return false;
     }
   }
+
+  Future<String> getFirebaseUidByEmail(String email) async {
+    final QuerySnapshot result = await firebaseFirestore
+        .collection(FirestoreConstants.pathUserCollection)
+        .where(FirestoreConstants.email, isEqualTo: email)
+        .get();
+    final List<DocumentSnapshot> document = result.docs;
+    if (document.isNotEmpty) {
+      return document.first.id;
+    }
+    return "";
+  }
 }
+
+
 
 enum Status {
   uninitialized,

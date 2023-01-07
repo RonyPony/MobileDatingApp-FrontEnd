@@ -97,8 +97,10 @@ class AuthService implements AuthContract {
   @override
   Future<bool> userExists(String userEmail) async {
     try {
-      var resp =
-          await Dio().post(serverurl + 'api/user/findByEmail/' + userEmail);
+      Dio client = Dio(
+        
+      );
+      var resp = await client.post(serverurl + 'api/user/findByEmail/' + userEmail);
       if (resp.statusCode == 200) {
         return true;
       }

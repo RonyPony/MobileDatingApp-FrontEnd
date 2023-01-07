@@ -367,8 +367,8 @@ class _StateUserProfile extends State<UserProfileScreen>
                               if (snapshot.data?.bio == "N/A") {
                                 isBioEmpty = true;
                                 snapshot.data?.bio =
-                                    "No has agregado informacion sobre ti, hazlo " +
-                                        emoji.getAnEmmoji(false);
+                                    "${snapshot.data?.name} todavia no ha escrito sobre su persona, preguntale tu ! " +
+                                        emoji.getAnEmmoji(true);
                               }
                               return Column(
                                 children: [
@@ -564,13 +564,14 @@ class _StateUserProfile extends State<UserProfileScreen>
         String currentUserId = _currentUser.id.toString();
         User user = await _user;
         String secondID = await user.id.toString();
-        String secondUID = "";
+        String uid = await authProvider.getFirebaseUidByEmail(user.email!);
+        String secondUID = uid;
         print("Waiting 1 sec");
         await Future.delayed(Duration(seconds: 1), () {});
         print("Creating room");
 
         String roomId = chatProvider.createRoom(_uid, currentUserId, secondUID,
-            secondID, user.name! + " " + user.lastName!);
+            secondID, "[${user.name} ${user.lastName}]|[${_currentUser.name} ${_currentUser.lastName}]");
         ChatArguments args = ChatArguments(user, roomId);
         Navigator.pushNamed(context, Conversation.routeName, arguments: args);
         // Navigator.pushNamed(context, UserProfileScreen.routeName,

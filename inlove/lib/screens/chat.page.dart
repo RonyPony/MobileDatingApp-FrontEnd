@@ -572,7 +572,8 @@ class _StateChatScreen extends State<ChatScreen> {
     //       .then((value){
     // print("Fetched ==>>>" + value.docs.first.get("content"));
     //       });
-
+    List<String> chatNameList=room.get("displayName").toString().replaceAll('[', '').replaceAll(']', '').split('|');
+    String _chatName = chatNameList.first=="${_currentUser.name} ${_currentUser.lastName}"?chatNameList[1]:chatNameList[0];
     return GestureDetector(
       onLongPress: () {
         setState(() {
@@ -603,8 +604,8 @@ class _StateChatScreen extends State<ChatScreen> {
                           Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
                               .withOpacity(1.0),
                       child: Text(
-                        room.get("displayName").toString().toUpperCase()[0] +
-                            room.get("displayName").toString().toUpperCase()[1],
+                        _chatName.toUpperCase()[0] +
+                            _chatName.split(' ')[1].toUpperCase()[0],
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
@@ -619,7 +620,7 @@ class _StateChatScreen extends State<ChatScreen> {
                         Padding(
                           padding: const EdgeInsets.only(left: 15),
                           child: Text(
-                            room.get("displayName"),
+                            _chatName,
                             style: TextStyle(color: Colors.white, fontSize: 25),
                           ),
                         ),

@@ -38,7 +38,7 @@ class _LoginPageState extends State<LoginPage>
     _controller.repeat();
     if (kDebugMode) {
       emailController.text = "ronel.cruz.a8@gmail.com";
-      passController.text = "ronel0808";
+      passController.text = "ronel08";
     }
     super.initState();
   }
@@ -70,6 +70,7 @@ class _LoginPageState extends State<LoginPage>
         Fluttertoast.showToast(msg: 'Sign in successful');
         break;
       default:
+      // Fluttertoast.showToast(msg: 'Sign in failed');
         break;
     }
 
