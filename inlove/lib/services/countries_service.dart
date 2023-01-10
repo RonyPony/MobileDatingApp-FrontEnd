@@ -79,7 +79,10 @@ class CountriesService implements CountriesContract {
       var resp = await Dio().get(
           serverurl+'api/countries/byName/'+name);
       if(resp.statusCode == 200){
-        var json = resp.data[0];
+        var json;
+        if (resp.data.length >0) {
+          json= resp.data[0];
+        }
         foundCountry = Country.fromJson(resp.data[0]);
         return foundCountry;
       }

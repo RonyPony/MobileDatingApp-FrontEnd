@@ -146,9 +146,11 @@ class _HomePageState extends State<HomePage> {
                               //   width: MediaQuery.of(context).size.width * .9,
                               // ),
                               ),
+                          
                           FutureBuilder<User>(
                             future: _usuario,
                             builder: (context, snapshot) {
+                              bool showSexualityPref = false;
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
                                 return CircularProgressIndicator(
@@ -162,6 +164,7 @@ class _HomePageState extends State<HomePage> {
                                 if (snapshot.hasData) {
                                   Future<String> countryCode =
                                       getCountryCode(snapshot.data!.countryId);
+                                showSexualityPref = snapshot.data!.showMySexuality!;
                                   return Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -286,7 +289,7 @@ class _HomePageState extends State<HomePage> {
                                                                                     if (_flag.hasError) {
                                                                                       return Text("Err");
                                                                                     }
-                                                                                    if (_flag.connectionState == ConnectionState.done && _flag.hasData) {
+                                                                                    if (_flag.connectionState == ConnectionState.done && _flag.hasData && showSexualityPref) {
                                                                                       return GestureDetector(
                                                                                         onTap: () {
                                                                                           CoolAlert.show(
@@ -302,7 +305,7 @@ class _HomePageState extends State<HomePage> {
                                                                                         ),
                                                                                       );
                                                                                     }
-                                                                                    return Text("no data");
+                                                                                    return SizedBox();
                                                                                   },
                                                                                 );
                                                                               }

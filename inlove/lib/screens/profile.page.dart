@@ -630,6 +630,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                                       animType: CoolAlertAnimType.slideInDown,
                                       backgroundColor: Colors.white,
                                       loopAnimation: false,
+                                      onConfirmBtnTap: () {
+                                        Navigator.pushNamedAndRemoveUntil(context, ProfileScreen.routeName, (route) => false);
+                                      },
                                       type: CoolAlertType.success,
                                       title: "Actualizado 👍🏼");
                                 }

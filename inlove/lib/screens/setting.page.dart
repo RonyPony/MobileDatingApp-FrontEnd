@@ -205,24 +205,29 @@ class _SettingScreenState extends State<SettingScreen>
             currentUser.preferedCountryId = paisPref.id;
           }
           currentUser.sex = selectedSex;
-          currentUser.countryId = paisOrigen.id;
+          currentUser.countryId = paisOrigen.id??0;
           currentUser.sexualOrientationId = mySexuality.id;
           currentUser.minimunAgeToMatch = minimunAgeToMatch;
           currentUser.maximunAgeToMatch = maximunAgeToMatch;
           var filtersUpdated = await settings.setFiltersPreferences(
               currentUser.id!, currentUser);
           if (filtersUpdated) {
-            finalCountries.clear();
+            finalCountries=[];
             context.loaderOverlay.hide();
             CoolAlert.show(
                 context: context,
                 animType: CoolAlertAnimType.slideInDown,
                 backgroundColor: Colors.white,
                 loopAnimation: false,
+                onConfirmBtnTap: () {
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, SettingScreen.routeName, (route) => false);
+                },
                 type: CoolAlertType.success,
                 text: "Configuracion aplicada correctamente",
                 title: "Exito!");
-            setState(() {});
+            // setState(() {});
+            
           }
           context.loaderOverlay.hide();
         } catch (e) {

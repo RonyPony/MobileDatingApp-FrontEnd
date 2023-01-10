@@ -172,6 +172,7 @@ class _StateUserProfile extends State<UserProfileScreen>
                               children: [
                                 FutureBuilder<User>(
                                   builder: (context, snapshot) {
+                                    bool sexualPref = false;
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {
                                       return const CircularProgressIndicator(
@@ -187,6 +188,7 @@ class _StateUserProfile extends State<UserProfileScreen>
                                       if (snapshot.hasData) {
                                         Future<Country> pais = getCountry(
                                             "${snapshot.data?.countryId}");
+                                        sexualPref = snapshot.data!.showMySexuality!;
                                         return FutureBuilder<Country>(
                                           future: pais,
                                           builder: (context, snapshotCountry) {
@@ -290,13 +292,12 @@ class _StateUserProfile extends State<UserProfileScreen>
                                                                             return Text("Err");
                                                                           }
                                                                           if (_flag.connectionState == ConnectionState.done &&
-                                                                              _flag.hasData) {
+                                                                              _flag.hasData && sexualPref) {
                                                                             return CircleAvatar(
                                                                               backgroundImage: MemoryImage(base64Decode(_flag.data!.image!)),
                                                                             );
                                                                           }
-                                                                          return Text(
-                                                                              "no data");
+                                                                          return SizedBox();
                                                                         },
                                                                       );
                                                                     }

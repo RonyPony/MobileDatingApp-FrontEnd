@@ -51,6 +51,7 @@ class _StateChatScreen extends State<ChatScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    getMatches();
   }
 
   @override
@@ -525,8 +526,7 @@ class _StateChatScreen extends State<ChatScreen> {
                           return _chatStrip(document, secondUID);
                         } else {
                           //receibed
-                          return Text("NO",
-                              style: TextStyle(color: Colors.pinkAccent));
+                          return SizedBox();
                         }
                       }).toList(),
                     );
@@ -573,124 +573,152 @@ class _StateChatScreen extends State<ChatScreen> {
     // print("Fetched ==>>>" + value.docs.first.get("content"));
     //       });
     List<String> chatNameList=room.get("displayName").toString().replaceAll('[', '').replaceAll(']', '').split('|');
-    String _chatName = chatNameList.first=="${_currentUser.name} ${_currentUser.lastName}"?chatNameList[1]:chatNameList[0];
-    return GestureDetector(
-      onLongPress: () {
-        setState(() {
-          showDeleteBtn = true;
-        });
-      },
-      onTap: () async {
-        User _finalUser = await authProvider.findUserById(int.parse(userId));
-        ChatArguments args = ChatArguments(_finalUser, room.id);
-        Navigator.pushNamed(context, Conversation.routeName, arguments: args);
-      },
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          decoration: BoxDecoration(
-              color: Color(0xff242424),
-              borderRadius: BorderRadius.circular(10)),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  children: [
-                    CircleAvatar(
-                      backgroundColor:
-                          Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
-                              .withOpacity(1.0),
-                      child: Text(
-                        _chatName.toUpperCase()[0] +
-                            _chatName.split(' ')[1].toUpperCase()[0],
-                        style: TextStyle(color: Colors.white),
+    bool isLastMessageSeen = room
+        .get("isLastMessageSeen");
+    Future<User> usr =  authProvider.readLocalUserInfo();
+    return FutureBuilder<User>(
+      future: usr,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        }
+        if(snapshot.hasError){
+          return Text("Error getting chats");
+        }
+        if (snapshot.connectionState == ConnectionState.done) {
+          if(snapshot.hasData){
+             String _chatName = chatNameList.first=="${snapshot.data!.name} ${snapshot.data!.lastName}"?chatNameList[1]:chatNameList[0];
+                return GestureDetector(
+                  onLongPress: () {
+                    setState(() {
+                      showDeleteBtn = true;
+                    });
+                  },
+                  onTap: () async {
+                    User _finalUser = await authProvider.findUserById(int.parse(userId));
+                    ChatArguments args = ChatArguments(_finalUser, room.id);
+                    Navigator.pushNamed(context, Conversation.routeName, arguments: args);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Color(0xff242424),
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 20, top: 20, bottom: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              children: [
+                                CircleAvatar(
+                                  backgroundColor:
+                                      Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
+                                          .withOpacity(1.0),
+                                  child: Text(
+                                    _chatName.toUpperCase()[0] +
+                                        _chatName.split(' ')[1].toUpperCase()[0],
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 15),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            _chatName,
+                                            style: TextStyle(color: Colors.white, fontSize: 25),
+                                          ),
+                                          isLastMessageSeen?Padding(
+                                            padding: const EdgeInsets.only(left: 10,),
+                                            child: Icon(Icons.disc_full_outlined,color: Colors.blue,),
+                                          ):SizedBox()
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                                      future: _snap,
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return CircularProgressIndicator();
+                                        }
+                                        if (snapshot.hasError) {
+                                          return Text(
+                                            "Error found",
+                                            style: TextStyle(color: Colors.red),
+                                          );
+                                        }
+                                        if (snapshot.hasData &&
+                                            snapshot.connectionState ==
+                                                ConnectionState.done) {
+                                          if (snapshot.data!.docs.length >= 1) {
+                                            String cont =
+                                                snapshot.data!.docs.last.get("content");
+                                            return Text(
+                                              cont,
+                                              style: TextStyle(
+                                                  color: Colors.white.withOpacity(.5)),
+                                            );
+                                          } else {
+                                            return Text("No hay mensajes",
+                                                style: TextStyle(
+                                                    color: Colors.white.withOpacity(.5)));
+                                          }
+                                        }
+                                        return Text("No Data",
+                                            style: TextStyle(color: Colors.red));
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            // SizedBox(width: MediaQuery.of(context).size.width*.09,),
+                            Column(
+                              children: [
+                                Visibility(
+                                    visible: showDeleteBtn,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        deleteChat(room);
+                                      },
+                                      child: Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                        size: 30,
+                                      ),
+                                    ))
+                              ],
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(left: 15),
-                          child: Text(
-                            _chatName,
-                            style: TextStyle(color: Colors.white, fontSize: 25),
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        FutureBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                          future: _snap,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return CircularProgressIndicator();
-                            }
-                            if (snapshot.hasError) {
-                              return Text(
-                                "Error found",
-                                style: TextStyle(color: Colors.red),
-                              );
-                            }
-                            if (snapshot.hasData &&
-                                snapshot.connectionState ==
-                                    ConnectionState.done) {
-                              if (snapshot.data!.docs.length >= 1) {
-                                String cont =
-                                    snapshot.data!.docs.last.get("content");
-                                return Text(
-                                  cont,
-                                  style: TextStyle(
-                                      color: Colors.white.withOpacity(.5)),
-                                );
-                              } else {
-                                return Text("No hay mensajes",
-                                    style: TextStyle(
-                                        color: Colors.white.withOpacity(.5)));
-                              }
-                            }
-                            return Text("No Data",
-                                style: TextStyle(color: Colors.red));
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                // SizedBox(width: MediaQuery.of(context).size.width*.09,),
-                Column(
-                  children: [
-                    Visibility(
-                        visible: showDeleteBtn,
-                        child: GestureDetector(
-                          onTap: () {
-                            deleteChat(room);
-                          },
-                          child: Icon(
-                            Icons.delete,
-                            color: Colors.red,
-                            size: 30,
-                          ),
-                        ))
-                  ],
-                )
-              ],
-            ),
-          ),
-        ),
-      ),
+                  ),
+                );
+          }
+        }
+        return Text("no info found");
+      },
     );
+    
   }
 
   void deleteChat(DocumentSnapshot<Object?> room) {
