@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:cool_alert/cool_alert.dart';
 import 'package:flag/flag_widget.dart';
@@ -29,84 +30,381 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   late Future<User> _usuario;
+  late AnimationController _controller;
   int _userId = 0;
   @override
   void initState() {
+    _controller =
+        AnimationController(vsync: this, duration: const Duration(seconds: 2));
+    _controller.repeat();
     _usuario = getPossibleMatch();
     super.initState();
+    context.loaderOverlay.show();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: const MainMenu(),
-      backgroundColor: const Color(0xff020202),
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: const Color(0xff020202),
-        title: const Text('LoVers'),
-      ),
-      body: SingleChildScrollView(
-          child: FutureBuilder<User>(
-        future: _usuario,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.none) {
-            return Icon(
-              Icons.close,
-              color: Colors.white,
-            );
-          }
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Row(
+    return LoaderOverlay(
+        useDefaultLoading: false,
+        overlayWidgetBuilder: (progress) {
+          return Center(
+              child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: Colors.black,
+              boxShadow: const [
+                BoxShadow(color: Colors.pink, spreadRadius: 3),
+              ],
+            ),
+
+            height: MediaQuery.of(context).size.height * .25,
+            // color: Colors.black,
+            padding: const EdgeInsets.all(29),
+            child: Column(
+              // crossAxisAlignment: CrossAxisAlignment.center
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircularProgressIndicator(color: Colors.pink),
+                AnimatedBuilder(
+                  animation: _controller.view,
+                  builder: (context, child) {
+                    return Transform.rotate(
+                      angle: _controller.value * 2 * pi,
+                      child: child,
+                    );
+                  },
+                  child: SvgPicture.asset(
+                    'assets/logo-no-name.svg',
+                    height: MediaQuery.of(context).size.height * .12,
+                  ),
+                ),
+                // CircularProgressIndicator(color:Colors.pink,),
+                const SizedBox(
+                  height: 10,
+                ),
               ],
-            );
-          }
-          if (snapshot.hasError) {
-            return Text("Error ${snapshot.error.toString()}");
-          }
-          Emojies emoji = Emojies();
-          if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.hasData) {
-            if (snapshot.data!.hasError!) {
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                      color: Colors.red,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          children: [
-                            Text(
-                              snapshot.data!.error!,
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 20),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  //TODO report implementation
-                                },
-                                child: Text('Reportalo'),
-                              ),
-                            )
-                          ],
-                        ),
-                      )),
-                ],
-              );
-            }
-            Future<Widget> profilePic = getUserImage(snapshot.data);
-            return Column(
-              children: [
-                Row(
+            ),
+          ));
+        },
+        child: Scaffold(
+          bottomNavigationBar: const MainMenu(),
+          backgroundColor: const Color(0xff020202),
+          appBar: AppBar(
+            elevation: 0,
+            backgroundColor: const Color(0xff020202),
+            title: const Text('LoVers'),
+          ),
+          body: SingleChildScrollView(
+              child: FutureBuilder<User>(
+            future: _usuario,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.none) {
+                return Icon(
+                  Icons.close,
+                  color: Colors.white,
+                );
+              }
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    // CircularProgressIndicator(color: Colors.pink),
+                  ],
+                );
+              }
+              if (snapshot.hasError) {
+                return Text("Error ${snapshot.error.toString()}");
+              }
+              Emojies emoji = Emojies();
+              if (snapshot.connectionState == ConnectionState.done &&
+                  snapshot.hasData) {
+                if (snapshot.data!.hasError!) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                          color: Colors.red,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Text(
+                                  snapshot.data!.error!,
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 20),
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      //TODO report implementation
+                                    },
+                                    child: Text('Reportalo'),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )),
+                    ],
+                  );
+                }
+                Future<Widget> profilePic = getUserImage(snapshot.data);
+                return Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width * .9,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(26),
+                            color: const Color(0xff1b1b1b),
+                          ),
+                          child: Column(
+                            children: [
+                              Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 010, left: 10, right: 10, bottom: 0),
+                                  child: FutureBuilder<Widget>(
+                                    future: profilePic,
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return CircularProgressIndicator(
+                                            color: Colors.pink);
+                                      } else {
+                                        if (snapshot.hasError) {
+                                          return Text("Error found");
+                                        }
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.done) {
+                                          if (snapshot.hasData) {
+                                            return snapshot.data!;
+                                          }
+                                          return Text("no data error");
+                                        }
+                                      }
+                                      return Text("unknown error");
+                                    },
+                                  )
+                                  // Image.asset(
+                                  //   "assets/placeHolder.png",
+                                  //   height: MediaQuery.of(context).size.height * .5,
+                                  //   width: MediaQuery.of(context).size.width * .9,
+                                  // ),
+                                  ),
+                              FutureBuilder<User>(
+                                future: _usuario,
+                                builder: (context, snapshot) {
+                                  bool showSexualityPref = false;
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return CircularProgressIndicator(
+                                        color: Colors.pink);
+                                  }
+                                  if (snapshot.hasError) {
+                                    return Text("Error Ocurred");
+                                  }
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                    if (snapshot.hasData) {
+                                      Future<String> countryCode =
+                                          getCountryCode(
+                                              snapshot.data!.countryId);
+                                      showSexualityPref =
+                                          snapshot.data!.showMySexuality!;
+                                      return Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                bottom: 10),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                FutureBuilder<User>(
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState
+                                                            .waiting) {
+                                                      return const CircularProgressIndicator(
+                                                        color: Colors.pink,
+                                                      );
+                                                    }
+                                                    if (snapshot.hasError) {
+                                                      return const Text("Err");
+                                                    }
+
+                                                    if (snapshot
+                                                            .connectionState ==
+                                                        ConnectionState.done) {
+                                                      if (snapshot.hasData) {
+                                                        Future<Country> pais =
+                                                            getCountry(
+                                                                "${snapshot.data?.countryId}");
+                                                        return FutureBuilder<
+                                                            Country>(
+                                                          future: pais,
+                                                          builder: (context,
+                                                              snapshotCountry) {
+                                                            if (snapshotCountry
+                                                                    .hasData &&
+                                                                snapshotCountry
+                                                                        .connectionState ==
+                                                                    ConnectionState
+                                                                        .done) {
+                                                              int? sexOrId =
+                                                                  snapshot.data!
+                                                                      .sexualOrientationId;
+                                                              final authProvider =
+                                                                  Provider.of<
+                                                                          AuthProvider>(
+                                                                      context,
+                                                                      listen:
+                                                                          false);
+                                                              Future<SexualOrientation>
+                                                                  so =
+                                                                  authProvider
+                                                                      .getSexualOrientationById(
+                                                                          sexOrId!);
+                                                              return Row(
+                                                                children: [
+                                                                  GestureDetector(
+                                                                    onTap: () {
+                                                                      CoolAlert.show(
+                                                                          context: context,
+                                                                          type: CoolAlertType.info,
+                                                                          backgroundColor: Colors.white,
+                                                                          loopAnimation: false,
+                                                                          cancelBtnText: "Configurar mi pais",
+                                                                          showCancelBtn: true,
+                                                                          onCancelBtnTap: () {
+                                                                            Navigator.pushNamedAndRemoveUntil(
+                                                                                context,
+                                                                                SettingScreen.routeName,
+                                                                                (route) => false);
+                                                                          },
+                                                                          title: snapshotCountry.data!.name!,
+                                                                          text: '${snapshot.data!.name!} ${snapshot.data!.lastName!} ha seleccionado su pais como ${snapshotCountry.data!.name}');
+                                                                    },
+                                                                    child: Flag
+                                                                        .fromString(
+                                                                      "${snapshotCountry.data?.code}",
+                                                                      fit: BoxFit
+                                                                          .fill,
+                                                                      height:
+                                                                          50,
+                                                                      width: 50,
+                                                                      borderRadius:
+                                                                          100,
+                                                                    ),
+                                                                  ),
+                                                                  Padding(
+                                                                    padding:
+                                                                        const EdgeInsets.all(
+                                                                            8.0),
+                                                                    child: Container(
+                                                                        padding: EdgeInsets.only(),
+                                                                        child: sexOrId != 0
+                                                                            ? FutureBuilder<SexualOrientation>(
+                                                                                future: so,
+                                                                                builder: (context, _sexualOrientation) {
+                                                                                  if (_sexualOrientation.connectionState == ConnectionState.waiting) {
+                                                                                    return CircularProgressIndicator(color: Colors.pink);
+                                                                                  }
+                                                                                  if (_sexualOrientation.hasError) {
+                                                                                    return Text("Err");
+                                                                                  }
+                                                                                  if (_sexualOrientation.connectionState == ConnectionState.done && _sexualOrientation.hasData) {
+                                                                                    final photoProv = Provider.of<PhotoProvider>(context, listen: false);
+                                                                                    int currentFlagImageId = _sexualOrientation.data!.imageId!;
+                                                                                    Future<Photo> flag = photoProv.getPhoto(currentFlagImageId);
+                                                                                    return FutureBuilder<Photo>(
+                                                                                      future: flag,
+                                                                                      builder: (context, _flag) {
+                                                                                        if (_flag.connectionState == ConnectionState.waiting) {
+                                                                                          return CircularProgressIndicator(color: Colors.pink);
+                                                                                        }
+                                                                                        if (_flag.hasError) {
+                                                                                          return Text("Err");
+                                                                                        }
+                                                                                        if (_flag.connectionState == ConnectionState.done && _flag.hasData && showSexualityPref) {
+                                                                                          return GestureDetector(
+                                                                                            onTap: () {
+                                                                                              CoolAlert.show(context: context, type: CoolAlertType.info, backgroundColor: Colors.white, loopAnimation: false, title: _sexualOrientation.data!.name!, text: '${snapshot.data!.name!} ${snapshot.data!.lastName!} ha seleccionado su sexualidad como ${_sexualOrientation.data!.name}');
+                                                                                            },
+                                                                                            child: CircleAvatar(
+                                                                                              backgroundImage: MemoryImage(base64Decode(_flag.data!.image!)),
+                                                                                            ),
+                                                                                          );
+                                                                                        }
+                                                                                        return SizedBox();
+                                                                                      },
+                                                                                    );
+                                                                                  }
+                                                                                  return Text("no data 45");
+                                                                                },
+                                                                              )
+                                                                            : SizedBox()),
+                                                                  ), //CircleAvatar
+                                                                ],
+                                                              );
+
+                                                              // Flag.fromCode(
+                                                              //   FlagsCode.CA,
+                                                              //   fit: BoxFit.fill,
+                                                              //   height: 50,
+                                                              //   width: 50,
+                                                              //   borderRadius: 100,
+                                                              // );
+                                                            }
+                                                            return const CircularProgressIndicator(
+                                                              color:
+                                                                  Colors.pink,
+                                                            );
+                                                          },
+                                                        );
+                                                      }
+                                                      return const Text(
+                                                          "Error 3");
+                                                    }
+                                                    return const Text(
+                                                        "error 4");
+                                                  },
+                                                  future: _usuario,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                        ],
+                                      );
+                                    }
+                                    return Text("Error 3320");
+                                  }
+                                  return Text("Error 455");
+                                },
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     Container(
                       width: MediaQuery.of(context).size.width * .9,
                       decoration: BoxDecoration(
@@ -116,397 +414,152 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         children: [
                           Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 010, left: 10, right: 10, bottom: 0),
-                              child: FutureBuilder<Widget>(
-                                future: profilePic,
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return CircularProgressIndicator(
-                                        color: Colors.pink);
-                                  } else {
-                                    if (snapshot.hasError) {
-                                      return Text("Error found");
-                                    }
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.done) {
-                                      if (snapshot.hasData) {
-                                        return snapshot.data!;
-                                      }
-                                      return Text("no data error");
-                                    }
-                                  }
-                                  return Text("unknown error");
-                                },
-                              )
-                              // Image.asset(
-                              //   "assets/placeHolder.png",
-                              //   height: MediaQuery.of(context).size.height * .5,
-                              //   width: MediaQuery.of(context).size.width * .9,
-                              // ),
+                            padding: EdgeInsets.only(
+                                top: 0, left: 20, right: 20, bottom: 20),
+                            child: Text(
+                              "${capitalize(snapshot.data!.name)} ${capitalize(snapshot.data!.lastName)}",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 25,
+                                letterSpacing: 2.10,
                               ),
-                          
-                          FutureBuilder<User>(
-                            future: _usuario,
-                            builder: (context, snapshot) {
-                              bool showSexualityPref = false;
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return CircularProgressIndicator(
-                                    color: Colors.pink);
-                              }
-                              if (snapshot.hasError) {
-                                return Text("Error Ocurred");
-                              }
-                              if (snapshot.connectionState ==
-                                  ConnectionState.done) {
-                                if (snapshot.hasData) {
-                                  Future<String> countryCode =
-                                      getCountryCode(snapshot.data!.countryId);
-                                showSexualityPref = snapshot.data!.showMySexuality!;
-                                  return Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(bottom: 10),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            FutureBuilder<User>(
-                                              builder: (context, snapshot) {
-                                                if (snapshot.connectionState ==
-                                                    ConnectionState.waiting) {
-                                                  return const CircularProgressIndicator(
-                                                    color: Colors.pink,
-                                                  );
-                                                }
-                                                if (snapshot.hasError) {
-                                                  return const Text("Err");
-                                                }
-
-                                                if (snapshot.connectionState ==
-                                                    ConnectionState.done) {
-                                                  if (snapshot.hasData) {
-                                                    Future<Country> pais =
-                                                        getCountry(
-                                                            "${snapshot.data?.countryId}");
-                                                    return FutureBuilder<
-                                                        Country>(
-                                                      future: pais,
-                                                      builder: (context,
-                                                          snapshotCountry) {
-                                                        if (snapshotCountry
-                                                                .hasData &&
-                                                            snapshotCountry
-                                                                    .connectionState ==
-                                                                ConnectionState
-                                                                    .done) {
-                                                          int? sexOrId = snapshot
-                                                              .data!
-                                                              .sexualOrientationId;
-                                                          final authProvider =
-                                                              Provider.of<
-                                                                      AuthProvider>(
-                                                                  context,
-                                                                  listen:
-                                                                      false);
-                                                          Future<SexualOrientation>
-                                                              so = authProvider
-                                                                  .getSexualOrientationById(
-                                                                      sexOrId!);
-                                                          return Row(
-                                                            children: [
-                                                              GestureDetector(
-                                                                onTap: () {
-                                                                  CoolAlert.show(
-                                                                      context:
-                                                                          context,
-                                                                      type: CoolAlertType
-                                                                          .info,
-                                                                      backgroundColor:
-                                                                          Colors
-                                                                              .white,
-                                                                      loopAnimation:
-                                                                          false,
-                                                                          cancelBtnText: "Configurar mi pais",
-                                                                          showCancelBtn: true,
-                                                                          onCancelBtnTap: (){
-                                                                            Navigator.pushNamedAndRemoveUntil(
-                                                                            context,
-                                                                            SettingScreen
-                                                                                .routeName,
-                                                                            (route) =>
-                                                                                false);
-                                                                          },
-                                                                      title: snapshotCountry.data!.name!,
-                                                                      text:
-                                                                          '${snapshot.data!.name!} ${snapshot.data!.lastName!} ha seleccionado su pais como ${snapshotCountry.data!.name}');
-                                                                  
-                                                                },
-                                                                child: Flag
-                                                                    .fromString(
-                                                                  "${snapshotCountry.data?.code}",
-                                                                  fit: BoxFit
-                                                                      .fill,
-                                                                  height: 50,
-                                                                  width: 50,
-                                                                  borderRadius:
-                                                                      100,
-                                                                ),
-                                                              ),
-                                                              Padding(
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                            .all(
-                                                                        8.0),
-                                                                child: Container(
-                                                                    padding: EdgeInsets.only(),
-                                                                    child: sexOrId != 0
-                                                                        ? FutureBuilder<SexualOrientation>(
-                                                                            future:
-                                                                                so,
-                                                                            builder:
-                                                                                (context, _sexualOrientation) {
-                                                                              if (_sexualOrientation.connectionState == ConnectionState.waiting) {
-                                                                                return CircularProgressIndicator(color:Colors.pink);
-                                                                              }
-                                                                              if (_sexualOrientation.hasError) {
-                                                                                return Text("Err");
-                                                                              }
-                                                                              if (_sexualOrientation.connectionState == ConnectionState.done && _sexualOrientation.hasData) {
-                                                                                final photoProv = Provider.of<PhotoProvider>(context, listen: false);
-                                                                                int currentFlagImageId = _sexualOrientation.data!.imageId!;
-                                                                                Future<Photo> flag = photoProv.getPhoto(currentFlagImageId);
-                                                                                return FutureBuilder<Photo>(
-                                                                                  future: flag,
-                                                                                  builder: (context, _flag) {
-                                                                                    if (_flag.connectionState == ConnectionState.waiting) {
-                                                                                      return CircularProgressIndicator(color:Colors.pink);
-                                                                                    }
-                                                                                    if (_flag.hasError) {
-                                                                                      return Text("Err");
-                                                                                    }
-                                                                                    if (_flag.connectionState == ConnectionState.done && _flag.hasData && showSexualityPref) {
-                                                                                      return GestureDetector(
-                                                                                        onTap: () {
-                                                                                          CoolAlert.show(
-                                                                                            context: context,
-                                                                                             type: CoolAlertType.info,
-                                                                                             backgroundColor: Colors.white,
-                                                                                             loopAnimation: false,
-                                                                                             title: _sexualOrientation.data!.name!,                                                    
-                                                                                             text: '${snapshot.data!.name!} ${snapshot.data!.lastName!} ha seleccionado su sexualidad como ${_sexualOrientation.data!.name}');
-                                                                                        },
-                                                                                        child: CircleAvatar(
-                                                                                          backgroundImage: MemoryImage(base64Decode(_flag.data!.image!)),
-                                                                                        ),
-                                                                                      );
-                                                                                    }
-                                                                                    return SizedBox();
-                                                                                  },
-                                                                                );
-                                                                              }
-                                                                              return Text("no data 45");
-                                                                            },
-                                                                          )
-                                                                        : SizedBox()),
-                                                              ), //CircleAvatar
-                                                            ],
-                                                          );
-
-                                                          // Flag.fromCode(
-                                                          //   FlagsCode.CA,
-                                                          //   fit: BoxFit.fill,
-                                                          //   height: 50,
-                                                          //   width: 50,
-                                                          //   borderRadius: 100,
-                                                          // );
-                                                        }
-                                                        return const CircularProgressIndicator(
-                                                          color: Colors.pink,
-                                                        );
-                                                      },
-                                                    );
-                                                  }
-                                                  return const Text("Error 3");
-                                                }
-                                                return const Text("error 4");
-                                              },
-                                              future: _usuario,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: 10,
-                                      ),
-                                    ],
-                                  );
-                                }
-                                return Text("Error 3320");
-                              }
-                              return Text("Error 455");
-                            },
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 20),
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 0, bottom: 8, left: 10, right: 10),
+                              child: Text(
+                                snapshot.data!.bio != "N/A"
+                                    ? capitalize(snapshot.data!.bio)!
+                                    : "Aun no ha agregado informacion sobre el " +
+                                        emoji.getAnEmmoji(false),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                snapshot.data!.instagramUserEnabled!
+                                    ? SvgPicture.asset(
+                                        'assets/instagram.svg',
+                                        color: Colors.white,
+                                        height: 18,
+                                      )
+                                    : SizedBox(),
+                                snapshot.data!.instagramUserEnabled!
+                                    ? Text(
+                                        " ${snapshot.data!.instagramUser!}",
+                                        style: TextStyle(color: Colors.white),
+                                      )
+                                    : SizedBox(),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                snapshot.data!.whatsappNumberEnabled!
+                                    ? SvgPicture.asset(
+                                        'assets/whatsapp.svg',
+                                        color: Colors.white,
+                                        height: 18,
+                                      )
+                                    : SizedBox(),
+                                snapshot.data!.whatsappNumberEnabled!
+                                    ? Text(
+                                        " ${snapshot.data!.whatsappNumber!}",
+                                        style: TextStyle(color: Colors.white),
+                                      )
+                                    : SizedBox(),
+                              ],
+                            ),
                           )
                         ],
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Container(
-                  width: MediaQuery.of(context).size.width * .9,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(26),
-                    color: const Color(0xff1b1b1b),
-                  ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(
-                            top: 0, left: 20, right: 20, bottom: 20),
-                        child: Text(
-                          "${capitalize(snapshot.data!.name)} ${capitalize(snapshot.data!.lastName)}",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 25,
-                            letterSpacing: 2.10,
-                          ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            if (kDebugMode) {
+                              print("DENY");
+                            }
+                            setState(() {
+                              _usuario = getPossibleMatch();
+                            });
+                          },
+                          child: Container(
+                              width: 88,
+                              height: 90,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Color(0xff1db9fc),
+                              ),
+                              child: SvgPicture.asset("assets/deny.svg")),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                              top: 0, bottom: 8, left: 10, right: 10),
-                          child: Text(
-                            snapshot.data!.bio != "N/A"
-                                ? capitalize(snapshot.data!.bio)!
-                                : "Aun no ha agregado informacion sobre el " +
-                                    emoji.getAnEmmoji(false),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            final matchProvider = Provider.of<MatchProvider>(
+                                context,
+                                listen: false);
+                            final authProvider = Provider.of<AuthProvider>(
+                                context,
+                                listen: false);
+                            User currentUser =
+                                await authProvider.readLocalUserInfo();
+                            bool created = await matchProvider.createMatch(
+                                currentUser.id!, _userId);
+                            setState(() {
+                              _usuario = getPossibleMatch();
+                            });
+                            if (kDebugMode) {
+                              print("ACEPTED");
+                            }
+                          },
+                          child: Container(
+                            width: 88,
+                            height: 90,
+                            child: Image.asset(
+                              "assets/love3.png",
+                              // color: Color.fromARGB(255, 212, 2, 54),
+                            ),
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color(0xff1db9fc),
                             ),
                           ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            snapshot.data!.instagramUserEnabled!
-                                ? SvgPicture.asset(
-                                    'assets/instagram.svg',
-                                    color: Colors.white,
-                                    height: 18,
-                                  )
-                                : SizedBox(),
-                            snapshot.data!.instagramUserEnabled!
-                                ? Text(
-                                    " ${snapshot.data!.instagramUser!}",
-                                    style: TextStyle(color: Colors.white),
-                                  )
-                                : SizedBox(),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            snapshot.data!.whatsappNumberEnabled!
-                                ? SvgPicture.asset(
-                                    'assets/whatsapp.svg',
-                                    color: Colors.white,
-                                    height: 18,
-                                  )
-                                : SizedBox(),
-                            snapshot.data!.whatsappNumberEnabled!
-                                ? Text(
-                                    " ${snapshot.data!.whatsappNumber!}",
-                                    style: TextStyle(color: Colors.white),
-                                  )
-                                : SizedBox(),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        if (kDebugMode) {
-                          print("DENY");
-                        }
-                        setState(() {
-                          _usuario = getPossibleMatch();
-                        });
-                      },
-                      child: Container(
-                          width: 88,
-                          height: 90,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color(0xff1db9fc),
-                          ),
-                          child: SvgPicture.asset("assets/deny.svg")),
+                        )
+                      ],
                     ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        final matchProvider =
-                            Provider.of<MatchProvider>(context, listen: false);
-                        final authProvider =
-                            Provider.of<AuthProvider>(context, listen: false);
-                        User currentUser =
-                            await authProvider.readLocalUserInfo();
-                        bool created = await matchProvider.createMatch(
-                            currentUser.id!, _userId);
-                        setState(() {
-                          _usuario = getPossibleMatch();
-                        });
-                        if (kDebugMode) {
-                          print("ACEPTED");
-                        }
-                      },
-                      child: Container(
-                        width: 88,
-                        height: 90,
-                        child: Image.asset(
-                          "assets/love3.png",
-                          // color: Color.fromARGB(255, 212, 2, 54),
-                        ),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xff1db9fc),
-                        ),
-                      ),
-                    )
                   ],
-                ),
-              ],
-            );
-          }
-          return Text("No Info");
-        },
-      )),
-    );
+                );
+              }
+              return Text("No Info");
+            },
+          )),
+        ));
   }
 
   Future<User> getPossibleMatch() async {
     try {
+      // FocusScope.of(context).unfocus();
+      context.loaderOverlay.show();
       final matchProvider = Provider.of<MatchProvider>(context, listen: false);
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       User currentUser = await authProvider.readLocalUserInfo();
-      print("Getting Possible Match of "+currentUser.name!+" ID: "+currentUser.id!.toString());
+      print("Getting Possible Match of " +
+          currentUser.name! +
+          " ID: " +
+          currentUser.id!.toString());
       User possibleMatch =
           await matchProvider.getPossibleMatch(currentUser.id!);
 
@@ -521,12 +574,17 @@ class _HomePageState extends State<HomePage> {
             title: "Algo salio mal. Pero chill, intenta de nuevo 🤪");
       } else {
         _userId = possibleMatch.id!;
+        context.loaderOverlay.hide();
         return possibleMatch;
       }
+      context.loaderOverlay.hide();
       return possibleMatch;
     } catch (e) {
       print(e);
+      context.loaderOverlay.hide();
       return User();
+    } finally {
+      context.loaderOverlay.hide();
     }
   }
 

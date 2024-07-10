@@ -64,7 +64,7 @@ class _SettingScreenState extends State<SettingScreen>
   List<String> sexs = ["M", "F"];
 
   String selectedSex = "M";
-  String selectedSexFromServer="";
+  String selectedSexFromServer = "";
   // Future<List<Country>> countries;
 
   @override
@@ -90,51 +90,53 @@ class _SettingScreenState extends State<SettingScreen>
   Widget build(BuildContext context) {
     return LoaderOverlay(
       useDefaultLoading: false,
-      overlayWidget: Center(
-          child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(50),
-          color: Colors.black,
-          boxShadow: const [
-            BoxShadow(color: Colors.pink, spreadRadius: 3),
-          ],
-        ),
+      overlayWidgetBuilder: (progress) {
+        return Center(
+            child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50),
+            color: Colors.black,
+            boxShadow: const [
+              BoxShadow(color: Colors.pink, spreadRadius: 3),
+            ],
+          ),
 
-        height: MediaQuery.of(context).size.height * .25,
-        // color: Colors.black,
-        padding: const EdgeInsets.all(29),
-        child: Column(
-          // crossAxisAlignment: CrossAxisAlignment.center
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AnimatedBuilder(
-              animation: _controller.view,
-              builder: (context, child) {
-                return Transform.rotate(
-                  angle: _controller.value * 2 * pi,
-                  child: child,
-                );
-              },
-              child: SvgPicture.asset(
-                'assets/logo-no-name.svg',
-                height: MediaQuery.of(context).size.height * .12,
+          height: MediaQuery.of(context).size.height * .25,
+          // color: Colors.black,
+          padding: const EdgeInsets.all(29),
+          child: Column(
+            // crossAxisAlignment: CrossAxisAlignment.center
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AnimatedBuilder(
+                animation: _controller.view,
+                builder: (context, child) {
+                  return Transform.rotate(
+                    angle: _controller.value * 2 * pi,
+                    child: child,
+                  );
+                },
+                child: SvgPicture.asset(
+                  'assets/logo-no-name.svg',
+                  height: MediaQuery.of(context).size.height * .12,
+                ),
               ),
-            ),
-            // CircularProgressIndicator(color:Colors.pink,),
-            const SizedBox(
-              height: 10,
-            ),
-            const Text(
-              "Aplicando cambios...",
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.white,
-                  decoration: TextDecoration.none),
-            )
-          ],
-        ),
-      )),
+              // CircularProgressIndicator(color:Colors.pink,),
+              const SizedBox(
+                height: 10,
+              ),
+              const Text(
+                "Aplicando cambios...",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.normal,
+                    color: Colors.white,
+                    decoration: TextDecoration.none),
+              )
+            ],
+          ),
+        ));
+      },
       child: Scaffold(
         bottomNavigationBar: const MainMenu(),
         backgroundColor: const Color(0xff020202),
@@ -205,14 +207,14 @@ class _SettingScreenState extends State<SettingScreen>
             currentUser.preferedCountryId = paisPref.id;
           }
           currentUser.sex = selectedSex;
-          currentUser.countryId = paisOrigen.id??0;
+          currentUser.countryId = paisOrigen.id ?? 0;
           currentUser.sexualOrientationId = mySexuality.id;
           currentUser.minimunAgeToMatch = minimunAgeToMatch;
           currentUser.maximunAgeToMatch = maximunAgeToMatch;
           var filtersUpdated = await settings.setFiltersPreferences(
               currentUser.id!, currentUser);
           if (filtersUpdated) {
-            finalCountries=[];
+            finalCountries = [];
             context.loaderOverlay.hide();
             CoolAlert.show(
                 context: context,
@@ -227,7 +229,7 @@ class _SettingScreenState extends State<SettingScreen>
                 text: "Configuracion aplicada correctamente",
                 title: "Exito!");
             // setState(() {});
-            
+
           }
           context.loaderOverlay.hide();
         } catch (e) {
@@ -865,7 +867,7 @@ class _SettingScreenState extends State<SettingScreen>
               }),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
-                  String sex = snapshot.data! == "F"?"Mujer":"Hombre";
+                  String sex = snapshot.data! == "F" ? "Mujer" : "Hombre";
                   return Row(
                     children: [
                       Padding(

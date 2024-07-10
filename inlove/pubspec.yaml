@@ -34,27 +34,26 @@ dependencies:
   flag: ^6.0.0
   flutter_native_splash: ^2.2.1
   provider: ^6.0.3
-  dio: ^4.0.6
-  loader_overlay: ^2.0.7
   cool_alert: ^1.1.0
   shared_preferences: ^2.0.15
-  flutter_launcher_icons: ^0.9.3
-  image_picker: ^0.8.5+3
-  flutter_image_compress: ^1.1.0
-  firebase_core: ^1.12.0
-  firebase_auth: ^3.3.7
-  cloud_firestore: ^3.1.8
-  firebase_storage: ^10.3.7
-  google_sign_in: ^5.2.4
+  image_picker: ^1.0.2
+  flutter_image_compress: ^2.3.0
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.16.0
+  cloud_firestore: ^4.14.0
+  firebase_storage: ^11.6.0
+  google_sign_in: ^6.1.4
   fluttertoast: ^8.0.8
-  intl: ^0.17.0
-  photo_view: ^0.13.0
-  country_code_picker: ^2.0.2
+  intl: ^0.18.1
+  photo_view: ^0.15.0
+  country_code_picker: ^3.0.0
   url_launcher: ^6.0.20
   equatable: ^2.0.3
-  google_sign_in_web: ^0.10.0+5
-  firebase_app_check: ^0.0.6+18
-
+  google_sign_in_web: ^0.12.0+2
+  firebase_app_check: ^0.2.1+8
+  loader_overlay: ^3.0.0
+  dio: ^5.5.0+1
+  flutter_launcher_icons: ^0.13.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -64,7 +63,6 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^1.0.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

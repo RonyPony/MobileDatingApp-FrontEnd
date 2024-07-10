@@ -152,12 +152,15 @@ class _StateChatScreen extends State<ChatScreen> {
                 child: Container(
                   width: 150,
                   height: 120,
-                  child: snapshot.data,
+                  child: ClipRRect(
+                    
+                    borderRadius: BorderRadius.circular(5),
+                    child: snapshot.data),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(12)),
                       color: Color(0xff3c3c3c),
                       border: Border.all(
-                          width: 3,
+                          width: 5,
                           color: active ? Colors.pinkAccent : Colors.grey)),
                 ),
               ),
@@ -377,7 +380,7 @@ class _StateChatScreen extends State<ChatScreen> {
                         ),
                       );
                     } else {
-                      return _buildNoMatches();
+                      return  _buildNoMatches();
                     }
                   }
                   return Text("Error ");
@@ -422,13 +425,13 @@ class _StateChatScreen extends State<ChatScreen> {
         Icon(
           Icons.local_fire_department_outlined,
           color: Colors.orange.withOpacity(.4),
-          size: 60,
+          size: 40,
         ),
         SizedBox(
           height: 10,
         ),
         Text(
-          "Hey, aun no tienes matches",
+          "Hey, aun no has hecho match",
           style: TextStyle(color: Colors.white.withOpacity(.4)),
         ),
         SizedBox(
@@ -587,7 +590,9 @@ class _StateChatScreen extends State<ChatScreen> {
         }
         if (snapshot.connectionState == ConnectionState.done) {
           if(snapshot.hasData){
-             String _chatName = chatNameList.first=="${snapshot.data!.name} ${snapshot.data!.lastName}"?chatNameList[1]:chatNameList[0];
+            //  String _chatName = chatNameList.first=="${snapshot.data!.name} ${snapshot.data!.lastName}"?chatNameList[1]:chatNameList[0];
+            String _chatName = chatNameList.first=="${snapshot.data!.name} ${snapshot.data!.lastName}"?chatNameList[1]:chatNameList[0];
+            String chatNameImageLeters = _chatName.toUpperCase()[0] + _chatName.split(' ')[1].toUpperCase()[0];
                 return GestureDetector(
                   onLongPress: () {
                     setState(() {
@@ -618,8 +623,7 @@ class _StateChatScreen extends State<ChatScreen> {
                                       Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
                                           .withOpacity(1.0),
                                   child: Text(
-                                    _chatName.toUpperCase()[0] +
-                                        _chatName.split(' ')[1].toUpperCase()[0],
+                                    chatNameImageLeters,
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ),
@@ -636,7 +640,7 @@ class _StateChatScreen extends State<ChatScreen> {
                                       child: Row(
                                         children: [
                                           Text(
-                                            _chatName,
+                                            _chatName.length>13?_chatName.substring(0,13):_chatName,
                                             style: TextStyle(color: Colors.white, fontSize: 25),
                                           ),
                                           isLastMessageSeen?Padding(

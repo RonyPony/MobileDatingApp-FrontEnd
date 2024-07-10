@@ -23,6 +23,7 @@ import 'package:inlove/services/photo_service.dart';
 import 'package:inlove/services/setting_service.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'providers/auth_provider.dart' as kk;
 import 'firebase_options.dart';
 
 void main() async {
@@ -59,8 +60,9 @@ void main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
-          create: (_) => AuthProvider(
-              authService: AuthService(FirebaseAuth.instance, FirebaseFirestore.instance),
+          create: (_) => kk.AuthProvider(
+              authService: AuthService(
+                  FirebaseAuth.instance, FirebaseFirestore.instance),
               firebaseAuth: FirebaseAuth.instance,
               firebaseFirestore: FirebaseFirestore.instance,
               googleSignIn: GoogleSignIn(),

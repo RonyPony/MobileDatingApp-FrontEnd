@@ -32,9 +32,9 @@ class _RegisterPageState extends State<RegisterPage>
   TextEditingController passController = TextEditingController();
 
   TextEditingController passValidationController = TextEditingController();
-  
-  List<String> sexs = ["M","F"];
-  
+
+  List<String> sexs = ["M", "F"];
+
   String selectedSex = "M";
 
   @override
@@ -60,51 +60,53 @@ class _RegisterPageState extends State<RegisterPage>
     );
     return LoaderOverlay(
         useDefaultLoading: false,
-        overlayWidget: Center(
-            child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
-            color: Colors.black,
-            boxShadow: const [
-              BoxShadow(color: Colors.pink, spreadRadius: 3),
-            ],
-          ),
+        overlayWidgetBuilder: (progress) {
+          return Center(
+              child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: Colors.black,
+              boxShadow: const [
+                BoxShadow(color: Colors.pink, spreadRadius: 3),
+              ],
+            ),
 
-          height: MediaQuery.of(context).size.height * .25,
-          // color: Colors.black,
-          padding: const EdgeInsets.all(29),
-          child: Column(
-            // crossAxisAlignment: CrossAxisAlignment.center
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AnimatedBuilder(
-                animation: _controller.view,
-                builder: (context, child) {
-                  return Transform.rotate(
-                    angle: _controller.value * 2 * pi,
-                    child: child,
-                  );
-                },
-                child: SvgPicture.asset(
-                  'assets/logo-no-name.svg',
-                  height: MediaQuery.of(context).size.height * .12,
+            height: MediaQuery.of(context).size.height * .25,
+            // color: Colors.black,
+            padding: const EdgeInsets.all(29),
+            child: Column(
+              // crossAxisAlignment: CrossAxisAlignment.center
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnimatedBuilder(
+                  animation: _controller.view,
+                  builder: (context, child) {
+                    return Transform.rotate(
+                      angle: _controller.value * 2 * pi,
+                      child: child,
+                    );
+                  },
+                  child: SvgPicture.asset(
+                    'assets/logo-no-name.svg',
+                    height: MediaQuery.of(context).size.height * .12,
+                  ),
                 ),
-              ),
-              // CircularProgressIndicator(color:Colors.pink,),
-              const SizedBox(
-                height: 10,
-              ),
-              const Text(
-                "Validando informacion...",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.white,
-                    decoration: TextDecoration.none),
-              )
-            ],
-          ),
-        )),
+                // CircularProgressIndicator(color:Colors.pink,),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Text(
+                  "Validando informacion...",
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.white,
+                      decoration: TextDecoration.none),
+                )
+              ],
+            ),
+          ));
+        },
         child: Scaffold(
             appBar: AppBar(
               title: Text("Registrate"),
@@ -257,7 +259,7 @@ class _RegisterPageState extends State<RegisterPage>
               }
               if (passController.text == "" ||
                   passController.text.length <= 3) {
-                err = err+ "\nClave incorrecta";
+                err = err + "\nClave incorrecta";
               }
               if (err == "") {
                 canRegister = true;

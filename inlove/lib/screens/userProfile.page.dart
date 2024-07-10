@@ -75,51 +75,53 @@ class _StateUserProfile extends State<UserProfileScreen>
     Future<Widget> profilePic = getUserImage(_currentUser);
     return LoaderOverlay(
         useDefaultLoading: false,
-        overlayWidget: Center(
-            child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
-            color: Colors.black,
-            boxShadow: const [
-              BoxShadow(color: Colors.pink, spreadRadius: 3),
-            ],
-          ),
+        overlayWidgetBuilder: (progress) {
+          return Center(
+              child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: Colors.black,
+              boxShadow: const [
+                BoxShadow(color: Colors.pink, spreadRadius: 3),
+              ],
+            ),
 
-          height: MediaQuery.of(context).size.height * .25,
-          // color: Colors.black,
-          padding: const EdgeInsets.all(29),
-          child: Column(
-            // crossAxisAlignment: CrossAxisAlignment.center
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AnimatedBuilder(
-                animation: _controller.view,
-                builder: (context, child) {
-                  return Transform.rotate(
-                    angle: _controller.value * 2 * pi,
-                    child: child,
-                  );
-                },
-                child: SvgPicture.asset(
-                  'assets/logo-no-name.svg',
-                  height: MediaQuery.of(context).size.height * .12,
+            height: MediaQuery.of(context).size.height * .25,
+            // color: Colors.black,
+            padding: const EdgeInsets.all(29),
+            child: Column(
+              // crossAxisAlignment: CrossAxisAlignment.center
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnimatedBuilder(
+                  animation: _controller.view,
+                  builder: (context, child) {
+                    return Transform.rotate(
+                      angle: _controller.value * 2 * pi,
+                      child: child,
+                    );
+                  },
+                  child: SvgPicture.asset(
+                    'assets/logo-no-name.svg',
+                    height: MediaQuery.of(context).size.height * .12,
+                  ),
                 ),
-              ),
-              // CircularProgressIndicator(color:Colors.pink,),
-              const SizedBox(
-                height: 10,
-              ),
-              const Text(
-                "Cargando...",
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.normal,
-                    color: Colors.white,
-                    decoration: TextDecoration.none),
-              )
-            ],
-          ),
-        )),
+                // CircularProgressIndicator(color:Colors.pink,),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Text(
+                  "Cargando...",
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.white,
+                      decoration: TextDecoration.none),
+                )
+              ],
+            ),
+          ));
+        },
         child: Scaffold(
           backgroundColor: Colors.black,
           appBar: AppBar(
@@ -188,7 +190,8 @@ class _StateUserProfile extends State<UserProfileScreen>
                                       if (snapshot.hasData) {
                                         Future<Country> pais = getCountry(
                                             "${snapshot.data?.countryId}");
-                                        sexualPref = snapshot.data!.showMySexuality!;
+                                        sexualPref =
+                                            snapshot.data!.showMySexuality!;
                                         return FutureBuilder<Country>(
                                           future: pais,
                                           builder: (context, snapshotCountry) {
@@ -292,7 +295,8 @@ class _StateUserProfile extends State<UserProfileScreen>
                                                                             return Text("Err");
                                                                           }
                                                                           if (_flag.connectionState == ConnectionState.done &&
-                                                                              _flag.hasData && sexualPref) {
+                                                                              _flag.hasData &&
+                                                                              sexualPref) {
                                                                             return CircleAvatar(
                                                                               backgroundImage: MemoryImage(base64Decode(_flag.data!.image!)),
                                                                             );
@@ -420,8 +424,9 @@ class _StateUserProfile extends State<UserProfileScreen>
                                                   MainAxisAlignment.center,
                                               children: [
                                                 GestureDetector(
-                                                  onTap: (){
-                                                     _launchMailClient(snapshot.data!.email!);
+                                                  onTap: () {
+                                                    _launchMailClient(
+                                                        snapshot.data!.email!);
                                                   },
                                                   child: Image.asset(
                                                     "assets/email.gif",
@@ -435,7 +440,9 @@ class _StateUserProfile extends State<UserProfileScreen>
                                                         onTap: () {
                                                           openInstagram(snapshot
                                                               .data!
-                                                              .instagramUser!.replaceAll("@", ""));
+                                                              .instagramUser!
+                                                              .replaceAll(
+                                                                  "@", ""));
                                                         },
                                                         child: Image.asset(
                                                           "assets/instagram1.gif",
@@ -571,8 +578,12 @@ class _StateUserProfile extends State<UserProfileScreen>
         await Future.delayed(Duration(seconds: 1), () {});
         print("Creating room");
 
-        String roomId = chatProvider.createRoom(_uid, currentUserId, secondUID,
-            secondID, "[${user.name} ${user.lastName}]|[${_currentUser.name} ${_currentUser.lastName}]");
+        String roomId = chatProvider.createRoom(
+            _uid,
+            currentUserId,
+            secondUID,
+            secondID,
+            "[${user.name} ${user.lastName}]|[${_currentUser.name} ${_currentUser.lastName}]");
         ChatArguments args = ChatArguments(user, roomId);
         Navigator.pushNamed(context, Conversation.routeName, arguments: args);
         // Navigator.pushNamed(context, UserProfileScreen.routeName,
@@ -823,7 +834,7 @@ class _StateUserProfile extends State<UserProfileScreen>
   }
 
   void openInstagram(String user) async {
-    var url = 'https://www.instagram.com/'+user+'/';
+    var url = 'https://www.instagram.com/' + user + '/';
 
     if (await canLaunch(url)) {
       await launch(
