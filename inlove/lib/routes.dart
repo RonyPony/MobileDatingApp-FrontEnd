@@ -1,8 +1,8 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:inlove/screens/chat.page.dart';
 import 'package:inlove/screens/chat_spike.dart';
 import 'package:inlove/screens/conversation.page.dart';
+import 'package:inlove/screens/delete.account.page.dart';
 import 'package:inlove/screens/home.page.dart';
 import 'package:inlove/screens/landing.page.dart';
 import 'package:inlove/screens/login.page.dart';
@@ -17,9 +17,10 @@ final Map<String, WidgetBuilder> routes = {
   HomePage.routeName: (context) => const HomePage(),
   ProfileScreen.routeName: (context) => const ProfileScreen(),
   SettingScreen.routeName: (context) => const SettingScreen(),
-  RegisterPage.routeName:(context)=> RegisterPage(),
-  ChatScreen.routeName:(context)=>ChatScreen(),
-  Conversation.routeName:(context)=>Conversation(),
-  UserProfileScreen.routeName:(context)=>UserProfileScreen(),
-  ChatTest.routeName:((context) => ChatTest())
+  RegisterPage.routeName: (context) => RegisterPage(),
+  ChatScreen.routeName: (context) => ChatScreen(),
+  Conversation.routeName: (context) => Conversation(),
+  DeleteAccountScreen.routeName: (context) => DeleteAccountScreen(),
+  UserProfileScreen.routeName: (context) => UserProfileScreen(),
+  ChatTest.routeName: ((context) => ChatTest())
 };

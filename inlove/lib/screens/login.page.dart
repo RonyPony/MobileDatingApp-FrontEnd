@@ -38,8 +38,8 @@ class _LoginPageState extends State<LoginPage>
         AnimationController(vsync: this, duration: const Duration(seconds: 2));
     _controller.repeat();
     if (kDebugMode) {
-      //emailController.text = "ronel.cruz.a8@gmail.com";
-      //passController.text = "ronel08";
+      emailController.text = "ronel.cruz.a8@gmail.com";
+      passController.text = "ronel08";
     }
     super.initState();
   }

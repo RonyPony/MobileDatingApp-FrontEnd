@@ -13,6 +13,7 @@ import 'package:inlove/models/photoToUpload.dart';
 import 'package:inlove/models/sexual_orientations.dart';
 import 'package:inlove/models/user.dart';
 import 'package:inlove/providers/auth_provider.dart';
+import 'package:inlove/screens/delete.account.page.dart';
 import 'package:inlove/screens/login.page.dart';
 import 'package:inlove/screens/setting.page.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -685,23 +686,28 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   Widget deleteAccount() {
-    return Container(
-      width: MediaQuery.of(context).size.width * .8,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(26),
-        color: const Color(0xff242424),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Padding(
-            padding: EdgeInsets.only(top: 10, bottom: 10),
-            child: Text(
-              "Elimina mi cuenta",
-              style: TextStyle(color: Colors.red, fontSize: 22),
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, DeleteAccountScreen.routeName);
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width * .8,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(26),
+          color: const Color(0xff242424),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Padding(
+              padding: EdgeInsets.only(top: 10, bottom: 10),
+              child: Text(
+                "Elimina mi cuenta",
+                style: TextStyle(color: Colors.red, fontSize: 22),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
