@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:inlove/models/user.dart';
+import 'package:inlove/providers/auth_provider.dart';
+import 'package:inlove/screens/login.page.dart';
 import 'package:inlove/screens/profile.page.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:provider/provider.dart';
 
 class DeleteAccountScreen extends StatefulWidget {
   static String routeName = '/DeleteAcountScreen';
@@ -56,7 +59,7 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
               Container(
                 width: screenWidth * .8,
                 child: Text(
-                  "Tu cuenta sera eliminada en un periodo de 24 horas, esta accion no se puede deshacer",
+                  "Tu cuenta sera eliminada de inmediato, esta accion no se puede deshacer",
                   style: TextStyle(color: Colors.white, fontSize: 14),
                 ),
               ),
@@ -85,7 +88,15 @@ class _DeleteAccountScreenState extends State<DeleteAccountScreen>
                 backgroundColor: redColor,
                 foregroundColor: whiteColor,
               ),
-              onPressed: () {},
+              onPressed: () async {
+                AuthProvider authProvider =
+                    Provider.of<AuthProvider>(context, listen: false);
+                User currentUsr = await authProvider.readLocalUserInfo();
+                authProvider.deleteAccount(currentUsr.id!);
+                authProvider.logout();
+                Navigator.pushNamedAndRemoveUntil(
+                    context, LoginPage.routeName, (route) => false);
+              },
               child: Text("Si, elimina mi informacion"))
         ],
       ),

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario</title>
+    <style>
+        /* Estilos CSS para el formulario */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        main {
+            padding: 20px;
+        }
+        .etilazo {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        header {
+            background-color: #b176f5;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Estilos para el footer */
+        footer {
+            background-color: #f9f9f9;
+            text-align: center;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        button {
+            background-color: #b176f5;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        function deleteItem() {
+            console.log("okkkkkk");
+            login();
+            // const itemId = document.getElementById("itemId").value;
+            // const apiUrl = "https://api.example.com/items"; // Cambia esto a tu URL de API
+
+            // // Realiza la solicitud DELETE
+            // fetch(`${apiUrl}/${itemId}`, {
+            //     method: "DELETE",
+            // })
+            // .then(response => {
+            //     if (response.ok) {
+            //         return response.text();
+            //     } else {
+            //         throw new Error("Error al eliminar el elemento");
+            //     }
+            // })
+            // .then(message => {
+            //     // Muestra el mensaje de éxito o error
+            //     alert(message);
+            // })
+            // .catch(error => {
+            //     console.error(error);
+            //     alert("Error al eliminar el elemento. Inténtalo de nuevo más tarde.");
+            // });
+        }
+
+
+        async function login(){            
+            const email = document.getElementById("email").value;
+            const pass = document.getElementById("password").value;
+            const apiUrl = "http://216.172.100.170:8055/"; // Cambia esto a tu URL de API
+
+            try {
+                const userLogin = {
+                    userEmail: email,
+                    password: pass,
+                    rememberMe: false
+                };
+
+                const url = apiUrl+"/api/user/login"; // Cambia esto a tu URL de API
+
+                const resp = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(userLogin)
+                });
+
+                if (resp.status === 200) {
+                    // El código para manejar la respuesta exitosa va aquí
+                }
+            } catch (error) {
+                console.error("Error al realizar la solicitud:", error);
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>InLover</h1>
+        <p>Elimina mi cuenta</p>
+    </header>
+    <main>
+        <div class="container">
+        <h1>Eliminar Cuenta</h1>
+        <form id="deleteForm">
+            <label for="email">Correo Electronico:</label>
+            <input class="etilazo" type="text" id="email" name="email" required>
+            <label for="password">Clave:</label>
+            <input class="etilazo" type="password" id="password" name="password" required>
+            <button type="button" onclick="deleteItem()">Eliminar mi cuenta</button>
+        </form>
+    </div>
+
+    
+    </main>
+    <footer>
+        <p>&copy; 2024 - Todos los derechos reservados</p>
+    </footer>
+</body>
+</html>

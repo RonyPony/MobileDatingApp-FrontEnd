@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "inlove-79a50"
-  }
+    "default": "inlove-79a50",
+    "website": "inlove-r"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
 }

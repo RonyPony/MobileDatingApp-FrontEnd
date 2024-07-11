@@ -99,6 +99,11 @@ class AuthProvider extends ChangeNotifier {
     return response;
   }
 
+  Future<User> deleteAccount(int userId) async {
+    var response = await authService.deleteAccount(userId);
+    return response;
+  }
+
   String? getFirebaseUserId() {
     return prefs.getString(FirestoreConstants.id);
   }
@@ -113,18 +118,40 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<GoogleSignInAccount?> _handleSignIn() async {
+    GoogleSignInAccount? acc;
+    try {
+      const List<String> scopes = <String>[
+        'email',
+        // 'https://www.googleapis.com/auth/contacts.readonly',
+      ];
+      GoogleSignIn googleUser = GoogleSignIn(
+        // Optional clientId
+        // clientId: 'your-client_id.apps.googleusercontent.com',
+        scopes: scopes,
+      );
+      acc = await googleUser.signIn();
+      return acc;
+    } catch (error) {
+      print(error);
+
+      return acc;
+    }
+  }
+
   Future<bool?> handleGoogleSignIn() async {
     try {
       _status = Status.authenticating;
       notifyListeners();
 
       // GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-       final GoogleSignIn _googleSignIn = GoogleSignIn(
-          // scopes: [
-          //   'https://www.googleapis.com/auth/drive',
-          // ],
-        );
-GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      // final GoogleSignIn _googleSignIn = GoogleSignIn(
+      // scopes: [
+      //   'https://www.googleapis.com/auth/drive',
+      // ],
+      // );
+      // GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      var googleUser = await _handleSignIn();
       if (googleUser != null) {
         GoogleSignInAuthentication? googleAuth =
             await googleUser.authentication;
@@ -182,8 +209,6 @@ GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
     return "";
   }
 }
-
-
 
 enum Status {
   uninitialized,

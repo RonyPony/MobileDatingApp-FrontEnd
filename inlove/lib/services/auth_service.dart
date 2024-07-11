@@ -31,36 +31,35 @@ class AuthService implements AuthContract {
         "rememberMe": userLogin.rememberMe
       });
       if (resp.statusCode == 200) {
-          fbAuth.User? firebaseUser =
-              (await firebaseAuth.signInWithEmailAndPassword(
-                      email: userLogin.userEmail!,
-                      password: userLogin.password!))
-                  .user;
-          if (firebaseUser != null) {
-            final QuerySnapshot result = await firebaseFirestore
+        fbAuth.User? firebaseUser =
+            (await firebaseAuth.signInWithEmailAndPassword(
+                    email: userLogin.userEmail!, password: userLogin.password!))
+                .user;
+        if (firebaseUser != null) {
+          final QuerySnapshot result = await firebaseFirestore
+              .collection(FirestoreConstants.pathUserCollection)
+              .where(FirestoreConstants.id, isEqualTo: firebaseUser.uid)
+              .get();
+          final List<DocumentSnapshot> document = result.docs;
+          if (document.isEmpty) {
+            firebaseFirestore
                 .collection(FirestoreConstants.pathUserCollection)
-                .where(FirestoreConstants.id, isEqualTo: firebaseUser.uid)
-                .get();
-            final List<DocumentSnapshot> document = result.docs;
-            if (document.isEmpty) {
-              firebaseFirestore
-                  .collection(FirestoreConstants.pathUserCollection)
-                  .doc(firebaseUser.uid)
-                  .set({
-                FirestoreConstants.displayName: firebaseUser.displayName,
-                FirestoreConstants.photoUrl: firebaseUser.photoURL,
-                FirestoreConstants.email: firebaseUser.email,
-                FirestoreConstants.id: firebaseUser.uid,
-                "createdAt: ": DateTime.now().millisecondsSinceEpoch.toString(),
-                FirestoreConstants.chattingWith: null
-              });
-            }
-            User usua = await findUserByEmail(firebaseUser.email!);
-            if (usua != User()) {
-              saveLocalUserInfo(usua);
-              return true;
-            }
+                .doc(firebaseUser.uid)
+                .set({
+              FirestoreConstants.displayName: firebaseUser.displayName,
+              FirestoreConstants.photoUrl: firebaseUser.photoURL,
+              FirestoreConstants.email: firebaseUser.email,
+              FirestoreConstants.id: firebaseUser.uid,
+              "createdAt: ": DateTime.now().millisecondsSinceEpoch.toString(),
+              FirestoreConstants.chattingWith: null
+            });
           }
+          User usua = await findUserByEmail(firebaseUser.email!);
+          if (usua != User()) {
+            saveLocalUserInfo(usua);
+            return true;
+          }
+        }
       }
 
       // ignore: unrelated_type_equality_checks
@@ -85,7 +84,6 @@ class AuthService implements AuthContract {
     } on fbAuth.FirebaseAuthException catch (fbE) {
       setErrorMessage(fbE.code);
       print(fbE.message);
-      
 
       return false;
     } catch (e) {
@@ -97,10 +95,9 @@ class AuthService implements AuthContract {
   @override
   Future<bool> userExists(String userEmail) async {
     try {
-      Dio client = Dio(
-        
-      );
-      var resp = await client.post(serverurl + 'api/user/findByEmail/' + userEmail);
+      Dio client = Dio();
+      var resp =
+          await client.post(serverurl + 'api/user/findByEmail/' + userEmail);
       if (resp.statusCode == 200) {
         return true;
       }
@@ -417,6 +414,31 @@ class AuthService implements AuthContract {
       return true;
     } catch (e) {
       return false;
+    }
+  }
+
+  @override
+  Future<User> deleteAccount(int userId) async {
+    User foundUser = User();
+    try {
+      var resp = await Dio().delete(serverurl + 'api/user/$userId');
+      if (resp.statusCode == 200) {
+        User list = User.fromJson(resp.data);
+        foundUser = list; //list.map<User>(User.fromJson(list)).toList();
+      }
+
+      if (resp.statusCode == "404") {
+        print("User Not Found");
+      }
+      return foundUser;
+    } on DioError catch (e) {
+      //http error(statusCode not 20x) will be catched here.
+      print(e.response!.statusCode.toString());
+      print('Failed Load Data with status code ${e.response!.statusCode}');
+      return foundUser;
+    } catch (e) {
+      print(e);
+      return foundUser;
     }
   }
 }
