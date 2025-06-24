@@ -279,7 +279,13 @@ class AuthService implements AuthContract {
   Future<bool> registerUser(Register user) async {
     User finalUser = User();
     try {
-      var resp = await Dio().post(serverurl + 'api/user', data: user);
+      var resp = await Dio().post(serverurl + 'api/user', data: {
+        "userName": "${user.userName}",
+        "lastName": "${user.lastName}",
+        "email": "${user.email}",
+        "password": "${user.password}",
+        "sex": "${user.sex}"
+      });
       if (resp.statusCode == 200 || resp.statusCode == 201) {
         return true;
       }
